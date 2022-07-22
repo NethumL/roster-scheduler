@@ -1,4 +1,5 @@
 import { getLoginSession } from '@/lib/auth/session';
+import { send } from '@/lib/util';
 import Router from 'next/router';
 import { useRef, useState } from 'react';
 
@@ -17,16 +18,11 @@ export default function LoginPage() {
       password: passwordRef.current.value,
     };
 
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-
-    if (res.status === 200) {
+    try {
+      await send('POST', '/api/login', body);
       Router.push('/');
-    } else {
-      setErrorMsg(await res.text());
+    } catch (error) {
+      setErrorMsg(error.message);
     }
   }
 
