@@ -1,5 +1,5 @@
 import NewUserCard from '@/components/admin/newUsers/newUserCard';
-import NewUsersFilters from '@/components/admin/newUsers/newUsersFilters';
+import UserFilters from '@/components/admin/newUsers/userFilters';
 import { Grid, Typography } from '@mui/material';
 import { Container } from '@mui/system';
 import { useState, useRef } from 'react';
@@ -51,7 +51,7 @@ export default function NewUsersPage({ newUsers }) {
       <Typography variant="h4" component="div" sx={{ mb: 5 }}>
         New Users
       </Typography>
-      <NewUsersFilters
+      <UserFilters
         filter={filter}
         clear={clear}
         nameRef={nameRef}

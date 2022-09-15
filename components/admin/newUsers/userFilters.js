@@ -7,15 +7,9 @@ import {
   Typography,
 } from '@mui/material';
 
-export default function NewUsersFilters({
-  filter,
-  clear,
-  nameRef,
-  type,
-  setType,
-}) {
+export default function UserFilters({ filter, clear, nameRef, type, setType }) {
   return (
-    <Stack id="new-users-filters" spacing={1} sx={{ maxWidth: 400, mb: 5 }}>
+    <Stack id="user-filters" spacing={1} sx={{ maxWidth: 400, mb: 5 }}>
       <Typography variant="h5" component="div" sx={{ mb: 0 }}>
         Filters
       </Typography>
