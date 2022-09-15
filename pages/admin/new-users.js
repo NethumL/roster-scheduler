@@ -2,26 +2,48 @@ import NewUserCard from '@/components/admin/newUsers/newUserCard';
 import NewUsersFilters from '@/components/admin/newUsers/newUsersFilters';
 import { Grid, Typography } from '@mui/material';
 import { Container } from '@mui/system';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 export default function NewUsersPage({ newUsers }) {
   const [users, setUsers] = useState(newUsers);
   const [filtered, setFiltered] = useState(users);
 
+  const nameRef = useRef();
+  const [type, setType] = useState([]);
+
   const accept = (username) => {
     setUsers(users.filter((user) => user.username !== username));
+    setFiltered(filtered.filter((user) => user.username !== username));
   };
 
   const decline = (username) => {
     setUsers(users.filter((user) => user.username !== username));
+    setFiltered(filtered.filter((user) => user.username !== username));
   };
 
   const filter = () => {
-    setFiltered(users);
+    let temp = [...users];
+
+    const name = nameRef.current.value;
+    if (name) {
+      temp = temp.filter((user) =>
+        user.name.toLowerCase().includes(name.toLowerCase())
+      );
+    }
+
+    if (type.length) {
+      temp = temp.filter((user) =>
+        type.includes(user.type === 'doctor' ? 'Doctor' : 'Consultant')
+      );
+    }
+
+    setFiltered(temp);
   };
 
   const clear = () => {
     setFiltered(users);
+    setType([]);
+    nameRef.current.value = '';
   };
 
   return (
@@ -29,11 +51,18 @@ export default function NewUsersPage({ newUsers }) {
       <Typography variant="h4" component="div" sx={{ mb: 5 }}>
         New Users
       </Typography>
-      <NewUsersFilters filter={filter} clear={clear} />
+      <NewUsersFilters
+        filter={filter}
+        clear={clear}
+        nameRef={nameRef}
+        type={type}
+        setType={setType}
+      />
       <Grid
         container
         id="new-users-grid"
         spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}
+        sx={{ mb: 5 }}
       >
         {filtered.map((user, index) => (
           <NewUserCard

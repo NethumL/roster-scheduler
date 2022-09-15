@@ -1,21 +1,35 @@
 import {
   Autocomplete,
+  Box,
   Button,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 
-export default function NewUsersFilters({ filter, clear }) {
+export default function NewUsersFilters({
+  filter,
+  clear,
+  nameRef,
+  type,
+  setType,
+}) {
   return (
-    <Stack id="new-users-filters" spacing={1} sx={{ maxWidth: 400, mb: 3 }}>
+    <Stack id="new-users-filters" spacing={1} sx={{ maxWidth: 400, mb: 5 }}>
       <Typography variant="h5" component="div" sx={{ mb: 0 }}>
         Filters
       </Typography>
-      <TextField id="filter-name" label="Name" variant="standard" />
+      <TextField
+        id="filter-name"
+        label="Name"
+        variant="standard"
+        inputRef={nameRef}
+      />
       <Autocomplete
         multiple
         id="filter-type"
+        onChange={(event, value) => setType(value)}
+        value={type}
         options={['Doctor', 'Consultant']}
         getOptionLabel={(option) => option}
         defaultValue={[]}
@@ -28,11 +42,19 @@ export default function NewUsersFilters({ filter, clear }) {
           />
         )}
       />
-      <span>
-        <Button variant="contained" color="primary" onClick={() => {}}>
+      <Box>
+        <Button variant="contained" color="primary" onClick={filter}>
           Filter
         </Button>
-      </span>
+        <Button
+          sx={{ ml: 2 }}
+          variant="contained"
+          color="warning"
+          onClick={clear}
+        >
+          Clear
+        </Button>
+      </Box>
     </Stack>
   );
 }
