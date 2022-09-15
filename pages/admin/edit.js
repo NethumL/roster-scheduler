@@ -1,3 +1,5 @@
+import EditUserModal from '@/components/admin/newUsers/editUserModal';
+import ResetPasswordModal from '@/components/admin/newUsers/ResetPasswordModal';
 import UserFilters from '@/components/admin/newUsers/userFilters';
 import UserTable from '@/components/admin/newUsers/userTable';
 import { Container, Typography } from '@mui/material';
@@ -7,6 +9,53 @@ export default function Edit({ users }) {
   const nameRef = useRef();
   const [type, setType] = useState([]);
   const [filtered, setFiltered] = useState(users);
+
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [openResetModal, setOpenResetModal] = useState(false);
+
+  const handleClickOpenEditModal = (user) => {
+    setSelectedUser(user);
+    setOpenEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setSelectedUser(null);
+    setOpenEditModal(false);
+  };
+
+  const handleSaveEdit = (username, newName, newType) => {
+    const newUsers = users.map((u) => {
+      if (u.username === username) {
+        u.name = newName;
+        u.type = newType;
+      }
+      return u;
+    });
+
+    console.log(username, newName, newType);
+
+    setSelectedUser(null);
+    setOpenEditModal(false);
+    setFiltered(newUsers);
+  };
+
+  const handleClickOpenResetModal = (user) => {
+    setSelectedUser(user);
+    setOpenResetModal(true);
+  };
+
+  const handleCloseResetModal = () => {
+    setSelectedUser(null);
+    setOpenResetModal(false);
+  };
+
+  const handleSavePassword = (username, password) => {
+    console.log(username, password);
+
+    setSelectedUser(null);
+    setOpenResetModal(false);
+  };
 
   const filter = () => {
     let temp = [...users];
@@ -45,7 +94,23 @@ export default function Edit({ users }) {
         type={type}
         setType={setType}
       />
-      <UserTable users={filtered} />
+      <UserTable
+        users={filtered}
+        handleEdit={handleClickOpenEditModal}
+        handleReset={handleClickOpenResetModal}
+      />
+      <EditUserModal
+        open={openEditModal}
+        user={selectedUser}
+        handleClose={handleCloseEditModal}
+        handleSave={handleSaveEdit}
+      />
+      <ResetPasswordModal
+        open={openResetModal}
+        user={selectedUser}
+        handleClose={handleCloseResetModal}
+        handleSave={handleSavePassword}
+      />
     </Container>
   );
 }

@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@mui/material';
 
-export default function UserTable({ users }) {
+export default function UserTable({ users, handleEdit, handleReset }) {
   return (
     <TableContainer component={Paper} sx={{ mb: 5 }}>
       <Table>
@@ -29,8 +29,12 @@ export default function UserTable({ users }) {
               <TableCell>{user.name}</TableCell>
               <TableCell>
                 <ButtonGroup variant="contained" size="small">
-                  <Button color="primary">Edit User</Button>
-                  <Button color="warning">Reset Password</Button>
+                  <Button color="primary" onClick={() => handleEdit(user)}>
+                    Edit User
+                  </Button>
+                  <Button color="warning" onClick={() => handleReset(user)}>
+                    Reset Password
+                  </Button>
                 </ButtonGroup>
               </TableCell>
             </TableRow>
