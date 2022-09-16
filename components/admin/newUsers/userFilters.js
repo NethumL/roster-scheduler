@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@mui/material';
 
-export default function UserFilters({ filter, clear, nameRef, type, setType }) {
+export default function UserFilters({ filter, clear, nameRef, unameRef, type, setType }) {
   return (
     <Stack id="user-filters" spacing={1} sx={{ maxWidth: 400, mb: 5 }}>
       <Typography variant="h5" component="div" sx={{ mb: 0 }}>
@@ -18,6 +18,12 @@ export default function UserFilters({ filter, clear, nameRef, type, setType }) {
         label="Name"
         variant="standard"
         inputRef={nameRef}
+      />
+      <TextField
+        id="filter-uname"
+        label="Username"
+        variant="standard"
+        inputRef={unameRef}
       />
       <Autocomplete
         multiple

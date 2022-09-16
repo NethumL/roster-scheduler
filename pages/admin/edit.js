@@ -7,6 +7,7 @@ import { useRef, useState } from 'react';
 
 export default function Edit({ users }) {
   const nameRef = useRef();
+  const unameRef = useRef();
   const [type, setType] = useState([]);
   const [filtered, setFiltered] = useState(users);
 
@@ -67,6 +68,13 @@ export default function Edit({ users }) {
       );
     }
 
+    const uname = unameRef.current.value;
+    if (uname) {
+      temp = temp.filter((user) =>
+        user.username.toLowerCase().includes(uname.toLowerCase())
+      );
+    }
+
     if (type.length) {
       temp = temp.filter((user) =>
         type.includes(user.type === 'doctor' ? 'Doctor' : 'Consultant')
@@ -80,6 +88,7 @@ export default function Edit({ users }) {
     setFiltered(users);
     setType([]);
     nameRef.current.value = '';
+    unameRef.current.value = '';
   };
 
   return (
@@ -91,6 +100,7 @@ export default function Edit({ users }) {
         filter={filter}
         clear={clear}
         nameRef={nameRef}
+        unameRef={unameRef}
         type={type}
         setType={setType}
       />

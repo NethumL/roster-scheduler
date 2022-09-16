@@ -9,6 +9,7 @@ export default function NewUsersPage({ newUsers }) {
   const [filtered, setFiltered] = useState(users);
 
   const nameRef = useRef();
+  const unameRef = useRef();
   const [type, setType] = useState([]);
 
   const accept = (username) => {
@@ -31,6 +32,13 @@ export default function NewUsersPage({ newUsers }) {
       );
     }
 
+    const uname = unameRef.current.value;
+    if (uname) {
+      temp = temp.filter((user) =>
+        user.username.toLowerCase().includes(uname.toLowerCase())
+      );
+    }
+
     if (type.length) {
       temp = temp.filter((user) =>
         type.includes(user.type === 'doctor' ? 'Doctor' : 'Consultant')
@@ -44,6 +52,7 @@ export default function NewUsersPage({ newUsers }) {
     setFiltered(users);
     setType([]);
     nameRef.current.value = '';
+    unameRef.current.value = '';
   };
 
   return (
@@ -55,6 +64,7 @@ export default function NewUsersPage({ newUsers }) {
         filter={filter}
         clear={clear}
         nameRef={nameRef}
+        unameRef={unameRef}
         type={type}
         setType={setType}
       />
