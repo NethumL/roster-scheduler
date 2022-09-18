@@ -12,7 +12,7 @@ export default function NewUserCard({ user, accept, decline }) {
 
   return (
     <Grid item xs={12} sm={6} md={6} lg={4} xl={3}>
-      <Card sx={{ height: 1, py: 2 }}>
+      <Card sx={{ height: 1, py: 2 }} elevation={3}>
         <CardContent>
           <Typography variant="h5" component="div" sx={{ mb: 1.5 }}>
             Name: {name}

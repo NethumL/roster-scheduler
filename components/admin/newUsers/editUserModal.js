@@ -14,6 +14,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { Close } from '@mui/icons-material';
 
 export default function EditUserModal({ open, user, handleClose, handleSave }) {
   const theme = useTheme();
@@ -32,7 +33,13 @@ export default function EditUserModal({ open, user, handleClose, handleSave }) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} fullScreen={fullScreen}>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullScreen={fullScreen}
+        fullWidth={true}
+        maxWidth="sm"
+      >
         {fullScreen && (
           <AppBar sx={{ position: 'relative' }}>
             <Toolbar>
@@ -42,7 +49,7 @@ export default function EditUserModal({ open, user, handleClose, handleSave }) {
                 onClick={handleClose}
                 aria-label="close"
               >
-                X
+                <Close />
               </IconButton>
               <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                 Edit User
@@ -54,7 +61,7 @@ export default function EditUserModal({ open, user, handleClose, handleSave }) {
           </AppBar>
         )}
         {!fullScreen && <DialogTitle>Edit User</DialogTitle>}
-        <DialogContent>
+        <DialogContent sx={{ p: 5 }}>
           <TextField
             autoFocus
             margin="dense"
@@ -65,7 +72,6 @@ export default function EditUserModal({ open, user, handleClose, handleSave }) {
             type="text"
             fullWidth
             variant="standard"
-            sx={{ width }}
           />
           <TextField
             margin="dense"
@@ -76,16 +82,16 @@ export default function EditUserModal({ open, user, handleClose, handleSave }) {
             fullWidth
             disabled
             variant="standard"
-            sx={{ width, mt: 3 }}
+            sx={{ mt: 3 }}
           />
           <TextField
             id="select-type"
             select
-            label="Select"
+            label="Type"
             onChange={(e) => setNewType(e.target.value)}
             value={newType}
             fullWidth
-            sx={{ width, mt: 3 }}
+            sx={{ mt: 3 }}
             variant="standard"
           >
             <MenuItem value={'consultant'}>Consultant</MenuItem>

@@ -1,6 +1,6 @@
 import NewUserCard from '@/components/admin/newUsers/newUserCard';
 import UserFilters from '@/components/admin/newUsers/userFilters';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Paper, Typography } from '@mui/material';
 import { Container } from '@mui/system';
 import { useState, useRef } from 'react';
 
@@ -68,21 +68,22 @@ export default function NewUsersPage({ newUsers }) {
         type={type}
         setType={setType}
       />
-      <Grid
-        container
-        id="new-users-grid"
-        spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}
-        sx={{ mb: 5 }}
-      >
-        {filtered.map((user, index) => (
-          <NewUserCard
-            key={index}
-            user={user}
-            accept={accept}
-            decline={decline}
-          />
-        ))}
-      </Grid>
+      <Paper elevation={2} sx={{ p: 5, mb: 5 }}>
+        <Grid
+          container
+          id="new-users-grid"
+          spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}
+        >
+          {filtered.map((user, index) => (
+            <NewUserCard
+              key={index}
+              user={user}
+              accept={accept}
+              decline={decline}
+            />
+          ))}
+        </Grid>
+      </Paper>
     </Container>
   );
 }

@@ -14,6 +14,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { Close } from '@mui/icons-material';
 
 export default function ResetPasswordModal({
   open,
@@ -42,7 +43,13 @@ export default function ResetPasswordModal({
 
   return (
     <div>
-      <Dialog open={open} onClose={close} fullScreen={fullScreen}>
+      <Dialog
+        open={open}
+        onClose={close}
+        fullScreen={fullScreen}
+        fullWidth={true}
+        maxWidth="sm"
+      >
         {fullScreen && (
           <AppBar sx={{ position: 'relative' }}>
             <Toolbar>
@@ -52,7 +59,7 @@ export default function ResetPasswordModal({
                 onClick={close}
                 aria-label="close"
               >
-                X
+                <Close />
               </IconButton>
               <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                 Reset Password
@@ -64,7 +71,7 @@ export default function ResetPasswordModal({
           </AppBar>
         )}
         {!fullScreen && <DialogTitle>Reset Password</DialogTitle>}
-        <DialogContent>
+        <DialogContent sx={{ p: 5 }}>
           <TextField
             margin="dense"
             id="name"
@@ -74,7 +81,6 @@ export default function ResetPasswordModal({
             fullWidth
             disabled
             variant="standard"
-            sx={{ width }}
           />
           <TextField
             margin="dense"
@@ -85,7 +91,7 @@ export default function ResetPasswordModal({
             fullWidth
             disabled
             variant="standard"
-            sx={{ width, mt: 3 }}
+            sx={{ mt: 3 }}
           />
           <TextField
             margin="dense"
@@ -98,7 +104,7 @@ export default function ResetPasswordModal({
             fullWidth
             disabled
             variant="standard"
-            sx={{ width, mt: 3 }}
+            sx={{ mt: 3 }}
           />
           <TextField
             autoFocus
@@ -110,7 +116,7 @@ export default function ResetPasswordModal({
             type="password"
             fullWidth
             variant="standard"
-            sx={{ width, mt: 3 }}
+            sx={{ mt: 3 }}
           />
           <TextField
             margin="dense"
@@ -121,7 +127,7 @@ export default function ResetPasswordModal({
             type="password"
             fullWidth
             variant="standard"
-            sx={{ width, mt: 3 }}
+            sx={{ mt: 3 }}
           />
         </DialogContent>
         {!fullScreen && (

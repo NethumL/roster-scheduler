@@ -1,5 +1,5 @@
+import { Key, Person } from '@mui/icons-material';
 import {
-  Box,
   Button,
   ButtonGroup,
   Paper,
@@ -9,6 +9,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
 } from '@mui/material';
 
 export default function UserTable({ users, handleEdit, handleReset }) {
@@ -29,12 +30,16 @@ export default function UserTable({ users, handleEdit, handleReset }) {
               <TableCell>{user.name}</TableCell>
               <TableCell>
                 <ButtonGroup variant="contained" size="small">
-                  <Button color="primary" onClick={() => handleEdit(user)}>
-                    Edit User
-                  </Button>
-                  <Button color="warning" onClick={() => handleReset(user)}>
-                    Reset Password
-                  </Button>
+                  <Tooltip title="Edit User">
+                    <Button color="primary" onClick={() => handleEdit(user)}>
+                      Edit <Person sx={{ ml: 1 }} />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Reset Password">
+                    <Button color="warning" onClick={() => handleReset(user)}>
+                      Reset <Key sx={{ ml: 1 }} />
+                    </Button>
+                  </Tooltip>
                 </ButtonGroup>
               </TableCell>
             </TableRow>
