@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField';
 import { MenuItem } from '@mui/material';
 import { useEffect, useState } from 'react';
-import ModalHeader from '@/components/common/ModalHeader';
+import ModalHeader from '@/components/common/modalHeader';
 
 export default function EditUserModal({ open, user, handleClose, handleSave }) {
   const [newName, setNewName] = useState('');

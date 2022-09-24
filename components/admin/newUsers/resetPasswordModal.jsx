@@ -1,7 +1,6 @@
 import TextField from '@mui/material/TextField';
-import { useTheme } from '@mui/system';
 import { useState } from 'react';
-import ModalHeader from '@/components/common/ModalHeader';
+import ModalHeader from '@/components/common/modalHeader';
 
 export default function ResetPasswordModal({
   open,
@@ -9,8 +8,6 @@ export default function ResetPasswordModal({
   handleClose,
   handleSave,
 }) {
-  const theme = useTheme();
-
   const [password, setPassword] = useState('');
   const [confPassword, setConfPassword] = useState('');
 

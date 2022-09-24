@@ -1,5 +1,5 @@
 import EditUserModal from '@/components/admin/newUsers/editUserModal';
-import ResetPasswordModal from '@/components/admin/newUsers/ResetPasswordModal';
+import ResetPasswordModal from '@/components/admin/newUsers/resetPasswordModal';
 import UserFilters from '@/components/admin/newUsers/userFilters';
 import UserTable from '@/components/admin/newUsers/userTable';
 import { Container, Typography } from '@mui/material';
