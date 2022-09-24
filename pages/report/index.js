@@ -1,4 +1,5 @@
-import ReportCard from '@/components/reports/ReportCard';
+import NewReportModal from '@/components/reports/newReportModal';
+import ReportCard from '@/components/reports/reportCard';
 import { Add, AddCircleOutline } from '@mui/icons-material';
 import {
   Box,
@@ -26,6 +27,16 @@ export default function ViewReports({ reports, user }) {
   const theme = useTheme();
   const mobileView = useMediaQuery(theme.breakpoints.down('md'));
 
+  const [openReportModal, setOpenReportModal] = useState(false);
+
+  const handleClickOpenReportModal = () => {
+    setOpenReportModal(true);
+  };
+
+  const handleCloseReportModal = () => {
+    setOpenReportModal(false);
+  };
+
   const resolve = (reportId) => {
     if (isDoctor) return;
 
@@ -47,7 +58,11 @@ export default function ViewReports({ reports, user }) {
           {isDoctor ? 'My Reports' : 'Reports'}
         </Typography>
         {isDoctor && !mobileView && (
-          <Button variant="contained" startIcon={<AddCircleOutline />}>
+          <Button
+            variant="contained"
+            startIcon={<AddCircleOutline />}
+            onClick={handleClickOpenReportModal}
+          >
             New
           </Button>
         )}
@@ -78,10 +93,15 @@ export default function ViewReports({ reports, user }) {
           color="primary"
           aria-label="add"
           sx={{ position: 'fixed', bottom: 16, right: 16 }}
+          onClick={handleClickOpenReportModal}
         >
           <Add />
         </Fab>
       )}
+      <NewReportModal
+        open={openReportModal}
+        handleClose={handleCloseReportModal}
+      />
     </Container>
   );
 }
