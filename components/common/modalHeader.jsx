@@ -18,7 +18,8 @@ export default function ModalHeader({
   title,
   open,
   handleClose,
-  save,
+  successActionName,
+  handleSuccessAction,
 }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -45,8 +46,8 @@ export default function ModalHeader({
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               {title}
             </Typography>
-            <Button autoFocus color="inherit" onClick={save}>
-              Save
+            <Button autoFocus color="inherit" onClick={handleSuccessAction}>
+              {successActionName}
             </Button>
           </Toolbar>
         </AppBar>
@@ -56,7 +57,7 @@ export default function ModalHeader({
       {!fullScreen && (
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={save}>Save</Button>
+          <Button onClick={handleSuccessAction}>{successActionName}</Button>
         </DialogActions>
       )}
     </Dialog>

@@ -29,7 +29,8 @@ export default function ResetPasswordModal({
         title="Reset Password"
         open={open}
         handleClose={close}
-        save={save}
+        successActionName="Save"
+        handleSuccessAction={save}
       >
         <TextField
           margin="dense"

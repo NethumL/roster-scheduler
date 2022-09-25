@@ -24,7 +24,8 @@ export default function NewReportModal({ open, handleClose }) {
         title="New Report"
         open={open}
         handleClose={close}
-        save={save}
+        successActionName="Send"
+        handleSuccessAction={save}
       >
         <TextField
           autoFocus

@@ -20,7 +20,8 @@ export default function EditUserModal({ open, user, handleClose, handleSave }) {
         title="Reset Password"
         open={open}
         handleClose={handleClose}
-        save={save}
+        successActionName="Save"
+        handleSuccessAction={save}
       >
         <TextField
           autoFocus
