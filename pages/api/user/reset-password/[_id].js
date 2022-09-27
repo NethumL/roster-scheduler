@@ -31,12 +31,7 @@ export default async function updateUser(req, res) {
 
       res
         .status(200)
-        .json({
-          _id: user._id,
-          username: user.username,
-          name: user.name,
-          type: user.type,
-        });
+        .json({ message: 'Password has been successfully changed' });
     }
   } catch (error) {
     console.error(error);

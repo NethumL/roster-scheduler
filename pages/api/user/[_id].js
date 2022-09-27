@@ -29,7 +29,14 @@ export default async function updateUser(req, res) {
 
       if (!user) return res.status(404).json({ message: 'User not found' });
 
-      res.status(200).json({ user });
+      res.status(200).json({
+        user: {
+          _id: user._id,
+          username: user.username,
+          name: user.name,
+          type: user.type,
+        },
+      });
     }
   } catch (error) {
     console.error(error);
