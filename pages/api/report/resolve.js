@@ -21,8 +21,8 @@ export default async function resolve(req, res) {
       await dbConnect();
 
       const { postId } = req.body;
-      report = await Report.findOneAndUpdate(
-        { _id: postId },
+      report = await Report.findByIdAndUpdate(
+        postId,
         { resolved: true },
         { new: true }
       );
