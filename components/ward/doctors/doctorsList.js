@@ -5,7 +5,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DeleteIcon from '@mui/icons-material/Delete';
-import LetterAvatar from '../letterAvatar';
+import LetterAvatar from '../common/letterAvatar';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import { useEffect, useState } from 'react';

@@ -8,7 +8,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import GroupIcon from '@mui/icons-material/Group';
-import LetterAvatar from '../letterAvatar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';

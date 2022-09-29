@@ -10,7 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import GroupIcon from '@mui/icons-material/Group';
 import WardsList from '@/components/ward/wards/WardsList';
-import SearchModal from '@/components/ward/SearchModal';
+import SearchModal from '@/components/ward/common/SearchModal';
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
