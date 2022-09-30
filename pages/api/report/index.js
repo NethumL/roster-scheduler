@@ -4,9 +4,7 @@ import Report from '@/lib/models/Report';
 
 export default async function report(req, res) {
   /**
-   * TODO: Verify whether a doctor logged in
    * TODO: Validate user input
-   * TODO: Include user id
    */
 
   try {
@@ -20,17 +18,22 @@ export default async function report(req, res) {
     let report = null;
 
     if (session) {
-      await dbConnect();
+      if (session.type === 'Doctor') {
+        await dbConnect();
 
-      const { subject, description } = req.body;
-      report = new Report({
-        subject,
-        description,
-        resolved: false,
-      });
+        const { subject, description } = req.body;
+        report = new Report({
+          subject,
+          description,
+          userId: session._id,
+          resolved: false,
+        });
 
-      await report.save();
-      res.status(200).json({ report });
+        await report.save();
+        res.status(200).json({ report });
+      } else {
+        res.status(403).end("You don't have permission to perform this action");
+      }
     }
   } catch (error) {
     console.error(error);

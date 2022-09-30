@@ -4,7 +4,6 @@ import User from '@/lib/models/User';
 
 export default async function updateUser(req, res) {
   /**
-   * TODO: Verify whether an admin logged in
    * TODO: Validate the passwords
    */
   try {
@@ -14,24 +13,28 @@ export default async function updateUser(req, res) {
     let user = null;
 
     if (session) {
-      await dbConnect();
+      if (session.type === 'Admin') {
+        await dbConnect();
 
-      const { _id } = req.query;
-      const { password, confPassword } = req.body;
+        const { _id } = req.query;
+        const { password, confPassword } = req.body;
 
-      user = await User.findByIdAndUpdate(
-        _id,
-        { password },
-        {
-          new: true,
-        }
-      );
+        user = await User.findByIdAndUpdate(
+          _id,
+          { password },
+          {
+            new: true,
+          }
+        );
 
-      if (!user) return res.status(404).json({ message: 'User not found' });
+        if (!user) return res.status(404).json({ message: 'User not found' });
 
-      res
-        .status(200)
-        .json({ message: 'Password has been successfully changed' });
+        res
+          .status(200)
+          .json({ message: 'Password has been successfully changed' });
+      } else {
+        res.status(403).end("You don't have permission to perform this action");
+      }
     }
   } catch (error) {
     console.error(error);

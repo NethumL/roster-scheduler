@@ -3,10 +3,6 @@ import dbConnect from '@/lib/db';
 import Report from '@/lib/models/Report';
 
 export default async function resolve(req, res) {
-  /**
-   * TODO: Verify whether a consultant logged in
-   */
-
   try {
     if (req.method !== 'PUT') {
       return res.status(405).end();
@@ -18,18 +14,23 @@ export default async function resolve(req, res) {
     let report = null;
 
     if (session) {
-      await dbConnect();
+      if (session.type === 'Consultant') {
+        await dbConnect();
 
-      const { postId } = req.body;
-      report = await Report.findByIdAndUpdate(
-        postId,
-        { resolved: true },
-        { new: true }
-      );
+        const { postId } = req.body;
+        report = await Report.findByIdAndUpdate(
+          postId,
+          { resolved: true },
+          { new: true }
+        );
 
-      if (!report) return res.status(404).json({ message: 'Report not found' });
+        if (!report)
+          return res.status(404).json({ message: 'Report not found' });
 
-      res.status(200).json({ report });
+        res.status(200).json({ report });
+      } else {
+        res.status(403).end("You don't have permission to perform this action");
+      }
     }
   } catch (error) {
     console.error(error);
