@@ -11,29 +11,44 @@ import {
 import Router, { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
+  const nameRef = useRef(null);
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
 
   /** @type import('react').FormEventHandler<HTMLFormElement> */
   async function handleSubmit(e) {
     e.preventDefault();
 
     const body = {
+      name: nameRef.current.value,
       username: usernameRef.current.value,
       password: passwordRef.current.value,
     };
 
     try {
-      await send('POST', '/api/login', body);
+      await send('POST', '/api/auth/register', body);
       Router.push('/');
     } catch (error) {
       setErrorMsg(error.message);
     }
   }
+
+  const checkConfirmPassword = () => {
+    if (
+      confirmPasswordRef.current.value &&
+      passwordRef.current.value != confirmPasswordRef.current.value
+    ) {
+      setPasswordError('Passwords do not match');
+    } else {
+      setPasswordError('');
+    }
+  };
 
   /** @param {string} href */
   const getRedirector = (href) => () => {
@@ -50,15 +65,11 @@ export default function LoginPage() {
         marginTop="5px"
       >
         <Grid item>
-          <Typography variant="h4">Login</Typography>
+          <Typography variant="h4">Register</Typography>
         </Grid>
       </Grid>
-      <Container sx={{ marginTop: '15px' }}>
-        {errorMsg && (
-          <Alert severity="error" sx={{ marginY: '10px' }}>
-            {errorMsg}
-          </Alert>
-        )}
+      <Container>
+        {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
         <Grid
           container
           alignItems="center"
@@ -66,7 +77,12 @@ export default function LoginPage() {
           rowSpacing={5}
         >
           <Grid item xs={3} md={5}></Grid>
-          <Grid item container xs={6} md={2} justifyContent="center">
+          <Grid item xs={6} md={2}>
+            <TextField variant="standard" label="Name" inputRef={nameRef} />
+          </Grid>
+          <Grid item xs={3} md={5}></Grid>
+          <Grid item xs={3} md={5}></Grid>
+          <Grid item xs={6} md={2}>
             <TextField
               variant="standard"
               label="Username"
@@ -75,35 +91,50 @@ export default function LoginPage() {
           </Grid>
           <Grid item xs={3} md={5}></Grid>
           <Grid item xs={3} md={5}></Grid>
-          <Grid item container xs={6} md={2} justifyContent="center">
+          <Grid item xs={6} md={2}>
             <TextField
               variant="standard"
               label="Password"
               inputRef={passwordRef}
               type="password"
+              onBlur={checkConfirmPassword}
+              error={passwordError ? true : false}
+            />
+          </Grid>
+          <Grid item xs={3} md={5}></Grid>
+          <Grid item xs={3} md={5}></Grid>
+          <Grid item xs={6} md={2}>
+            <TextField
+              variant="standard"
+              label="Confirm password"
+              type="password"
+              inputRef={confirmPasswordRef}
+              onBlur={checkConfirmPassword}
+              error={passwordError ? true : false}
+              helperText={passwordError}
             />
           </Grid>
           <Grid item xs={3} md={5}></Grid>
         </Grid>
       </Container>
+
       <Grid container justifyContent="space-between" sx={{ marginTop: '55px' }}>
-        <Grid item xs={3} md={5} />
-        <Grid item container xs={4} md={1} justifyContent="center">
+        <Grid item xs={3}></Grid>
+        <Grid item xs={4}>
           <Button
             variant="contained"
             color="primary"
-            onClick={getRedirector('/auth/register')}
+            onClick={getRedirector('/auth/login')}
           >
-            Register
-          </Button>
-        </Grid>
-        <Grid item xs={0} md={0} />
-        <Grid item container xs={3} md={1} justifyContent="center">
-          <Button variant="contained" color="success" type="submit">
             Login
           </Button>
         </Grid>
-        <Grid item xs md={5} />
+        <Grid item xs={3}>
+          <Button variant="contained" color="success" type="submit">
+            Register
+          </Button>
+        </Grid>
+        <Grid item xs></Grid>
       </Grid>
     </form>
   );

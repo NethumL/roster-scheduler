@@ -12,7 +12,7 @@ export default function ResetPasswordModal({
   const [confPassword, setConfPassword] = useState('');
 
   const save = () => {
-    handleSave(user.username, password);
+    handleSave(user._id, password, confPassword);
     setPassword('');
     setConfPassword('');
   };

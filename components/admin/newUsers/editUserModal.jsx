@@ -7,7 +7,7 @@ export default function EditUserModal({ open, user, handleClose, handleSave }) {
   const [newName, setNewName] = useState('');
   const [newType, setNewType] = useState('');
 
-  const save = () => handleSave(user.username, newName, newType);
+  const save = () => handleSave(user._id, newName, newType);
 
   useEffect(() => {
     setNewName(user ? user.name : '');

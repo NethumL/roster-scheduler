@@ -52,7 +52,7 @@ export default function ViewReports({ reports, user }) {
   };
 
   return (
-    <Container>
+    <Container sx={{ mt: 5 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 5 }}>
         <Typography variant="h4" component="span">
           {isDoctor ? 'My Reports' : 'Reports'}
