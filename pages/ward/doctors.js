@@ -26,7 +26,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useRouter } from 'next/router';
 import { useTheme } from '@mui/system';
 import { useMediaQuery } from '@mui/material';
-import SearchBar from '@/components/ward/common/SearchBar';
+import Search_bar from '@/components/ward/common/search_bar';
 import Button from '@mui/material/Button';
 
 export default function View({ doctors, allDoctors }) {
@@ -35,6 +35,7 @@ export default function View({ doctors, allDoctors }) {
     ? ''
     : '10px solid #e9f3fc';
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const flx = useMediaQuery(theme.breakpoints.down('sm')) ? '' : 'flex';
   const router = useRouter();
   const {
     query: { ward },
@@ -62,8 +63,10 @@ export default function View({ doctors, allDoctors }) {
 
   const handleAdd = (newName) => {
     doctors.push({
+      _id: doctors.length,
       name: newName,
     });
+    setDoctors(doctors.map((obj) => ({ ...obj })));
     setOpenAddModal(false);
   };
   const handleDelete = (index) => {
@@ -113,11 +116,13 @@ export default function View({ doctors, allDoctors }) {
           position: 'sticky',
           top: 7,
           mb: 2,
+          mt: 2,
           backgrounColor: '#ffffff',
+          display: flx,
         }}
       >
         Doctors
-        <SearchBar
+        <Search_bar
           searchedText={searchedText}
           setSearchedText={setSearchedText}
         />
@@ -125,9 +130,15 @@ export default function View({ doctors, allDoctors }) {
           <Button
             variant="contained"
             onClick={handleOpenAddModal}
-            sx={{ float: 'right', marginBottom: 2 }}
+            sx={{
+              float: 'right',
+              marginLeft: '3%',
+              // marginRight: mr,
+              height: 35,
+              mt: 1,
+            }}
           >
-            Add Doctor
+            Add
           </Button>
         )}
       </Typography>
@@ -135,7 +146,7 @@ export default function View({ doctors, allDoctors }) {
         sx={{
           width: '100%',
           bgcolor: 'background.paper',
-          height: '90vh',
+          height: '80vh',
           overflowY: 'auto',
           border: { border },
         }}
@@ -174,27 +185,22 @@ export default function View({ doctors, allDoctors }) {
 
 export async function getStaticProps() {
   const doctors = [
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
+    { _id: '1', name: 'Deepaka Perera' },
+    { _id: '2', name: 'Deepika Gimhani' },
+    { _id: '3', name: 'Thanuj Jayasinge' },
+    { _id: '4', name: 'Deepaka Perera' },
+    { _id: '5', name: 'Deepika Gimhani' },
+    { _id: '6', name: 'Thanuj Jayasinge' },
+    { _id: '7', name: 'Deepaka Perera' },
+    { _id: '8', name: 'Deepika Gimhani' },
+    { _id: '9', name: 'Thanuj Jayasinge' },
+    { _id: '10', name: 'Deepaka Perera' },
   ];
   const allDoctors = [
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
-    { name: 'Thanuj Jayasinghe' },
+    { _id: '1', name: 'Deepaka Perera' },
+    { _id: '2', name: 'Deepika Gimhani' },
+    { _id: '3', name: 'Thanuj Jayasinge' },
+    { _id: '4', name: 'Thanuj Jayasinghe' },
   ];
 
   return {

@@ -10,7 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import GroupIcon from '@mui/icons-material/Group';
 import WardsList from '@/components/ward/wards/WardsList';
-import SearchBar from '@/components/ward/common/searchBar';
+import Search_bar from '@/components/ward/common/search_bar';
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -44,6 +44,7 @@ export default function View({ wards, consultants }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const mr = useMediaQuery(theme.breakpoints.down('lg')) ? 0 : 5;
+  const flx = useMediaQuery(theme.breakpoints.down('sm')) ? '' : 'flex';
 
   const handleClickOpenViewModal = (ward, index) => {
     setSelectedWard(ward);
@@ -80,7 +81,10 @@ export default function View({ wards, consultants }) {
       wards[selectedIndex].minNumDoctorsPerShift = newMinNumDoctorsPerShift;
       wards[selectedIndex].statusAdjacentShifts = newStatusAdjacentShifts;
     } else {
+      console.log(wards[wards.length - 1]._id + 1);
+      console.log(wards);
       wards.push({
+        _id_: wards[wards.length - 1]._id + 1,
         name: newName,
         description: newDescription,
         personInCharge: newPersonInCharge,
@@ -96,9 +100,6 @@ export default function View({ wards, consultants }) {
     setSelectedIndex(null);
     setOpenViewModal(false);
   };
-  const handleClickViewDoctors = (ward) => {
-    console.log('view doctors');
-  };
   const handleNewWardModal = () => {
     setOpenViewModal(true);
   };
@@ -113,7 +114,7 @@ export default function View({ wards, consultants }) {
       }
     });
     setFilteredWards(filteredData);
-  }, [searchedText]);
+  }, [searchedText, wards.length]);
   return (
     <Container
       sx={{
@@ -130,11 +131,13 @@ export default function View({ wards, consultants }) {
           position: 'sticky',
           top: 7,
           mb: 2,
+          mt: 2,
           backgrounColor: '#ffffff',
+          display: flx,
         }}
       >
         Wards
-        <SearchBar
+        <Search_bar
           searchedText={searchedText}
           setSearchedText={setSearchedText}
         />
@@ -142,7 +145,13 @@ export default function View({ wards, consultants }) {
           <Button
             variant="contained"
             onClick={handleNewWardModal}
-            sx={{ float: 'right', marginBottom: 2, marginRight: mr }}
+            sx={{
+              float: 'right',
+              marginLeft: '2%',
+              marginRight: mr,
+              height: 35,
+              mt: 1,
+            }}
             // sx={{ ml: 2, mr: 2 }}
           >
             New Ward
@@ -150,11 +159,7 @@ export default function View({ wards, consultants }) {
         )}
       </Typography>
 
-      <WardsList
-        wards={filteredWards}
-        handleView={handleClickOpenViewModal}
-        handleViewDoctors={handleClickViewDoctors}
-      />
+      <WardsList wards={filteredWards} handleView={handleClickOpenViewModal} />
       {fullScreen && (
         <Tooltip title="New Ward">
           <Fab
@@ -179,9 +184,13 @@ export default function View({ wards, consultants }) {
 }
 
 export async function getStaticProps() {
-  const consultants = [{ name: 'Mr.Deepaka' }, { name: 'Mrs.Deepika' }];
+  const consultants = [
+    { _id: 1, name: 'Mr.Deepaka' },
+    { _id: 2, name: 'Mrs.Deepika' },
+  ];
   const wards = [
     {
+      _id: 1,
       name: 'ICU',
       description: 'Intensive Care Unit',
       personInCharge: 'Mr.Deepaka',
@@ -204,6 +213,7 @@ export async function getStaticProps() {
       statusAdjacentShifts: true,
     },
     {
+      _id: 2,
       name: 'IpU',
       description: 'Intensive Care Unit',
       personInCharge: 'Mr.Deepaka',
@@ -221,6 +231,7 @@ export async function getStaticProps() {
       statusAdjacentShifts: false,
     },
     {
+      _id: 3,
       name: 'IgU',
       description: 'Intensive Care Unit',
       personInCharge: 'Mr.Deepaka',
@@ -238,6 +249,7 @@ export async function getStaticProps() {
       statusAdjacentShifts: true,
     },
     {
+      _id: 4,
       name: 'ICU',
       description: 'Intensive Care Unit',
       personInCharge: 'Mr.Deepaka',
@@ -256,40 +268,6 @@ export async function getStaticProps() {
       ],
       minNumDoctors: 10,
       maxNumLeaves: 8,
-      minNumDoctorsPerShift: 2,
-      statusAdjacentShifts: true,
-    },
-    {
-      name: 'IpU',
-      description: 'Intensive Care Unit',
-      personInCharge: 'Mr.Deepaka',
-
-      shifts: [
-        {
-          name: 'Morning',
-          start: '2014-08-18T21:11:54',
-          end: '2014-08-18T21:11:54',
-        },
-      ],
-      minNumDoctors: 11,
-      maxNumLeaves: 5,
-      minNumDoctorsPerShift: 2,
-      statusAdjacentShifts: false,
-    },
-    {
-      name: 'IgU',
-      description: 'Intensive Care Unit',
-      personInCharge: 'Mr.Deepaka',
-
-      shifts: [
-        {
-          name: 'Morning',
-          start: '2014-08-18T21:11:54',
-          end: '2014-08-18T21:11:54',
-        },
-      ],
-      minNumDoctors: 12,
-      maxNumLeaves: 7,
       minNumDoctorsPerShift: 2,
       statusAdjacentShifts: true,
     },

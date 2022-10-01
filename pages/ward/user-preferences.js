@@ -99,7 +99,7 @@ export default function View({ preferences, leaveDates }) {
       >
         {!fullScreen && (
           <Card sx={{ border: '37px solid #e9f3fc' }}>
-            <Box xs sx={{ margin: 7 }}>
+            <Box sx={{ margin: 7 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <StaticDatePicker
                   displayStaticWrapperAs="desktop"
@@ -195,7 +195,7 @@ export default function View({ preferences, leaveDates }) {
           <LeavesList dates={[...leaves]} setNew={setLeaves} />
         </Card>
       </Stack>
-      <Box sx={{ paddingTop: 4, paddingBottom: 4 }}>
+      <Box sx={{ paddingTop: 1, paddingBottom: 4 }}>
         <Button
           variant="contained"
           onClick={handleSaveLeaves}

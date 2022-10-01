@@ -16,7 +16,7 @@ import { useRouter } from 'next/router';
 import { useTheme } from '@mui/system';
 import { useMediaQuery } from '@mui/material';
 
-export default function WardsList({ wards, handleView, handleViewDoctors }) {
+export default function WardsList({ wards, handleView }) {
   let router = useRouter();
   const theme = useTheme();
   const border = useMediaQuery(theme.breakpoints.down('sm'))
@@ -28,7 +28,7 @@ export default function WardsList({ wards, handleView, handleViewDoctors }) {
         border: { border },
         width: '100%',
         maxWidth: 1120,
-        height: '89vh',
+        height: '80vh',
         bgcolor: 'background.paper',
         overflowY: 'auto',
         paddingLeft: 0,
@@ -36,7 +36,7 @@ export default function WardsList({ wards, handleView, handleViewDoctors }) {
       component="nav"
     >
       {wards.map((ward, index) => (
-        <Container>
+        <Container key={index}>
           <ListItem
             sx={{ paddingLeft: 0 }}
             secondaryAction={

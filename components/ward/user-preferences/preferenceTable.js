@@ -57,15 +57,17 @@ export default function PreferenceTable({ preferences, setNew }) {
             <TableCell></TableCell>
             <TableCell></TableCell>
             {newPreferences.map((preference, index) => (
-              <TableCell align="center">{index + 1}</TableCell>
+              <TableCell key={index} align="center">
+                {index + 1}
+              </TableCell>
             ))}
           </TableRow>
           {newPreferences.map((pref, i) => (
-            <TableRow>
+            <TableRow key={i}>
               <TableCell>{i + 1}</TableCell>
               <TableCell>{pref.name}</TableCell>
               {newPreferences.map((p, j) => (
-                <TableCell align="center">
+                <TableCell key={j} align="center">
                   <Radio
                     checked={j + 1 === newPreferences[i].rank}
                     onChange={(e) => handleChange(e.target.value, i, j)}

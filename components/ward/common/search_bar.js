@@ -32,7 +32,7 @@ import { Close } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import { Tooltip } from '@mui/material';
 
-export default function SearchBar({ searchedText, setSearchedText }) {
+export default function Search_bar({ searchedText, setSearchedText }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const width = useMediaQuery(theme.breakpoints.down('md')) ? '100%' : '100%';
@@ -42,8 +42,8 @@ export default function SearchBar({ searchedText, setSearchedText }) {
     backgroundColor: '#e9f3fc',
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      marginLeft: '15%',
-      width: '70%',
+      marginLeft: '5%',
+      width: '68%',
     },
   }));
 
@@ -68,22 +68,22 @@ export default function SearchBar({ searchedText, setSearchedText }) {
   }));
 
   return (
-    <div
-      sx={{ alignItems: 'center', justifyContent: 'center', float: 'center' }}
-    >
-      <Search>
-        <SearchIconWrapper>
-          <SearchIcon />
-        </SearchIconWrapper>
-        <StyledInputBase
-          autoFocus
-          fullWidth
-          placeholder="Search…"
-          value={searchedText}
-          onChange={(e) => setSearchedText(e.target.value.toLowerCase())}
-          inputProps={{ 'aria-label': 'search' }}
-        />
-      </Search>
-    </div>
+    // <div
+    //   sx={{ alignItems: 'center', justifyContent: 'center', float: 'center' }}
+    // >
+    <Search>
+      <SearchIconWrapper>
+        <SearchIcon />
+      </SearchIconWrapper>
+      <StyledInputBase
+        autoFocus
+        fullWidth
+        placeholder="Search…"
+        value={searchedText}
+        onChange={(e) => setSearchedText(e.target.value.toLowerCase())}
+        inputProps={{ 'aria-label': 'search' }}
+      />
+    </Search>
+    // </div>
   );
 }

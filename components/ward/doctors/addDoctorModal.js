@@ -30,15 +30,9 @@ export default function AddDoctorModal({
   const width = useMediaQuery(theme.breakpoints.down('md')) ? '100%' : '400px';
 
   const [newDoctor, setNewDoctor] = useState('');
-  const [isInvaild, setIsInvalid] = useState(false);
   const add = () => {
-    if (newDoctor == '') {
-      setIsInvalid(true);
-    } else {
-      handleAdd(newDoctor);
-      setIsInvalid(false);
-      setNewDoctor('');
-    }
+    handleAdd(newDoctor);
+    setNewDoctor('');
   };
   const close = () => {
     setIsInvalid(false);
@@ -89,14 +83,15 @@ export default function AddDoctorModal({
             select
             label=""
             onChange={(e) => setNewDoctor(e.target.value)}
-            error={isInvaild}
             value={newDoctor}
             fullWidth
             sx={{ mt: 3 }}
             variant="standard"
           >
             {allDoctors.map((doctor) => (
-              <MenuItem value={doctor.name}>{doctor.name}</MenuItem>
+              <MenuItem key={doctor._id} value={doctor.name}>
+                {doctor.name}
+              </MenuItem>
             ))}
           </TextField>
         </DialogContent>

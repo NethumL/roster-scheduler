@@ -68,6 +68,7 @@ export default function ViewWardModal({
       newStatusAdjacentShifts
     );
   };
+
   const handleIsEdit = () => {
     setIsEdit(true);
     setTopic('EDIT WARD');
@@ -83,8 +84,8 @@ export default function ViewWardModal({
     setNewMinNumDoctors(ward ? ward.minNumDoctors : '');
     setNewMaxNumLeaves(ward ? ward.maxNumLeaves : '');
     setNewMinNumDoctorsPerShift(ward ? ward.minNumDoctorsPerShift : '');
-    setNewStatusAdjacentShifts(ward ? ward.statusAdjacentShifts : '');
-  }, [ward]);
+    setNewStatusAdjacentShifts(ward ? ward.statusAdjacentShifts : false);
+  }, [ward, open]);
 
   useEffect(() => {
     setTopic('VIEW WARD');
@@ -195,8 +196,10 @@ export default function ViewWardModal({
             sx={{ mt: 3 }}
             variant="standard"
           >
-            {consultants.map((consultant) => (
-              <MenuItem value={consultant.name}>{consultant.name}</MenuItem>
+            {consultants.map((consultant, index) => (
+              <MenuItem key={index} value={consultant.name}>
+                {consultant.name}
+              </MenuItem>
             ))}
           </TextField>
           <TextField

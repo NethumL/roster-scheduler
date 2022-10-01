@@ -21,7 +21,7 @@ export default function DoctorsList({ doctors, handleDelete }) {
   }, [doctors]);
 
   return newDoctors.map((doctor, index) => (
-    <div>
+    <div key={index}>
       <ListItem
         secondaryAction={
           <IconButton
