@@ -1,4 +1,4 @@
-import { getLoginSession } from '@/lib/auth/session';
+import { getUser } from '@/lib/auth/session';
 import { send } from '@/lib/util';
 import {
   Alert,
@@ -11,34 +11,30 @@ import {
 import Router, { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 
-export default function LoginPage() {
+export default function ChangePasswordPage() {
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
 
-  const usernameRef = useRef(null);
-  const passwordRef = useRef(null);
+  const currentPasswordRef = useRef(null);
+  const newPasswordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
 
   /** @type import('react').FormEventHandler<HTMLFormElement> */
   async function handleSubmit(e) {
     e.preventDefault();
 
     const body = {
-      username: usernameRef.current.value,
-      password: passwordRef.current.value,
+      currentPassword: currentPasswordRef.current.value,
+      newPassword: newPasswordRef.current.value,
     };
 
     try {
-      await send('POST', '/api/login', body);
+      await send('POST', '/api/auth/change-password', body);
       Router.push('/');
     } catch (error) {
       setErrorMsg(error.message);
     }
   }
-
-  /** @param {string} href */
-  const getRedirector = (href) => () => {
-    router.push(href);
-  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -50,10 +46,12 @@ export default function LoginPage() {
         marginTop="5px"
       >
         <Grid item>
-          <Typography variant="h4">Login</Typography>
+          <Typography variant="h4" textAlign="center">
+            Change password
+          </Typography>
         </Grid>
       </Grid>
-      <Container sx={{ marginTop: '15px' }}>
+      <Container>
         {errorMsg && (
           <Alert severity="error" sx={{ marginY: '10px' }}>
             {errorMsg}
@@ -66,20 +64,30 @@ export default function LoginPage() {
           rowSpacing={5}
         >
           <Grid item xs={3} md={5}></Grid>
-          <Grid item container xs={6} md={2} justifyContent="center">
+          <Grid item xs={6} md={2}>
             <TextField
               variant="standard"
-              label="Username"
-              inputRef={usernameRef}
+              label="Current password"
+              inputRef={currentPasswordRef}
             />
           </Grid>
           <Grid item xs={3} md={5}></Grid>
           <Grid item xs={3} md={5}></Grid>
-          <Grid item container xs={6} md={2} justifyContent="center">
+          <Grid item xs={6} md={2}>
             <TextField
               variant="standard"
-              label="Password"
-              inputRef={passwordRef}
+              label="New password"
+              inputRef={newPasswordRef}
+              type="password"
+            />
+          </Grid>
+          <Grid item xs={3} md={5}></Grid>
+          <Grid item xs={3} md={5}></Grid>
+          <Grid item xs={6} md={2}>
+            <TextField
+              variant="standard"
+              label="Confirm password"
+              inputRef={confirmPasswordRef}
               type="password"
             />
           </Grid>
@@ -87,23 +95,13 @@ export default function LoginPage() {
         </Grid>
       </Container>
       <Grid container justifyContent="space-between" sx={{ marginTop: '55px' }}>
-        <Grid item xs={3} md={5} />
-        <Grid item container xs={4} md={1} justifyContent="center">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={getRedirector('/auth/register')}
-          >
-            Register
-          </Button>
-        </Grid>
-        <Grid item xs={0} md={0} />
-        <Grid item container xs={3} md={1} justifyContent="center">
+        <Grid item xs={7}></Grid>
+        <Grid item xs={3}>
           <Button variant="contained" color="success" type="submit">
-            Login
+            Update
           </Button>
         </Grid>
-        <Grid item xs md={5} />
+        <Grid item xs></Grid>
       </Grid>
     </form>
   );
@@ -114,16 +112,14 @@ export default function LoginPage() {
  */
 export async function getServerSideProps(context) {
   try {
-    const session = await getLoginSession(context.req);
-    if (session) {
-      return {
-        redirect: {
-          destination: '/',
-          permanent: false,
-        },
-      };
-    }
-  } catch (error) {}
-
-  return { props: {} };
+    const user = await getUser(context.req);
+    return { props: { user } };
+  } catch (error) {
+    return {
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
+    };
+  }
 }

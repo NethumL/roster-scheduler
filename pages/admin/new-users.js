@@ -56,7 +56,7 @@ export default function NewUsersPage({ newUsers }) {
   };
 
   return (
-    <Container>
+    <Container sx={{ mt: 5 }}>
       <Typography variant="h4" component="div" sx={{ mb: 5 }}>
         New Users
       </Typography>
