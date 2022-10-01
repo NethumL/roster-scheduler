@@ -49,57 +49,24 @@ export default function ViewWardModal({
   const [newPersonInCharge, setNewPersonInCharge] = useState('');
   const [newNumDutyCycles, setNewNumDutyCycles] = useState('');
   const [newShifts, setNewShifts] = useState([]);
-  const [newNumDoctors, setNewNumDoctors] = useState('');
+  const [newMinNumDoctors, setNewMinNumDoctors] = useState('');
   const [newMaxNumLeaves, setNewMaxNumLeaves] = useState('');
   const [newMinNumDoctorsPerShift, setNewMinNumDoctorsPerShift] = useState('');
   const [newStatusAdjacentShifts, setNewStatusAdjacentShifts] = useState(false);
 
-  const [isInvalidName, setIsInvalidName] = useState(false);
-  const [isInvalidDescription, setIsInvalidDescription] = useState(false);
-  const [isInvalidPIC, setIsInvalidPIC] = useState(false);
-  const [isInvalidNumDutyCycles, setIsInvalidNumDutyCycles] = useState(false);
-  const [isInvalidNumDoctors, setIsInvalidNumDoctors] = useState(false);
-
   const save = () => {
-    if (newName == '') {
-      setIsInvalidName(true);
-    }
-    if (newDescription == '') {
-      setNewDescription(true);
-    }
-    if (newPersonInCharge == '') {
-      setIsInvalidPIC(true);
-    }
-    if (newNumDutyCycles == '') {
-      setIsInvalidNumDutyCycles(true);
-    }
-    if (newNumDoctors == '') {
-      setIsInvalidNumDoctors(true);
-    }
-    if (
-      newName != '' &&
-      newDescription != '' &&
-      newPersonInCharge != '' &&
-      newNumDutyCycles != '' &&
-      newNumDoctors != ''
-    ) {
-      handleSave(
-        newName,
-        newDescription,
-        newPersonInCharge,
-        newNumDutyCycles,
-        newShifts.slice(0, newNumDutyCycles),
-        newNumDoctors,
-        newMaxNumLeaves,
-        newMinNumDoctorsPerShift,
-        newStatusAdjacentShifts
-      );
-      setIsInvalidName(false);
-      setIsInvalidDescription(false);
-      setIsInvalidPIC(false);
-      setIsInvalidNumDutyCycles(false);
-      setIsInvalidNumDoctors(false);
-    }
+    console.log(newName);
+    handleSave(
+      newName,
+      newDescription,
+      newPersonInCharge,
+      newNumDutyCycles,
+      newShifts.slice(0, newNumDutyCycles),
+      newMinNumDoctors,
+      newMaxNumLeaves,
+      newMinNumDoctorsPerShift,
+      newStatusAdjacentShifts
+    );
   };
   const handleIsEdit = () => {
     setIsEdit(true);
@@ -111,9 +78,9 @@ export default function ViewWardModal({
     setNewName(ward ? ward.name : '');
     setNewDescription(ward ? ward.description : '');
     setNewPersonInCharge(ward ? ward.personInCharge : '');
-    setNewNumDutyCycles(ward ? ward.numDutyCycles : '');
+    setNewNumDutyCycles(ward ? ward.shifts.length : '');
     setNewShifts(ward ? ward.shifts : []);
-    setNewNumDoctors(ward ? ward.numDoctors : '');
+    setNewMinNumDoctors(ward ? ward.minNumDoctors : '');
     setNewMaxNumLeaves(ward ? ward.maxNumLeaves : '');
     setNewMinNumDoctorsPerShift(ward ? ward.minNumDoctorsPerShift : '');
     setNewStatusAdjacentShifts(ward ? ward.statusAdjacentShifts : '');
@@ -135,7 +102,7 @@ export default function ViewWardModal({
         }}
         fullScreen={fullScreen}
         fullWidth={true}
-        maxWidth="sm"
+        maxWidth="md"
       >
         {fullScreen && (
           <AppBar sx={{ position: 'relative' }}>
@@ -180,7 +147,7 @@ export default function ViewWardModal({
                 color="inherit"
                 onClick={handleIsEdit}
                 aria-label="edit"
-                sx={{ position: 'relative', marginLeft: '360px' }}
+                sx={{ position: 'relative', float: 'right' }}
               >
                 <Tooltip title="Edit">
                   <EditIcon />
@@ -192,7 +159,6 @@ export default function ViewWardModal({
         <DialogContent sx={{ p: 5 }}>
           <TextField
             required
-            error={isInvalidName}
             autoFocus
             margin="dense"
             id="edit-name"
@@ -205,8 +171,8 @@ export default function ViewWardModal({
             variant="standard"
           />
           <TextField
+            required
             autoFocus
-            error={isInvalidDescription}
             margin="dense"
             id="edit-Description"
             label="Description"
@@ -218,10 +184,10 @@ export default function ViewWardModal({
             variant="standard"
           />
           <TextField
+            required
             id="select-personInCharge"
             select
             label="Person in charge"
-            error={isInvalidPIC}
             onChange={(e) => setNewPersonInCharge(e.target.value)}
             value={newPersonInCharge}
             fullWidth
@@ -234,8 +200,8 @@ export default function ViewWardModal({
             ))}
           </TextField>
           <TextField
+            required
             autoFocus
-            error={isInvalidNumDutyCycles}
             margin="dense"
             id="edit-NumDutyCycles"
             label="Number of duty cycles per day"
@@ -275,12 +241,11 @@ export default function ViewWardModal({
           </Table>
           <TextField
             autoFocus
-            error={isInvalidNumDoctors}
             margin="dense"
-            id="edit-NumDoctors"
-            label="Number of Doctors"
-            value={newNumDoctors}
-            onChange={(e) => setNewNumDoctors(e.target.value)}
+            id="edit-MinNumDoctors"
+            label="Minimum Number of Doctors"
+            value={newMinNumDoctors}
+            onChange={(e) => setNewMinNumDoctors(e.target.value)}
             type="number"
             InputProps={{ inputProps: { min: 0 } }}
             fullWidth

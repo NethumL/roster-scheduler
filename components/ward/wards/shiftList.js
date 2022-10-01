@@ -43,7 +43,6 @@ export default function WardsList({
   };
   useEffect(() => {
     var tmp = [];
-    console.log(newShifts);
     setShifts(newShifts ? newShifts.map((obj) => ({ ...obj })) : []);
   }, [newShifts]);
   var indents = [];
