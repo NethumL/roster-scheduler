@@ -18,7 +18,7 @@ export default async function report(req, res) {
     let report = null;
 
     if (session) {
-      if (session.type === 'Doctor') {
+      if (session.type === 'DOCTOR') {
         await dbConnect();
 
         const { subject, description } = req.body;

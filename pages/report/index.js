@@ -26,7 +26,7 @@ export default function ViewReports({ reports, user }) {
   /**
    * TODO: user type implementation
    */
-  let isDoctor = user.type === 'Doctor';
+  let isDoctor = user.type === 'DOCTOR';
 
   const [filtered, setFiltered] = useState(reports);
 
@@ -172,11 +172,11 @@ export async function getServerSideProps(context) {
   try {
     const user = await getUser(context.req);
 
-    if (user.type === 'Doctor') {
+    if (user.type === 'DOCTOR') {
       await dbConnect();
 
       reports = await Report.find({ user: user._id }).populate('user').lean();
-    } else if (user.type === 'Consultant') {
+    } else if (user.type === 'CONSULTANT') {
       await dbConnect();
 
       /**
