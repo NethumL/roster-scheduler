@@ -10,6 +10,8 @@ import { Alert, Container, Snackbar, Typography } from '@mui/material';
 import { useRef, useState } from 'react';
 
 export default function Edit({ users }) {
+  const apiEndPoint = '/api/admin/edit';
+
   const nameRef = useRef(null);
   const unameRef = useRef(null);
   const [type, setType] = useState([]);
@@ -52,7 +54,7 @@ export default function Edit({ users }) {
     };
 
     try {
-      await send('PUT', `/api/user/${_id}`, body);
+      await send('PUT', `${apiEndPoint}/${_id}`, body);
     } catch (error) {
       setOpenEditToast(true);
       filter(original);
@@ -95,7 +97,7 @@ export default function Edit({ users }) {
     };
 
     try {
-      await send('PUT', `/api/user/reset-password/${_id}`, body);
+      await send('PUT', `${apiEndPoint}/reset-password/${_id}`, body);
     } catch (error) {
       setOpenResetToast(true);
     }
@@ -208,7 +210,7 @@ export async function getServerSideProps(context) {
 
       users = await User.find({ type: { $ne: 'ADMIN' } });
       users = JSON.parse(JSON.stringify(users));
-      return { props: { users, user } };
+      return { props: { users } };
     } else {
       return {
         redirect: {
