@@ -55,8 +55,8 @@ export default function EditUserModal({ open, user, handleClose, handleSave }) {
           sx={{ mt: 3 }}
           variant="standard"
         >
-          <MenuItem value={'consultant'}>Consultant</MenuItem>
-          <MenuItem value={'doctor'}>Doctor</MenuItem>
+          <MenuItem value={'Consultant'}>Consultant</MenuItem>
+          <MenuItem value={'Doctor'}>Doctor</MenuItem>
         </TextField>
       </ModalHeader>
     </div>

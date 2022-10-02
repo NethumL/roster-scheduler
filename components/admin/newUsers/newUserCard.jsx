@@ -19,7 +19,7 @@ export default function NewUserCard({ user, accept, decline }) {
           </Typography>
           <Typography>Username: {username}</Typography>
           <Typography variant="body2">
-            Type: {type === 'doctor' ? 'Doctor' : 'Consultant'}
+            Type: {type === 'Doctor' ? 'Doctor' : 'Consultant'}
           </Typography>
         </CardContent>
         <CardActions sx={{ justifyContent: 'space-around' }}>
