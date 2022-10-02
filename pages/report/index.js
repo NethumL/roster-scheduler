@@ -3,13 +3,17 @@ import ReportCard from '@/components/reports/reportCard';
 import { getUser } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Report from '@/lib/models/Report';
-import { Add, AddCircleOutline } from '@mui/icons-material';
+import { send } from '@/lib/util';
+import { Add, AddCircleOutline, Close } from '@mui/icons-material';
 import {
+  Alert,
   Box,
   Button,
   Fab,
   Grid,
+  IconButton,
   Paper,
+  Snackbar,
   Switch,
   Typography,
   useMediaQuery,
@@ -30,6 +34,7 @@ export default function ViewReports({ reports, user }) {
   const mobileView = useMediaQuery(theme.breakpoints.down('md'));
 
   const [openReportModal, setOpenReportModal] = useState(false);
+  const [openToast, setOpenToast] = useState(false);
 
   const handleClickOpenReportModal = () => {
     setOpenReportModal(true);
@@ -37,6 +42,43 @@ export default function ViewReports({ reports, user }) {
 
   const handleCloseReportModal = () => {
     setOpenReportModal(false);
+  };
+
+  const handleSaveReport = async (subject, description) => {
+    const newFiltered = [
+      ...filtered,
+      {
+        subject,
+        description,
+        resolved: false,
+      },
+    ];
+    console.log(newFiltered);
+    const original = [...filtered];
+
+    setFiltered(newFiltered);
+
+    const body = {
+      subject,
+      description,
+    };
+
+    try {
+      await send('POST', '/api/report', body);
+    } catch (error) {
+      setOpenToast(true);
+      setFiltered(original);
+    }
+
+    setOpenReportModal(false);
+  };
+
+  const handleCloseToast = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenToast(false);
   };
 
   const resolve = (reportId) => {
@@ -95,10 +137,28 @@ export default function ViewReports({ reports, user }) {
           <Add />
         </Fab>
       )}
-      <NewReportModal
-        open={openReportModal}
-        handleClose={handleCloseReportModal}
-      />
+      {isDoctor && (
+        <NewReportModal
+          open={openReportModal}
+          handleClose={handleCloseReportModal}
+          handleSave={handleSaveReport}
+        />
+      )}
+      {isDoctor && (
+        <Snackbar
+          open={openToast}
+          autoHideDuration={6000}
+          onClose={handleCloseToast}
+        >
+          <Alert
+            onClose={handleCloseToast}
+            severity="error"
+            sx={{ width: '100%' }}
+          >
+            Report could not be saved!
+          </Alert>
+        </Snackbar>
+      )}
     </Container>
   );
 }
@@ -115,8 +175,8 @@ export async function getServerSideProps(context) {
     if (user.type === 'doctor') {
       await dbConnect();
 
-      reports = await Report.find({})
-        .populate('user', { _id: user._id })
+      reports = await Report.find({user: user._id })
+        .populate("user")
         .lean();
     } else if (user.type === 'consultant') {
       await dbConnect();

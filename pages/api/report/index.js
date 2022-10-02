@@ -25,7 +25,7 @@ export default async function report(req, res) {
         report = new Report({
           subject,
           description,
-          userId: session._id,
+          user: session._id,
           resolved: false,
         });
 

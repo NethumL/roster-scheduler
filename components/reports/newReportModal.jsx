@@ -2,12 +2,12 @@ import { TextField } from '@mui/material';
 import { useState } from 'react';
 import ModalHeader from '../common/modalHeader';
 
-export default function NewReportModal({ open, handleClose }) {
+export default function NewReportModal({ open, handleClose, handleSave }) {
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
 
   const save = () => {
-    console.log(subject, description);
+    handleSave(subject, description);
     setSubject('');
     setDescription('');
   };
