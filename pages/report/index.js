@@ -118,22 +118,24 @@ export async function getServerSideProps(context) {
       reports = await Report.find({})
         .populate('user', { _id: user._id })
         .lean();
-
-      console.log(reports, user);
-      reports = JSON.parse(JSON.stringify(reports));
-      return { props: { reports, user } };
-    }
-
-    if (user.type === 'consultant') {
+    } else if (user.type === 'consultant') {
       await dbConnect();
 
       /**
        * TODO: Filter reports by doctors of the ward
        */
       reports = await Report.find({}).lean();
-      reports = JSON.parse(JSON.stringify(reports));
-      return { props: { reports, user } };
+    } else {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
     }
+
+    reports = JSON.parse(JSON.stringify(reports));
+    return { props: { reports, user } };
   } catch (error) {
     return {
       redirect: {
