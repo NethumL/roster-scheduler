@@ -6,7 +6,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function deleteConfirm(open, handleClose) {
+export default function deleteConfirm(
+  open,
+  deleteIndex,
+  handleClose,
+  handleDeleteConfirm
+) {
   return (
     <div>
       <Dialog
@@ -23,7 +28,10 @@ export default function deleteConfirm(open, handleClose) {
         </DialogContent>
         <DialogActions>
           <Button onClick={open.handleClose}>CANCEL</Button>
-          <Button onClick={open.handleClose} autoFocus>
+          <Button
+            onClick={() => open.handleDeleteConfirm(open.index)}
+            autoFocus
+          >
             DELETE
           </Button>
         </DialogActions>

@@ -34,6 +34,7 @@ export default function LeaveList({ dates, setNew }) {
     >
       {newDates.map((date, index) => (
         <ListItem
+          key={index}
           secondaryAction={
             <IconButton
               edge="end"

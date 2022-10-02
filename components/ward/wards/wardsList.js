@@ -13,24 +13,32 @@ import { Tooltip } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import Container from '@mui/material/Container';
 import { useRouter } from 'next/router';
+import { useTheme } from '@mui/system';
+import { useMediaQuery } from '@mui/material';
 
-export default function WardsList({ wards, handleView, handleViewDoctors }) {
+export default function WardsList({ wards, handleView }) {
   let router = useRouter();
+  const theme = useTheme();
+  const border = useMediaQuery(theme.breakpoints.down('sm'))
+    ? ''
+    : '10px solid #e9f3fc';
   return (
     <List
       sx={{
-        border: '10px solid #e9f3fc',
+        border: { border },
         width: '100%',
         maxWidth: 1120,
-        maxHeight: '89vh',
+        height: '80vh',
         bgcolor: 'background.paper',
         overflowY: 'auto',
+        paddingLeft: 0,
       }}
       component="nav"
     >
       {wards.map((ward, index) => (
-        <Container>
+        <Container key={index}>
           <ListItem
+            sx={{ paddingLeft: 0 }}
             secondaryAction={
               <IconButton
                 edge="end"

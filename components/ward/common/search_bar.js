@@ -32,22 +32,18 @@ import { Close } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import { Tooltip } from '@mui/material';
 
-export default function ViewWardModal({ open, handleClose }) {
+export default function Search_bar({ searchedText, setSearchedText }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const width = useMediaQuery(theme.breakpoints.down('md')) ? '100%' : '100%';
   const Search = styled('div')(({ theme }) => ({
     position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
+    borderRadius: 75,
+    backgroundColor: '#e9f3fc',
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(1),
-      width: 'auto',
+      marginLeft: '5%',
+      width: '68%',
     },
   }));
 
@@ -68,52 +64,26 @@ export default function ViewWardModal({ open, handleClose }) {
       // vertical padding + font size from searchIcon
       paddingLeft: `calc(1em + ${theme.spacing(4)})`,
       transition: theme.transitions.create('width'),
-      width: '100%',
-      [theme.breakpoints.up('sm')]: {
-        width: '12ch',
-        '&:focus': {
-          width: '20ch',
-        },
-      },
     },
   }));
 
   return (
-    <div>
-      <Dialog
-        open={open}
-        onClose={(_, reason) => {
-          if (reason !== 'backdropClick') {
-            handleClose();
-          }
-        }}
-        fullScreen={fullScreen}
-        fullWidth={true}
-        maxWidth="sm"
-      >
-        <AppBar sx={{ position: 'relative' }}>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={handleClose}
-              aria-label="close"
-            >
-              <Close />
-            </IconButton>
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ 'aria-label': 'search' }}
-              />
-            </Search>
-          </Toolbar>
-        </AppBar>
-        <DialogContent sx={{ p: 5 }}></DialogContent>
-      </Dialog>
-    </div>
+    // <div
+    //   sx={{ alignItems: 'center', justifyContent: 'center', float: 'center' }}
+    // >
+    <Search>
+      <SearchIconWrapper>
+        <SearchIcon />
+      </SearchIconWrapper>
+      <StyledInputBase
+        autoFocus
+        fullWidth
+        placeholder="Search…"
+        value={searchedText}
+        onChange={(e) => setSearchedText(e.target.value.toLowerCase())}
+        inputProps={{ 'aria-label': 'search' }}
+      />
+    </Search>
+    // </div>
   );
 }

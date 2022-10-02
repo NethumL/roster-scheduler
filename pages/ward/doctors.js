@@ -24,8 +24,18 @@ import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import { useRouter } from 'next/router';
+import { useTheme } from '@mui/system';
+import { useMediaQuery } from '@mui/material';
+import Search_bar from '@/components/ward/common/search_bar';
+import Button from '@mui/material/Button';
 
 export default function View({ doctors, allDoctors }) {
+  const theme = useTheme();
+  const border = useMediaQuery(theme.breakpoints.down('sm'))
+    ? ''
+    : '10px solid #e9f3fc';
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const flx = useMediaQuery(theme.breakpoints.down('sm')) ? '' : 'flex';
   const router = useRouter();
   const {
     query: { ward },
@@ -39,6 +49,10 @@ export default function View({ doctors, allDoctors }) {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [searchedText, setSearchedText] = useState('');
+  const [filteredDoctors, setFilteredDoctors] = useState(doctors);
+  const [deleteIndex, setDeleteIndex] = useState(null);
+  //***
   const [Doctors, setDoctors] = useState(null);
   const handleCloseAddModal = () => {
     setOpenAddModal(false);
@@ -49,15 +63,25 @@ export default function View({ doctors, allDoctors }) {
 
   const handleAdd = (newName) => {
     doctors.push({
+      _id: doctors.length,
       name: newName,
     });
+    setDoctors(doctors.map((obj) => ({ ...obj })));
     setOpenAddModal(false);
   };
   const handleDelete = (index) => {
+    console.log('handleDelete');
+    console.log(index);
+    setDeleteIndex(index);
     setOpenDeleteModal(true);
     // doctors.splice(index, 1);
-
-    // setNewDoctors(doctors.map((obj) => ({ ...obj })));
+  };
+  const handleDeleteConfirm = (index) => {
+    doctors.splice(index, 1);
+    setDoctors(doctors.map((obj) => ({ ...obj })));
+    console.log(doctors);
+    setOpenDeleteModal(false);
+    setDeleteIndex(null);
   };
   const handleOpenAddModal = () => {
     setOpenAddModal(true);
@@ -65,51 +89,83 @@ export default function View({ doctors, allDoctors }) {
   useEffect(() => {
     console.log('g');
     console.log(ward);
-
-    // setNewDoctors(doctors.map((obj) => ({ ...obj })));
+    //***
+    setDoctors(doctors.map((obj) => ({ ...obj })));
   }, [doctors]);
+  useEffect(() => {
+    if (Doctors) {
+      const filteredData = Doctors.filter((el) => {
+        if (searchedText === '') {
+          return el;
+        }
+        //return the item which contains the user input
+        else {
+          return el.name.toLowerCase().includes(searchedText);
+        }
+      });
+      setFilteredDoctors(filteredData);
+      console.log(filteredDoctors);
+    }
+  }, [searchedText, Doctors]);
   return (
-    <Container sx={{ overflowY: 'hidden' }}>
+    <Container sx={{ overflowY: 'hidden', minWidth: 325 }}>
       <Typography
         variant="h4"
         component="div"
-        sx={{ position: 'sticky', top: 7, mb: 2, backgrounColor: '#ffffff' }}
+        sx={{
+          position: 'sticky',
+          top: 7,
+          mb: 2,
+          mt: 2,
+          backgrounColor: '#ffffff',
+          display: flx,
+        }}
       >
         Doctors
-        <IconButton
-          edge="end"
-          aria-label="newWard"
-          // onClick={() => setOpenSearch(true)}
-          sx={{ left: 200 }}
-          size="large"
-        >
-          <Tooltip title="Search Ward">
-            <SearchIcon sx={{ color: '#1976d2' }} />
-          </Tooltip>
-        </IconButton>
+        <Search_bar
+          searchedText={searchedText}
+          setSearchedText={setSearchedText}
+        />
+        {!fullScreen && (
+          <Button
+            variant="contained"
+            onClick={handleOpenAddModal}
+            sx={{
+              float: 'right',
+              marginLeft: '3%',
+              // marginRight: mr,
+              height: 35,
+              mt: 1,
+            }}
+          >
+            Add
+          </Button>
+        )}
       </Typography>
       <List
         sx={{
           width: '100%',
           bgcolor: 'background.paper',
-          maxHeight: '90vh',
+          height: '80vh',
           overflowY: 'auto',
-          border: '10px solid #e9f3fc',
+          border: { border },
         }}
         component="nav"
       >
-        <DoctorsList doctors={doctors} handleDelete={handleDelete} />
+        <DoctorsList doctors={filteredDoctors} handleDelete={handleDelete} />
       </List>
-      <Tooltip title="Add Doctor">
-        <Fab
-          color="primary"
-          aria-label="addDoctor"
-          onClick={() => handleOpenAddModal()}
-          sx={{ position: 'fixed', color: 'primary', bottom: 20, right: 30 }}
-        >
-          <AddIcon />
-        </Fab>
-      </Tooltip>
+      {fullScreen && (
+        <Tooltip title="Add Doctor">
+          <Fab
+            color="primary"
+            aria-label="addDoctor"
+            onClick={() => handleOpenAddModal()}
+            sx={{ position: 'fixed', color: 'primary', bottom: 20, right: 30 }}
+          >
+            <AddIcon />
+          </Fab>
+        </Tooltip>
+      )}
       <AddDoctorModal
         open={openAddModal}
         handleClose={handleCloseAddModal}
@@ -119,7 +175,9 @@ export default function View({ doctors, allDoctors }) {
       />
       <DeleteConfirmModal
         open={openDeleteModal}
+        index={deleteIndex}
         handleClose={handleCloseDeleteModal}
+        handleDeleteConfirm={handleDeleteConfirm}
       />
     </Container>
   );
@@ -127,27 +185,22 @@ export default function View({ doctors, allDoctors }) {
 
 export async function getStaticProps() {
   const doctors = [
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
+    { _id: '1', name: 'Deepaka Perera' },
+    { _id: '2', name: 'Deepika Gimhani' },
+    { _id: '3', name: 'Thanuj Jayasinge' },
+    { _id: '4', name: 'Deepaka Perera' },
+    { _id: '5', name: 'Deepika Gimhani' },
+    { _id: '6', name: 'Thanuj Jayasinge' },
+    { _id: '7', name: 'Deepaka Perera' },
+    { _id: '8', name: 'Deepika Gimhani' },
+    { _id: '9', name: 'Thanuj Jayasinge' },
+    { _id: '10', name: 'Deepaka Perera' },
   ];
   const allDoctors = [
-    { name: 'Deepaka Perera' },
-    { name: 'Deepika Gimhani' },
-    { name: 'Thanuj Jayasinge' },
-    { name: 'Thanuj Jayasinghe' },
+    { _id: '1', name: 'Deepaka Perera' },
+    { _id: '2', name: 'Deepika Gimhani' },
+    { _id: '3', name: 'Thanuj Jayasinge' },
+    { _id: '4', name: 'Thanuj Jayasinghe' },
   ];
 
   return {
