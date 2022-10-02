@@ -7,13 +7,17 @@ export default async function updateUser(req, res) {
    * TODO: Validate the request body
    */
   try {
+    if (req.method !== 'PUT') {
+      return res.status(405).end();
+    }
+
     const session = await getLoginSession(req);
 
     /** @type {import('@/lib/models/User').UserEntity|null} */
     let user = null;
 
     if (session) {
-      if (session.type === 'Admin') {
+      if (session.type === 'ADMIN') {
         await dbConnect();
 
         const { _id } = req.query;

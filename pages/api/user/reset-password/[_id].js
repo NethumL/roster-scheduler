@@ -2,11 +2,17 @@ import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import User from '@/lib/models/User';
 
-export default async function updateUser(req, res) {
+export default async function resetPassword(req, res) {
   /**
-   * TODO: Validate the passwords
+   * TODO: Validate and hash the passwords
    */
   try {
+    if (req.method !== 'PUT') {
+      return res.status(405).end();
+    }
+
+    return res.status(501).end('Not implemented');
+
     const session = await getLoginSession(req);
 
     /** @type {import('@/lib/models/User').UserEntity|null} */
