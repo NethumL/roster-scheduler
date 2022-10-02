@@ -8,8 +8,8 @@ export default function NewUsersPage({ newUsers }) {
   const [users, setUsers] = useState(newUsers);
   const [filtered, setFiltered] = useState(users);
 
-  const nameRef = useRef();
-  const unameRef = useRef();
+  const nameRef = useRef(null);
+  const unameRef = useRef(null);
   const [type, setType] = useState([]);
 
   const accept = (username) => {
