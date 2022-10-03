@@ -14,12 +14,16 @@ export default async function resolve(req, res) {
     let report = null;
 
     if (session) {
-      if (session.type === 'Consultant') {
+      if (session.type === 'CONSULTANT') {
         await dbConnect();
 
-        const { postId } = req.body;
+        const { _id } = req.query;
+        const { resolve } = req.body;
+
+        if (resolve !== true) return res.status(400).end();
+
         report = await Report.findByIdAndUpdate(
-          postId,
+          _id,
           { resolved: true },
           { new: true }
         );

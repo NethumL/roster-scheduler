@@ -4,17 +4,15 @@ import { getUser } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Report from '@/lib/models/Report';
 import { send } from '@/lib/util';
-import { Add, AddCircleOutline, Close } from '@mui/icons-material';
+import { Add, AddCircleOutline } from '@mui/icons-material';
 import {
   Alert,
   Box,
   Button,
   Fab,
   Grid,
-  IconButton,
   Paper,
   Snackbar,
-  Switch,
   Typography,
   useMediaQuery,
   useTheme,
@@ -45,6 +43,8 @@ export default function ViewReports({ reports, user }) {
   };
 
   const handleSaveReport = async (subject, description) => {
+    if (!isDoctor) return;
+
     const newFiltered = [
       ...filtered,
       {
@@ -81,18 +81,28 @@ export default function ViewReports({ reports, user }) {
     setOpenToast(false);
   };
 
-  const resolve = (reportId) => {
+  const resolve = async (reportId) => {
     if (isDoctor) return;
 
+    let original = [...filtered];
     let newReports = [...filtered];
     newReports = newReports.map((report) => {
+      const newReport = { ...report };
       if (report._id === reportId) {
-        report.resolved = true;
+        newReport.resolved = true;
       }
-      return report;
+      return newReport;
     });
-
     setFiltered(newReports);
+
+    const body = { resolve: true };
+
+    try {
+      await send('PUT', `/api/report/resolve/${reportId}`, body);
+    } catch (error) {
+      setOpenToast(true);
+      setFiltered(original);
+    }
   };
 
   return (
@@ -144,21 +154,21 @@ export default function ViewReports({ reports, user }) {
           handleSave={handleSaveReport}
         />
       )}
-      {isDoctor && (
-        <Snackbar
-          open={openToast}
-          autoHideDuration={6000}
+      <Snackbar
+        open={openToast}
+        autoHideDuration={6000}
+        onClose={handleCloseToast}
+      >
+        <Alert
           onClose={handleCloseToast}
+          severity="error"
+          sx={{ width: '100%' }}
         >
-          <Alert
-            onClose={handleCloseToast}
-            severity="error"
-            sx={{ width: '100%' }}
-          >
-            Report could not be saved!
-          </Alert>
-        </Snackbar>
-      )}
+          {isDoctor
+            ? 'The report could not be saved!'
+            : 'The request could not be completed!'}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
