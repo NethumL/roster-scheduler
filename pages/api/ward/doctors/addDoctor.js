@@ -15,19 +15,17 @@ export default async function addDoctor(req, res) {
     // const session = await getLoginSession(req);
 
     /** @type {import('@/lib/models/Ward').WardEntity | null} */
-    let ward = null;
+    let out = null;
 
     // if (session) {
     await dbConnect();
 
-    const { _id, doctors } = req.body;
-    ward = await Ward.findByIdAndUpdate(_id, {
-      doctors: doctors,
-    });
+    const { _id, doctor } = req.body;
+    out = await Ward.update({ _id: _id }, { $push: { doctors: doctor } });
 
-    if (!ward) return res.status(404).json({ message: 'Ward not found' });
+    if (!out) return res.status(404).json({ message: 'Ward not found' });
 
-    res.status(200).json({ ward });
+    res.status(200).json({ out });
     // }
   } catch (error) {
     console.error(error);
