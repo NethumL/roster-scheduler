@@ -267,3 +267,32 @@ export async function getStaticProps() {
     },
   };
 }
+// /**
+//  * @param {import('next').NextPageContext} context
+//  */
+//  export async function getServerSideProps(context) {
+//   let preferences = [];
+//   try {
+//     const user = await getUser(context.req);
+//     await dbConnect();
+//     if (user.type === 'DOCTOR') {
+//       preferences = await Preferences.find({doctor:user._id}).populate('preferenceOrder').lean();
+//     } else {
+//       return {
+//         redirect: {
+//           destination: '/',
+//           permanent: false,
+//         },
+//       };
+//     }
+//     preferences = JSON.parse(JSON.stringify(preferences));
+//     return { props: { preferences } };
+//   } catch (error) {
+//     return {
+//       redirect: {
+//         destination: '/auth/login',
+//         permanent: false,
+//       },
+//     };
+//   }
+// }
