@@ -2,7 +2,7 @@
 import dbConnect from '@/lib/db';
 import Ward from '@/lib/models/Ward';
 
-export default async function addDoctor(req, res) {
+export default async function deleteDoctor(req, res) {
   /**
    * TODO: Verify whether admin logged in
    */
@@ -15,25 +15,15 @@ export default async function addDoctor(req, res) {
     // const session = await getLoginSession(req);
 
     /** @type {import('@/lib/models/Ward').WardEntity | null} */
-    let ward = null;
+    let out = null;
 
     // if (session) {
     await dbConnect();
 
-    const { _id, doctors } = req.body;
-    ward = await Ward.findByIdAndUpdate(_id, {
-      doctors: doctors,
-    });
-    Ward.distinct('_id', {}).then((res) => {
-      /** So `res` will be an array of unique `_id`'s of Post collection which matches given conditions */
-      User.updateMany(
-        { watchlist: { $in: res } } /** get users who have listings ids  */,
-        { $pullAll: { watchlist: res } } /** pull all listing ids */
-      );
-    });
-    if (!ward) return res.status(404).json({ message: 'Ward not found' });
+    const { _id, doctor } = req.body;
+    out = await Ward.update({ _id: _id }, { $pull: { doctors: doctor } });
 
-    res.status(200).json({ ward });
+    res.status(200).json({ out });
     // }
   } catch (error) {
     console.error(error);
