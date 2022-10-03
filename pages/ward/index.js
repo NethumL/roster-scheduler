@@ -280,3 +280,38 @@ export async function getStaticProps() {
     },
   };
 }
+// /**
+//  * @param {import('next').NextPageContext} context
+//  */
+// export async function getServerSideProps(context) {
+//   let wards = [];
+//   let consultants = [];
+//   let type = '';
+//   try {
+//     const user = await getUser(context.req);
+//     await dbConnect();
+//     consultants = await User.find({ type: 'CONSULTANT' }).lean();
+//     if (user.type === 'ADMIN') {
+//       wards = await Ward.find({}).populate('consultant').lean();
+//     } else if (user.type === 'CONSULTANT') {
+//       wards = await Ward.find({ consultant: user._id })
+//         .populate('consultant')
+//         .lean();
+//     } else {
+//       wards = await Ward.find({ doctors: user._id })
+//         .populate('consultant')
+//         .lean();
+//     }
+//     wards = JSON.parse(JSON.stringify(wards));
+//     consultants = JSON.parse(JSON.stringify(consultants));
+//     type = user.type;
+//     return { props: { wards, consultants, type } };
+//   } catch (error) {
+//     return {
+//       redirect: {
+//         destination: '/auth/login',
+//         permanent: false,
+//       },
+//     };
+//   }
+// }
