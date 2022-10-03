@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 
 export default function ReportCard({ report, isDoctor, resolve }) {
-  const { _id, subject, body, resolved } = report;
+  const { _id, subject, description, resolved } = report;
 
   return (
     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
@@ -22,7 +22,7 @@ export default function ReportCard({ report, isDoctor, resolve }) {
               ? `Status: ${resolved ? 'Resolved' : 'Pending'}`
               : report.user.name}
           </Typography>
-          <Typography variant="body2">{body}</Typography>
+          <Typography variant="body2">{description}</Typography>
         </CardContent>
         {!isDoctor && !resolved && (
           <CardActions>

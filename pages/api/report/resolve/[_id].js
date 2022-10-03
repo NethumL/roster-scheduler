@@ -2,13 +2,9 @@ import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Report from '@/lib/models/Report';
 
-export default async function report(req, res) {
-  /**
-   * TODO: Validate user input
-   */
-
+export default async function resolve(req, res) {
   try {
-    if (req.method !== 'POST') {
+    if (req.method !== 'PUT') {
       return res.status(405).end();
     }
 
@@ -18,18 +14,23 @@ export default async function report(req, res) {
     let report = null;
 
     if (session) {
-      if (session.type === 'DOCTOR') {
+      if (session.type === 'CONSULTANT') {
         await dbConnect();
 
-        const { subject, description } = req.body;
-        report = new Report({
-          subject,
-          description,
-          user: session._id,
-          resolved: false,
-        });
+        const { _id } = req.query;
+        const { resolve } = req.body;
 
-        await report.save();
+        if (resolve !== true) return res.status(400).end();
+
+        report = await Report.findByIdAndUpdate(
+          _id,
+          { resolved: true },
+          { new: true }
+        );
+
+        if (!report)
+          return res.status(404).json({ message: 'Report not found' });
+
         res.status(200).json({ report });
       } else {
         res.status(403).end("You don't have permission to perform this action");

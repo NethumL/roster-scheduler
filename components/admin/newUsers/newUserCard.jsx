@@ -7,8 +7,8 @@ import {
   Typography,
 } from '@mui/material';
 
-export default function NewUserCard({ user, accept, decline }) {
-  const { name, username, type } = user;
+export default function NewUserCard({ user, action }) {
+  const { _id, name, username, type } = user;
 
   return (
     <Grid item xs={12} sm={6} md={6} lg={4} xl={3}>
@@ -19,7 +19,7 @@ export default function NewUserCard({ user, accept, decline }) {
           </Typography>
           <Typography>Username: {username}</Typography>
           <Typography variant="body2">
-            Type: {type === 'doctor' ? 'Doctor' : 'Consultant'}
+            Type: {type === 'Doctor' ? 'Doctor' : 'Consultant'}
           </Typography>
         </CardContent>
         <CardActions sx={{ justifyContent: 'space-around' }}>
@@ -27,7 +27,7 @@ export default function NewUserCard({ user, accept, decline }) {
             size="small"
             variant="contained"
             color="success"
-            onClick={() => accept(username)}
+            onClick={() => action(_id, true)}
           >
             Accept
           </Button>
@@ -35,7 +35,7 @@ export default function NewUserCard({ user, accept, decline }) {
             size="small"
             variant="contained"
             color="error"
-            onClick={() => decline(username)}
+            onClick={() => action(_id, false)}
           >
             Decline
           </Button>

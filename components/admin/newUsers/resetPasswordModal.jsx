@@ -57,7 +57,7 @@ export default function ResetPasswordModal({
           margin="dense"
           id="type"
           label="Type"
-          value={user ? (user.type === 'doctor' ? 'Doctor' : 'Consultant') : ''}
+          value={user ? (user.type === 'Doctor' ? 'Doctor' : 'Consultant') : ''}
           type="text"
           fullWidth
           disabled

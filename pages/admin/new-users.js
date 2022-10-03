@@ -1,25 +1,43 @@
 import NewUserCard from '@/components/admin/newUsers/newUserCard';
 import UserFilters from '@/components/admin/newUsers/userFilters';
-import { Grid, Paper, Typography } from '@mui/material';
+import { getUser } from '@/lib/auth/session';
+import dbConnect from '@/lib/db';
+import NewUser from '@/lib/models/NewUser';
+import { send } from '@/lib/util';
+import { Alert, Grid, Paper, Snackbar, Typography } from '@mui/material';
 import { Container } from '@mui/system';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function NewUsersPage({ newUsers }) {
   const [users, setUsers] = useState(newUsers);
   const [filtered, setFiltered] = useState(users);
+  const [openToast, setOpenToast] = useState(false);
 
-  const nameRef = useRef();
-  const unameRef = useRef();
+  const nameRef = useRef(null);
+  const unameRef = useRef(null);
   const [type, setType] = useState([]);
 
-  const accept = (username) => {
-    setUsers(users.filter((user) => user.username !== username));
-    setFiltered(filtered.filter((user) => user.username !== username));
+  const handleCloseToast = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenToast(false);
   };
 
-  const decline = (username) => {
-    setUsers(users.filter((user) => user.username !== username));
-    setFiltered(filtered.filter((user) => user.username !== username));
+  const action = async (_id, accept) => {
+    const original = [...users];
+    setUsers(users.filter((user) => user._id !== _id));
+
+    const body = { accept };
+
+    try {
+      await send('PUT', `/api/admin/new-users/${_id}`, body);
+    } catch (error) {
+      console.log(error);
+      setOpenToast(true);
+      setFiltered(original);
+    }
   };
 
   const filter = () => {
@@ -41,7 +59,7 @@ export default function NewUsersPage({ newUsers }) {
 
     if (type.length) {
       temp = temp.filter((user) =>
-        type.includes(user.type === 'doctor' ? 'Doctor' : 'Consultant')
+        type.includes(user.type === 'DOCTOR' ? 'Doctor' : 'Consultant')
       );
     }
 
@@ -54,6 +72,8 @@ export default function NewUsersPage({ newUsers }) {
     nameRef.current.value = '';
     unameRef.current.value = '';
   };
+
+  useEffect(filter, [users]);
 
   return (
     <Container sx={{ mt: 5 }}>
@@ -75,98 +95,56 @@ export default function NewUsersPage({ newUsers }) {
           spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}
         >
           {filtered.map((user, index) => (
-            <NewUserCard
-              key={index}
-              user={user}
-              accept={accept}
-              decline={decline}
-            />
+            <NewUserCard key={index} user={user} action={action} />
           ))}
         </Grid>
       </Paper>
+      <Snackbar
+        open={openToast}
+        autoHideDuration={6000}
+        onClose={handleCloseToast}
+      >
+        <Alert
+          onClose={handleCloseToast}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          The request could not be completed!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
 
-export async function getStaticProps() {
-  const newUsers = [
-    {
-      _id: '632e63375a6845d0ae14c740',
-      name: 'John Doe',
-      username: 'johnd',
-      type: 'consultant',
-    },
-    {
-      _id: '632e6337a6db8ba5fee28a38',
-      name: 'Maxine Wheeler',
-      username: 'maxine',
-      type: 'doctor',
-    },
-    {
-      _id: '632e6337a48dcc8015be0c87',
-      name: 'Antony Guzman',
-      username: 'antony',
-      type: 'doctor',
-    },
-    {
-      _id: '632e63376fb5c78f40e80911',
-      name: 'Kathryn Travers',
-      username: 'kathrynt',
-      type: 'consultant',
-    },
-    {
-      _id: '632e6337705876a9daafa3b5',
-      name: 'Willow Ryan',
-      username: 'willowr',
-      type: 'doctor',
-    },
-    {
-      _id: '632e6337a48dcc8015be0c87',
-      name: 'Aleisha Nolan',
-      username: 'aleishan',
-      type: 'doctor',
-    },
-    {
-      _id: '632e63376fb5c78f40e80911',
-      name: 'Bryn Rahman',
-      username: 'brynr',
-      type: 'doctor',
-    },
-    {
-      _id: '632e6337ff2beff05f9151af',
-      name: 'Erica Marshall',
-      username: 'ericam',
-      type: 'consultant',
-    },
-    {
-      _id: '632e6337dbcc10757750f75a',
-      name: 'Dylon Barclay',
-      username: 'dylonb',
-      type: 'consultant',
-    },
-    {
-      _id: '632e6337b05a9b20bd6a7445',
-      name: 'Emelia Driscoll',
-      username: 'emelia',
-      type: 'doctor',
-    },
-    {
-      _id: '632e63370f1d4de18fbf83a4',
-      name: 'Klara Lindsay',
-      username: 'klaral',
-      type: 'doctor',
-    },
-    {
-      _id: '632e633728262fefb5239f68',
-      name: 'Arnav Morales',
-      username: 'arnav',
-      type: 'doctor',
-    },
-  ];
+/**
+ * @param {import('next').NextPageContext} context
+ */
+export async function getServerSideProps(context) {
+  let newUsers = [];
 
-  return {
-    props: {
-      newUsers,
-    },
-  };
+  try {
+    const user = await getUser(context.req);
+
+    if (user.type === 'ADMIN') {
+      await dbConnect();
+
+      newUsers = await NewUser.find({});
+      newUsers = JSON.parse(JSON.stringify(newUsers));
+      return { props: { newUsers } };
+    } else {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    return {
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
+    };
+  }
 }

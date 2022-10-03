@@ -2,18 +2,26 @@ import EditUserModal from '@/components/admin/newUsers/editUserModal';
 import ResetPasswordModal from '@/components/admin/newUsers/resetPasswordModal';
 import UserFilters from '@/components/admin/newUsers/userFilters';
 import UserTable from '@/components/admin/newUsers/userTable';
-import { Container, Typography } from '@mui/material';
+import { getUser } from '@/lib/auth/session';
+import dbConnect from '@/lib/db';
+import User from '@/lib/models/User';
+import { send } from '@/lib/util';
+import { Alert, Container, Snackbar, Typography } from '@mui/material';
 import { useRef, useState } from 'react';
 
 export default function Edit({ users }) {
-  const nameRef = useRef();
-  const unameRef = useRef();
+  const apiEndPoint = '/api/admin/edit';
+
+  const nameRef = useRef(null);
+  const unameRef = useRef(null);
   const [type, setType] = useState([]);
   const [filtered, setFiltered] = useState(users);
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openResetModal, setOpenResetModal] = useState(false);
+  const [openEditToast, setOpenEditToast] = useState(false);
+  const [openResetToast, setOpenResetToast] = useState(false);
 
   const handleClickOpenEditModal = (user) => {
     setSelectedUser(user);
@@ -25,7 +33,7 @@ export default function Edit({ users }) {
     setOpenEditModal(false);
   };
 
-  const handleSaveEdit = (_id, newName, newType) => {
+  const handleSaveEdit = async (_id, newName, newType) => {
     const newUsers = users.map((u) => {
       if (u._id === _id) {
         u.name = newName;
@@ -33,12 +41,24 @@ export default function Edit({ users }) {
       }
       return u;
     });
+    filter(newUsers);
 
-    console.log(_id, newName, newType);
+    const original = [...users];
 
     setSelectedUser(null);
     setOpenEditModal(false);
-    setFiltered(newUsers);
+
+    const body = {
+      name: newName,
+      type: newType,
+    };
+
+    try {
+      await send('PUT', `${apiEndPoint}/${_id}`, body);
+    } catch (error) {
+      setOpenEditToast(true);
+      filter(original);
+    }
   };
 
   const handleClickOpenResetModal = (user) => {
@@ -51,15 +71,40 @@ export default function Edit({ users }) {
     setOpenResetModal(false);
   };
 
-  const handleSavePassword = (_id, password, confPassword) => {
-    console.log(_id, password, confPassword);
+  const handleCloseEditToast = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
 
-    setSelectedUser(null);
-    setOpenResetModal(false);
+    setOpenEditToast(false);
   };
 
-  const filter = () => {
-    let temp = [...users];
+  const handleCloseResetToast = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenResetToast(false);
+  };
+
+  const handleSavePassword = async (_id, password, confPassword) => {
+    setSelectedUser(null);
+    setOpenResetModal(false);
+
+    const body = {
+      password,
+      confPassword,
+    };
+
+    try {
+      await send('PUT', `${apiEndPoint}/reset-password/${_id}`, body);
+    } catch (error) {
+      setOpenResetToast(true);
+    }
+  };
+
+  const filter = (argUsers) => {
+    let temp = argUsers ? argUsers : [...users];
 
     const name = nameRef.current.value;
     if (name) {
@@ -77,7 +122,7 @@ export default function Edit({ users }) {
 
     if (type.length) {
       temp = temp.filter((user) =>
-        type.includes(user.type === 'doctor' ? 'Doctor' : 'Consultant')
+        type.includes(user.type === 'DOCTOR' ? 'Doctor' : 'Consultant')
       );
     }
 
@@ -97,7 +142,7 @@ export default function Edit({ users }) {
         Edit Users
       </Typography>
       <UserFilters
-        filter={filter}
+        filter={() => filter(null)}
         clear={clear}
         nameRef={nameRef}
         unameRef={unameRef}
@@ -121,89 +166,65 @@ export default function Edit({ users }) {
         handleClose={handleCloseResetModal}
         handleSave={handleSavePassword}
       />
+      <Snackbar
+        open={openEditToast}
+        autoHideDuration={6000}
+        onClose={handleCloseEditToast}
+      >
+        <Alert
+          onClose={handleCloseEditToast}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          Changes could not be saved!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={openResetToast}
+        autoHideDuration={6000}
+        onClose={handleCloseResetToast}
+      >
+        <Alert
+          onClose={handleCloseResetToast}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          New Password could not be saved!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
 
-export async function getStaticProps() {
-  const users = [
-    {
-      _id: '632e63375a6845d0ae14c740',
-      name: 'John Doe',
-      username: 'johnd',
-      type: 'consultant',
-    },
-    {
-      _id: '632e6337a6db8ba5fee28a38',
-      name: 'Maxine Wheeler',
-      username: 'maxine',
-      type: 'doctor',
-    },
-    {
-      _id: '632e6337a48dcc8015be0c87',
-      name: 'Antony Guzman',
-      username: 'antony',
-      type: 'doctor',
-    },
-    {
-      _id: '632e63376fb5c78f40e80911',
-      name: 'Kathryn Travers',
-      username: 'kathrynt',
-      type: 'consultant',
-    },
-    {
-      _id: '632e6337705876a9daafa3b5',
-      name: 'Willow Ryan',
-      username: 'willowr',
-      type: 'doctor',
-    },
-    {
-      _id: '632e6337a48dcc8015be0c87',
-      name: 'Aleisha Nolan',
-      username: 'aleishan',
-      type: 'doctor',
-    },
-    {
-      _id: '632e63376fb5c78f40e80911',
-      name: 'Bryn Rahman',
-      username: 'brynr',
-      type: 'doctor',
-    },
-    {
-      _id: '632e6337ff2beff05f9151af',
-      name: 'Erica Marshall',
-      username: 'ericam',
-      type: 'consultant',
-    },
-    {
-      _id: '632e6337dbcc10757750f75a',
-      name: 'Dylon Barclay',
-      username: 'dylonb',
-      type: 'consultant',
-    },
-    {
-      _id: '632e6337b05a9b20bd6a7445',
-      name: 'Emelia Driscoll',
-      username: 'emelia',
-      type: 'doctor',
-    },
-    {
-      _id: '632e63370f1d4de18fbf83a4',
-      name: 'Klara Lindsay',
-      username: 'klaral',
-      type: 'doctor',
-    },
-    {
-      _id: '632e633728262fefb5239f68',
-      name: 'Arnav Morales',
-      username: 'arnav',
-      type: 'doctor',
-    },
-  ];
+/**
+ * @param {import('next').NextPageContext} context
+ */
+export async function getServerSideProps(context) {
+  let users = [];
 
-  return {
-    props: {
-      users,
-    },
-  };
+  try {
+    const user = await getUser(context.req);
+
+    if (user.type === 'ADMIN') {
+      await dbConnect();
+
+      users = await User.find({ type: { $ne: 'ADMIN' } });
+      users = JSON.parse(JSON.stringify(users));
+      return { props: { users } };
+    } else {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    return {
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
+    };
+  }
 }
