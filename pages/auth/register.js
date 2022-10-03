@@ -4,7 +4,11 @@ import {
   Alert,
   Button,
   Container,
+  FormControl,
   Grid,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
   Typography,
 } from '@mui/material';
@@ -20,6 +24,7 @@ export default function RegisterPage() {
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
+  const userTypeRef = useRef(null);
 
   /** @type import('react').FormEventHandler<HTMLFormElement> */
   async function handleSubmit(e) {
@@ -29,6 +34,7 @@ export default function RegisterPage() {
       name: nameRef.current.value,
       username: usernameRef.current.value,
       password: passwordRef.current.value,
+      userType: userTypeRef.current.value,
     };
 
     try {
@@ -113,6 +119,22 @@ export default function RegisterPage() {
               error={passwordError ? true : false}
               helperText={passwordError}
             />
+          </Grid>
+          <Grid item xs={3} md={5}></Grid>
+          <Grid item xs={3} md={5}></Grid>
+          <Grid item xs={6} md={2}>
+            <FormControl fullWidth>
+              <InputLabel id="user-type-select-label">Type</InputLabel>
+              <Select
+                labelId="user-type-select-label"
+                id="user-type-select"
+                label="Type"
+                inputProps={{ ref: userTypeRef }}
+              >
+                <MenuItem value="DOCTOR">Doctor</MenuItem>
+                <MenuItem value="CONSULTANT">Consultant</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={3} md={5}></Grid>
         </Grid>

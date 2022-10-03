@@ -30,9 +30,9 @@ export default function ChangePasswordPage() {
 
     try {
       await send('POST', '/api/auth/change-password', body);
-      Router.push('/');
+      Router.push('/api/logout');
     } catch (error) {
-      setErrorMsg(error.message);
+      setErrorMsg(JSON.parse(error.message).error);
     }
   }
 
@@ -69,6 +69,7 @@ export default function ChangePasswordPage() {
               variant="standard"
               label="Current password"
               inputRef={currentPasswordRef}
+              type="password"
             />
           </Grid>
           <Grid item xs={3} md={5}></Grid>
