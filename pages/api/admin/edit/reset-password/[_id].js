@@ -1,17 +1,16 @@
 import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import User from '@/lib/models/User';
+import { hashSync } from 'bcryptjs';
 
 export default async function resetPassword(req, res) {
   /**
-   * TODO: Validate and hash the passwords
+   * TODO: Validate the password
    */
   try {
     if (req.method !== 'PUT') {
       return res.status(405).end();
     }
-
-    return res.status(501).end('Not implemented');
 
     const session = await getLoginSession(req);
 
@@ -19,15 +18,16 @@ export default async function resetPassword(req, res) {
     let user = null;
 
     if (session) {
-      if (session.type === 'Admin') {
+      if (session.type === 'ADMIN') {
         await dbConnect();
 
         const { _id } = req.query;
-        const { password, confPassword } = req.body;
+        const { password } = req.body;
+        const hashedPassword = hashSync(password);
 
         user = await User.findByIdAndUpdate(
           _id,
-          { password },
+          { password: hashedPassword },
           {
             new: true,
           }
