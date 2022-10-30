@@ -10,9 +10,23 @@ export default function ResetPasswordModal({
 }) {
   const [password, setPassword] = useState('');
   const [confPassword, setConfPassword] = useState('');
+  const [passwordErr, setPasswordErr] = useState('');
+  const [confPasswordErr, setConfPasswordErr] = useState(false);
+
+  const checkConfirmPassword = () => {
+    if (confPassword && password !== confPassword) {
+      setPasswordErr('Passwords do not match');
+      setConfPasswordErr(true);
+    } else {
+      setPasswordErr('');
+      setConfPasswordErr(false);
+    }
+  };
 
   const save = () => {
-    handleSave(user._id, password, confPassword);
+    checkConfirmPassword();
+    if (passwordErr || confPasswordErr) return;
+    handleSave(user._id, password);
     setPassword('');
     setConfPassword('');
   };
@@ -71,7 +85,10 @@ export default function ResetPasswordModal({
           label="New Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onBlur={checkConfirmPassword}
           type="password"
+          error={passwordErr !== ''}
+          helperText={passwordErr}
           fullWidth
           variant="standard"
           sx={{ mt: 3 }}
@@ -82,7 +99,9 @@ export default function ResetPasswordModal({
           label="Confirm Password"
           value={confPassword}
           onChange={(e) => setConfPassword(e.target.value)}
+          onBlur={checkConfirmPassword}
           type="password"
+          error={confPasswordErr}
           fullWidth
           variant="standard"
           sx={{ mt: 3 }}

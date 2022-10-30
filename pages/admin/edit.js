@@ -93,7 +93,6 @@ export default function Edit({ users }) {
 
     const body = {
       password,
-      confPassword,
     };
 
     try {
