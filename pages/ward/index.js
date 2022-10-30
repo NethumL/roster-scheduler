@@ -183,135 +183,143 @@ export default function View({ wards, consultants }) {
   );
 }
 
-export async function getStaticProps() {
-  const consultants = [
-    { _id: 1, name: 'Mr.Deepaka' },
-    { _id: 2, name: 'Mrs.Deepika' },
-  ];
-  const wards = [
-    {
-      _id: 1,
-      name: 'ICU',
-      description: 'Intensive Care Unit',
-      personInCharge: 'Mr.Deepaka',
+// export async function getStaticProps() {
+//   const consultants = [
+//     { _id: 1, name: 'Mr.Deepaka' },
+//     { _id: 2, name: 'Mrs.Deepika' },
+//   ];
+//   const wards = [
+//     {
+//       _id: 1,
+//       name: 'ICU',
+//       description: 'Intensive Care Unit',
+//       personInCharge: 'Mr.Deepaka',
 
-      shifts: [
-        {
-          name: 'Morning',
-          start: '2014-08-18T21:11:54',
-          end: '2014-08-18T21:11:54',
-        },
-        {
-          name: 'Evening',
-          start: '2014-08-18T21:11:54',
-          end: '2014-08-18T21:11:54',
-        },
-      ],
-      minNumDoctors: 10,
-      maxNumLeaves: 8,
-      minNumDoctorsPerShift: 2,
-      statusAdjacentShifts: true,
-    },
-    {
-      _id: 2,
-      name: 'IpU',
-      description: 'Intensive Care Unit',
-      personInCharge: 'Mr.Deepaka',
+//       shifts: [
+//         {
+//           name: 'Morning',
+//           start: '2014-08-18T21:11:54',
+//           end: '2014-08-18T21:11:54',
+//         },
+//         {
+//           name: 'Evening',
+//           start: '2014-08-18T21:11:54',
+//           end: '2014-08-18T21:11:54',
+//         },
+//       ],
+//       minNumDoctors: 10,
+//       maxNumLeaves: 8,
+//       minNumDoctorsPerShift: 2,
+//       statusAdjacentShifts: true,
+//     },
+//     {
+//       _id: 2,
+//       name: 'IpU',
+//       description: 'Intensive Care Unit',
+//       personInCharge: 'Mr.Deepaka',
 
-      shifts: [
-        {
-          name: 'Morning',
-          start: '2014-08-18T21:11:54',
-          end: '2014-08-18T21:11:54',
-        },
-      ],
-      minNumDoctors: 11,
-      maxNumLeaves: 5,
-      minNumDoctorsPerShift: 2,
-      statusAdjacentShifts: false,
-    },
-    {
-      _id: 3,
-      name: 'IgU',
-      description: 'Intensive Care Unit',
-      personInCharge: 'Mr.Deepaka',
+//       shifts: [
+//         {
+//           name: 'Morning',
+//           start: '2014-08-18T21:11:54',
+//           end: '2014-08-18T21:11:54',
+//         },
+//       ],
+//       minNumDoctors: 11,
+//       maxNumLeaves: 5,
+//       minNumDoctorsPerShift: 2,
+//       statusAdjacentShifts: false,
+//     },
+//     {
+//       _id: 3,
+//       name: 'IgU',
+//       description: 'Intensive Care Unit',
+//       personInCharge: 'Mr.Deepaka',
 
-      shifts: [
-        {
-          name: 'Morning',
-          start: '2014-08-18T21:11:54',
-          end: '2014-08-18T21:11:54',
-        },
-      ],
-      minNumDoctors: 12,
-      maxNumLeaves: 7,
-      minNumDoctorsPerShift: 2,
-      statusAdjacentShifts: true,
-    },
-    {
-      _id: 4,
-      name: 'ICU',
-      description: 'Intensive Care Unit',
-      personInCharge: 'Mr.Deepaka',
+//       shifts: [
+//         {
+//           name: 'Morning',
+//           start: '2014-08-18T21:11:54',
+//           end: '2014-08-18T21:11:54',
+//         },
+//       ],
+//       minNumDoctors: 12,
+//       maxNumLeaves: 7,
+//       minNumDoctorsPerShift: 2,
+//       statusAdjacentShifts: true,
+//     },
+//     {
+//       _id: 4,
+//       name: 'ICU',
+//       description: 'Intensive Care Unit',
+//       personInCharge: 'Mr.Deepaka',
 
-      shifts: [
-        {
-          name: 'Morning',
-          start: '2014-08-18T21:11:54',
-          end: '2014-08-18T21:11:54',
-        },
-        {
-          name: 'Evening',
-          start: '2014-08-18T21:11:54',
-          end: '2014-08-18T21:11:54',
-        },
-      ],
-      minNumDoctors: 10,
-      maxNumLeaves: 8,
-      minNumDoctorsPerShift: 2,
-      statusAdjacentShifts: true,
-    },
-  ];
+//       shifts: [
+//         {
+//           name: 'Morning',
+//           start: '2014-08-18T21:11:54',
+//           end: '2014-08-18T21:11:54',
+//         },
+//         {
+//           name: 'Evening',
+//           start: '2014-08-18T21:11:54',
+//           end: '2014-08-18T21:11:54',
+//         },
+//       ],
+//       minNumDoctors: 10,
+//       maxNumLeaves: 8,
+//       minNumDoctorsPerShift: 2,
+//       statusAdjacentShifts: true,
+//     },
+//   ];
 
-  return {
-    props: {
-      wards,
-      consultants,
-    },
-  };
-}
-// /**
-//  * @param {import('next').NextPageContext} context
-//  */
-// export async function getServerSideProps(context) {
-//   let wards = [];
-//   let consultants = [];
-//   let type = '';
-//   try {
-//     const user = await getUser(context.req);
-//     await dbConnect();
-//     consultants = await User.find({ type: 'CONSULTANT' }).lean();
-//     if (user.type === 'ADMIN') {
-//       wards = await Ward.find({}).populate('consultant').lean();
-//     } else if (user.type === 'CONSULTANT') {
-//       wards = await Ward.find({ consultant: user._id })
-//         .populate('consultant')
-//         .lean();
-//     } else {
-//       wards = await Ward.find({ doctors: user._id })
-//         .populate('consultant')
-//         .lean();
-//     }
-//     wards = JSON.parse(JSON.stringify(wards));
-//     consultants = JSON.parse(JSON.stringify(consultants));
-//     type = user.type;
-//     return { props: { wards, consultants, type } };
-//   } catch (error) {
-//     return {
-//       redirect: {
-//         destination: '/auth/login',
-//         permanent: false,
-//       },
-//     };
-//   }
+//   return {
+//     props: {
+//       wards,
+//       consultants,
+//     },
+//   };
 // }
+/**
+ * @param {import('next').NextPageContext} context
+ */
+export async function getServerSideProps(context) {
+  let wards = [];
+  let consultants = [];
+  let type = '';
+  try {
+    const user = await getUser(context.req);
+    await dbConnect();
+    if (user.type === 'ADMIN') {
+      consultants = await User.find({ type: 'CONSULTANT' }).lean();
+      wards = await Ward.find({}).populate('consultant').lean();
+    } else if (user.type === 'CONSULTANT' || user.type === 'DOCTOR') {
+      console.log('d');
+      return {
+        redirect: {
+          destination: '/ownWard',
+          permanent: false,
+        },
+      };
+    }
+    //   wards = await Ward.find({ consultant: user._id })
+    //     .populate('consultant')
+    //     .lean();
+    // } else {
+    //   wards = await Ward.find({ doctors: user._id })
+    //     .populate('consultant')
+    //     .lean();
+    // }
+    wards = JSON.parse(JSON.stringify(wards));
+    consultants = JSON.parse(JSON.stringify(consultants));
+    type = user.type;
+    return { props: { wards, consultants, type } };
+  } catch (error) {
+    return {
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
+    };
+  }
+}
