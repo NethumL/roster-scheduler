@@ -36,7 +36,7 @@ describe('NewUserCard', () => {
       _id: '6365174494b13942ee08248f',
       name: 'Maxine Wheeler',
       username: 'maxine',
-      type: 'Consultant',
+      type: 'CONSULTANT',
     };
 
     const mockActionCallback = jest.fn((_id, accept) => _id);
