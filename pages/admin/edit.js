@@ -87,7 +87,7 @@ export default function Edit({ users }) {
     setOpenResetToast(false);
   };
 
-  const handleSavePassword = async (_id, password, confPassword) => {
+  const handleSavePassword = async (_id, password) => {
     setSelectedUser(null);
     setOpenResetModal(false);
 

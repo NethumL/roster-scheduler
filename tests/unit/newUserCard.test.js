@@ -8,7 +8,7 @@ describe('NewUserCard', () => {
       _id: '6365138c94b13942ee08248e',
       name: 'John Doe',
       username: 'johnd',
-      type: 'Doctor',
+      type: 'DOCTOR',
     };
 
     const mockActionCallback = jest.fn((_id, accept) => _id);
@@ -16,7 +16,7 @@ describe('NewUserCard', () => {
     render(<NewUserCard user={user} action={mockActionCallback} />);
     expect(screen.getByText(`Name: ${user.name}`)).toBeInTheDocument();
     expect(screen.getByText(`Username: ${user.username}`)).toBeInTheDocument();
-    expect(screen.getByText(`Type: ${user.type}`)).toBeInTheDocument();
+    expect(screen.getByText(`Type: Doctor`)).toBeInTheDocument();
 
     const acceptButton = screen.getByRole('button', { name: 'Accept' });
     const declineButton = screen.getByRole('button', { name: 'Decline' });
@@ -44,7 +44,7 @@ describe('NewUserCard', () => {
     render(<NewUserCard user={user} action={mockActionCallback} />);
     expect(screen.getByText(`Name: ${user.name}`)).toBeInTheDocument();
     expect(screen.getByText(`Username: ${user.username}`)).toBeInTheDocument();
-    expect(screen.getByText(`Type: ${user.type}`)).toBeInTheDocument();
+    expect(screen.getByText(`Type: Consultant`)).toBeInTheDocument();
 
     const acceptButton = screen.getByRole('button', { name: 'Accept' });
     const declineButton = screen.getByRole('button', { name: 'Decline' });
