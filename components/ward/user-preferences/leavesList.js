@@ -47,7 +47,7 @@ export default function LeaveList({ dates, setNew }) {
             </IconButton>
           }
         >
-          <ListItemText primary={date} />
+          <ListItemText primary={date.slice(0, 10)} />
         </ListItem>
       ))}
     </List>

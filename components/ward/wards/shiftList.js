@@ -15,7 +15,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
 
-export default function WardsList({
+export default function shiftsList({
   newNumDutyCycles,
   setNew,
   isEdit,
@@ -54,6 +54,7 @@ export default function WardsList({
         end: '2014-08-18T00:00:00',
       });
     }
+    console.log(shifts[i].start);
     indents.push(
       <TableRow>
         <TableCell align="right">{i + 1}</TableCell>
@@ -75,7 +76,7 @@ export default function WardsList({
           <TableCell align="right">
             <TimePicker
               label=""
-              value={shifts[i]?.start}
+              value={dayjs(shifts[i]?.start)}
               onChange={(e) => setStart(e, i)}
               disabled={!isEdit}
               renderInput={(params) => <TextField {...params} />}
@@ -85,7 +86,7 @@ export default function WardsList({
           <TableCell align="right">
             <TimePicker
               label=""
-              value={shifts[i]?.end}
+              value={dayjs(shifts[i]?.end)}
               onChange={(e) => setEnd(e, i)}
               disabled={!isEdit}
               renderInput={(params) => <TextField {...params} />}

@@ -78,13 +78,15 @@ export default function ViewWardModal({
   useEffect(() => {
     setNewName(ward ? ward.name : '');
     setNewDescription(ward ? ward.description : '');
-    setNewPersonInCharge(ward ? ward.personInCharge : '');
+    console.log(ward);
+
+    setNewPersonInCharge(ward ? ward.personInCharge.name : '');
     setNewNumDutyCycles(ward ? ward.shifts.length : '');
     setNewShifts(ward ? ward.shifts : []);
-    setNewMinNumDoctors(ward ? ward.minNumDoctors : '');
-    setNewMaxNumLeaves(ward ? ward.maxNumLeaves : '');
-    setNewMinNumDoctorsPerShift(ward ? ward.minNumDoctorsPerShift : '');
-    setNewStatusAdjacentShifts(ward ? ward.statusAdjacentShifts : false);
+    setNewMinNumDoctors(ward ? ward.minNumberOfDoctors : '');
+    setNewMaxNumLeaves(ward ? ward.maxNumberOfLeaves : '');
+    setNewMinNumDoctorsPerShift(ward ? ward.minNumberOfDoctorsPerShift : '');
+    setNewStatusAdjacentShifts(ward ? ward.allowAdjacentShifts : false);
   }, [ward, open]);
 
   useEffect(() => {

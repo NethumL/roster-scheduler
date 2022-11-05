@@ -29,7 +29,11 @@ import Fab from '@mui/material/Fab';
 import Button from '@mui/material/Button';
 import { useTheme } from '@mui/system';
 import { useMediaQuery } from '@mui/material';
-
+import { getUser } from '@/lib/auth/session';
+import dbConnect from '@/lib/db';
+import { send } from '@/lib/util';
+import User from '@/lib/models/User';
+import Ward from '@/lib/models/Ward';
 export default function View({ wards, consultants }) {
   const [open, setOpen] = useState(true);
   const handleClick = () => {
@@ -76,10 +80,11 @@ export default function View({ wards, consultants }) {
       wards[selectedIndex].description = newDescription;
       wards[selectedIndex].personInCharge = newPersonInCharge;
       wards[selectedIndex].shifts = newShifts;
-      wards[selectedIndex].minNumDoctors = newMinNumDoctors;
-      wards[selectedIndex].maxNumLeaves = newMaxNumLeaves;
-      wards[selectedIndex].minNumDoctorsPerShift = newMinNumDoctorsPerShift;
-      wards[selectedIndex].statusAdjacentShifts = newStatusAdjacentShifts;
+      wards[selectedIndex].minNumberOfDoctors = newMinNumDoctors;
+      wards[selectedIndex].maxNumberOfLeaves = newMaxNumLeaves;
+      wards[selectedIndex].minNumberOfDoctorsPerShift =
+        newMinNumDoctorsPerShift;
+      wards[selectedIndex].allowAdjacentShifts = newStatusAdjacentShifts;
     } else {
       console.log(wards[wards.length - 1]._id + 1);
       console.log(wards);
@@ -292,16 +297,20 @@ export async function getServerSideProps(context) {
     await dbConnect();
     if (user.type === 'ADMIN') {
       consultants = await User.find({ type: 'CONSULTANT' }).lean();
-      wards = await Ward.find({}).populate('consultant').lean();
-    } else if (user.type === 'CONSULTANT' || user.type === 'DOCTOR') {
-      console.log('d');
-      return {
-        redirect: {
-          destination: '/ownWard',
-          permanent: false,
-        },
-      };
+      wards = await Ward.find({})
+        .populate('personInCharge')
+        .populate('shifts')
+        .lean();
     }
+    // else if (user.type === 'CONSULTANT' || user.type === 'DOCTOR') {
+    //   console.log('d');
+    //   return {
+    //     redirect: {
+    //       destination: '/ownWard',
+    //       permanent: false,
+    //     },
+    //   };
+    // }
     //   wards = await Ward.find({ consultant: user._id })
     //     .populate('consultant')
     //     .lean();

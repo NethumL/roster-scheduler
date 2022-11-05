@@ -46,7 +46,7 @@ export default function WardsList({ wards, handleView }) {
                 onClick={() =>
                   router.push({
                     pathname: '/ward/doctors',
-                    query: { index },
+                    query: { w_id: ward._id },
                   })
                 }
               >

@@ -28,8 +28,14 @@ import { useTheme } from '@mui/system';
 import { useMediaQuery } from '@mui/material';
 import Search_bar from '@/components/ward/common/search_bar';
 import Button from '@mui/material/Button';
-
+import { getUser } from '@/lib/auth/session';
+import dbConnect from '@/lib/db';
+import { send } from '@/lib/util';
+import User from '@/lib/models/User';
+import Ward from '@/lib/models/Ward';
 export default function View({ doctors, allDoctors }) {
+  // const router = useRouter();
+  // const data = router.query;
   const theme = useTheme();
   const border = useMediaQuery(theme.breakpoints.down('sm'))
     ? ''
@@ -183,30 +189,57 @@ export default function View({ doctors, allDoctors }) {
   );
 }
 
-export async function getStaticProps() {
-  const doctors = [
-    { _id: '1', name: 'Deepaka Perera' },
-    { _id: '2', name: 'Deepika Gimhani' },
-    { _id: '3', name: 'Thanuj Jayasinge' },
-    { _id: '4', name: 'Deepaka Perera' },
-    { _id: '5', name: 'Deepika Gimhani' },
-    { _id: '6', name: 'Thanuj Jayasinge' },
-    { _id: '7', name: 'Deepaka Perera' },
-    { _id: '8', name: 'Deepika Gimhani' },
-    { _id: '9', name: 'Thanuj Jayasinge' },
-    { _id: '10', name: 'Deepaka Perera' },
-  ];
-  const allDoctors = [
-    { _id: '1', name: 'Deepaka Perera' },
-    { _id: '2', name: 'Deepika Gimhani' },
-    { _id: '3', name: 'Thanuj Jayasinge' },
-    { _id: '4', name: 'Thanuj Jayasinghe' },
-  ];
+// export async function getStaticProps() {
+//   const doctors = [
+//     { _id: '1', name: 'Deepaka Perera' },
+//     { _id: '2', name: 'Deepika Gimhani' },
+//     { _id: '3', name: 'Thanuj Jayasinge' },
+//     { _id: '4', name: 'Deepaka Perera' },
+//     { _id: '5', name: 'Deepika Gimhani' },
+//     { _id: '6', name: 'Thanuj Jayasinge' },
+//     { _id: '7', name: 'Deepaka Perera' },
+//     { _id: '8', name: 'Deepika Gimhani' },
+//     { _id: '9', name: 'Thanuj Jayasinge' },
+//     { _id: '10', name: 'Deepaka Perera' },
+//   ];
+//   const allDoctors = [
+//     { _id: '1', name: 'Deepaka Perera' },
+//     { _id: '2', name: 'Deepika Gimhani' },
+//     { _id: '3', name: 'Thanuj Jayasinge' },
+//     { _id: '4', name: 'Thanuj Jayasinghe' },
+//   ];
 
-  return {
-    props: {
-      doctors,
-      allDoctors,
-    },
-  };
+//   return {
+//     props: {
+//       doctors,
+//       allDoctors,
+//     },
+//   };
+// }
+export async function getServerSideProps(context) {
+  let doctorsL = [];
+  let doctors = [];
+  let allDoctors = [];
+  // const { data } = context.query;
+  // console.log(context.query.data);
+  try {
+    const user = await getUser(context.req);
+    await dbConnect();
+    allDoctors = await User.find({ type: 'DOCTOR' }).lean();
+    doctorsL = await Ward.find({ _id: context.query.w_id })
+      .select('doctors')
+      .populate('doctors')
+      .lean();
+    doctors = doctorsL[0].doctors;
+    doctors = JSON.parse(JSON.stringify(doctors));
+    allDoctors = JSON.parse(JSON.stringify(allDoctors));
+    return { props: { doctors, allDoctors } };
+  } catch (error) {
+    return {
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
+    };
+  }
 }
