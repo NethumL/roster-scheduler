@@ -321,6 +321,7 @@ export async function getServerSideProps(context) {
     // }
     wards = JSON.parse(JSON.stringify(wards));
     consultants = JSON.parse(JSON.stringify(consultants));
+    console.log(consultants);
     type = user.type;
     return { props: { wards, consultants, type } };
   } catch (error) {

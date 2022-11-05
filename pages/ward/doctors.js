@@ -233,6 +233,7 @@ export async function getServerSideProps(context) {
     doctors = doctorsL[0].doctors;
     doctors = JSON.parse(JSON.stringify(doctors));
     allDoctors = JSON.parse(JSON.stringify(allDoctors));
+    console.log(doctors);
     return { props: { doctors, allDoctors } };
   } catch (error) {
     return {
