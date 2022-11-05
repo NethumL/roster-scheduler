@@ -273,18 +273,12 @@ export default function View({ preferences, leaveDates }) {
 export async function getServerSideProps(context) {
   let preferences = [];
   let leaveDates = [];
-  let prefs = [];
-  let pref;
   const user = await getUser(context.req);
   await dbConnect();
   if (user.type === 'DOCTOR') {
-    prefs = await Preferences.find({ doctor: user._id })
+    preferences = await Preferences.find({ doctor: user._id })
       .select('preferenceOrder')
       .lean();
-    // for (var i = 0;i<prefs.length;i++){
-    //   pref = await Ward
-    //   preferences.push(prefs)
-    // }
     leaveDates = await Preferences.find({ doctor: user._id })
       .select('leaveDates')
       .populate('leaveDates')
