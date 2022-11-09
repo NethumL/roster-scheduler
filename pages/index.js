@@ -17,9 +17,7 @@ export default function Home({ user }) {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+        <h1 className={styles.title}>Welcome to Roster Scheduler!</h1>
         {user ? (
           <>
             <MUILink component={Link} href="/preferences">
