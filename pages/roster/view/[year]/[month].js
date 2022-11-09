@@ -1,4 +1,7 @@
 import { getUser } from '@/lib/auth/session';
+import dbConnect from '@/lib/db';
+import Roster from '@/lib/models/Roster';
+import Ward from '@/lib/models/Ward';
 import {
   Button,
   Container,
@@ -16,26 +19,16 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import Router from 'next/router';
 
-export default function EditRosterPage() {
-  const [month, setMonth] = useState('10/2022');
-
+export default function ViewRosterPage({ year, month, roster, shifts }) {
   const handleChange = (event) => {
-    setMonth(event.target.value);
+    Router.push(`/roster/view/${event.target.value}`);
   };
 
-  const roster = [
-    { name: 'John Doe', items: ['M', 'M', '', 'A'] },
-    { name: 'Jane Doe', items: ['M', 'M', '', 'A'] },
-    { name: 'Maxine Wheeler', items: ['M', 'M', '', 'A'] },
-  ];
-
-  const daysInMonth = 4;
-  const dayColumns = [];
-  for (let day = 1; day <= daysInMonth; day++) {
-    dayColumns.push(<TableCell key={day}>{day}</TableCell>);
-  }
+  const dayColumns = shifts.map((shift) => (
+    <TableCell key={shift.name}>{shift.name}</TableCell>
+  ));
 
   return (
     <Container>
@@ -53,23 +46,23 @@ export default function EditRosterPage() {
           </Typography>
         </Grid>
         <Grid item container alignItems="center">
-          <Grid item xs={4} />
-          <Grid item xs={4}>
+          <Grid item xs={3} />
+          <Grid item xs={6}>
             <FormControl fullWidth sx={{ marginY: '15px' }}>
               <InputLabel id="month-select-label">Month</InputLabel>
               <Select
                 labelId="month-select-label"
                 id="month-select"
-                value={month}
+                value={`${year}/${month}`}
                 label="Month"
                 onChange={handleChange}
               >
-                <MenuItem value={'09/2022'}>Sep 2022</MenuItem>
-                <MenuItem value={'10/2022'}>Oct 2022</MenuItem>
+                <MenuItem value={'2022/11'}>November 2022</MenuItem>
+                <MenuItem value={'2022/12'}>December 2022</MenuItem>
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={2} />
+          <Grid item xs={1} />
           <Grid item xs={2}>
             <Button variant="contained" color="warning">
               Edit
@@ -100,7 +93,7 @@ export default function EditRosterPage() {
                 >
                   <TableCell>{row.name}</TableCell>
                   {row.items.map((shift, index) => (
-                    <TableCell key={shift + index} align="left">
+                    <TableCell key={shift + index.toString()} align="left">
                       {shift}
                     </TableCell>
                   ))}
@@ -120,8 +113,45 @@ export default function EditRosterPage() {
 export async function getServerSideProps(context) {
   try {
     const user = await getUser(context.req);
+    const { year, month } = context.query;
 
-    return { props: { user } };
+    await dbConnect();
+
+    const ward = await (async () => {
+      if (user.type === 'DOCTOR') {
+        const ward = await Ward.findOne({ doctors: user._id })
+          .populate('shifts')
+          .lean();
+        return ward;
+      } else {
+        const ward = await Ward.findOne({ personInCharge: user._id })
+          .populate('shifts')
+          .lean();
+        return ward;
+      }
+    })();
+
+    const roster = await Roster.findOne({
+      ward: ward._id,
+      month: `${year}-${month}-01`,
+    }).lean();
+
+    if (!roster) {
+      // No such roster
+      return { redirect: { destination: '/', permanent: false } };
+    }
+
+    return {
+      props: {
+        user,
+        // @ts-ignore
+        year: parseInt(year),
+        // @ts-ignore
+        month: parseInt(month),
+        roster: roster.shifts,
+        shifts: ward.shifts,
+      },
+    };
   } catch (error) {
     return {
       redirect: {
