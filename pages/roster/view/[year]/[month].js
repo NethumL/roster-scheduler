@@ -113,7 +113,11 @@ export default function ViewRosterPage({ year, month, roster, shifts }) {
 export async function getServerSideProps(context) {
   try {
     const user = await getUser(context.req);
-    const { year, month } = context.query;
+
+    // @ts-ignore
+    const year = parseInt(context.query.year);
+    // @ts-ignore
+    const month = parseInt(context.query.month);
 
     await dbConnect();
 
@@ -144,10 +148,8 @@ export async function getServerSideProps(context) {
     return {
       props: {
         user,
-        // @ts-ignore
-        year: parseInt(year),
-        // @ts-ignore
-        month: parseInt(month),
+        year,
+        month,
         roster: roster.shifts,
         shifts: ward.shifts,
       },
