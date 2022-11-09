@@ -22,7 +22,7 @@ import {
 import { deepOrange } from '@mui/material/colors';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 
 const pageGroups = [
@@ -59,6 +59,7 @@ const pageGroups = [
     ],
   },
 ];
+const disallowedForDoctor = ['/roster/generate', '/roster/edit'];
 const accountLinks = [
   { href: '/api/logout', title: 'Logout' },
   { href: '/auth/change-password', title: 'Change password' },
@@ -67,6 +68,7 @@ const accountLinks = [
 const Layout = ({ children }) => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [drawerItemGroups, setDrawerItemGroups] = useState([]);
   const router = useRouter();
 
   // List of menu anchors
@@ -106,25 +108,63 @@ const Layout = ({ children }) => {
     router.push(href);
   };
 
+  const isRouteDisallowed = (user, route) => {
+    if (user.type === 'DOCTOR' && disallowedForDoctor.includes(route)) {
+      return true;
+    }
+    return false;
+  };
+
+  /** @param {import('@/lib/models/User').UserEntity} user */
+  const getAllowedPages = (user) => {
+    return pageGroups
+      .filter((pageGroup) => pageGroup.id !== 'admin' || user.type === 'ADMIN')
+      .map((pageGroup) => {
+        return {
+          ...pageGroup,
+          items: pageGroup.items.filter(
+            (page) => !isRouteDisallowed(user, page.href)
+          ),
+        };
+      });
+  };
+
   const { data, error } = useSWR('/api/user', fetcher);
 
-  const drawerItemGroups = pageGroups.map((pageGroup) => (
-    <List key={pageGroup.id}>
-      {pageGroup.items.map((page) => (
-        <ListItem
-          key={page.href}
-          component="a"
-          href={page.href}
-          onClick={getRedirector(page.href)}
-          disablePadding
-        >
-          <ListItemButton>
-            <ListItemText>{page.title}</ListItemText>
-          </ListItemButton>
-        </ListItem>
-      ))}
-    </List>
-  ));
+  useEffect(() => {
+    if (data && data.user) {
+      setDrawerItemGroups(
+        getAllowedPages(data.user).map((pageGroup) => (
+          <List key={pageGroup.id}>
+            {pageGroup.items.map((page) => {
+              let href = page.href;
+              if (href === '/roster/view') {
+                href = getRosterViewRoute();
+              }
+              return (
+                <ListItem
+                  key={href}
+                  component="a"
+                  href={href}
+                  onClick={getRedirector(href)}
+                  disablePadding
+                >
+                  <ListItemButton>
+                    <ListItemText>{page.title}</ListItemText>
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
+        ))
+      );
+    }
+  }, [data]);
+
+  function getRosterViewRoute() {
+    const today = new Date();
+    return `/roster/view/${today.getFullYear()}/${today.getMonth() + 1}`;
+  }
 
   const getMenuOpener = (menuId) => (event) => {
     setMenuAnchors({ ...menuAnchors, [menuId]: event.currentTarget });
@@ -329,13 +369,14 @@ const Layout = ({ children }) => {
           onKeyDown={getDrawerToggler(false)}
         >
           {/* Joining groups of drawer items with dividers */}
-          {drawerItemGroups.reduce((prev, curr) => (
-            <>
-              {prev}
-              <Divider />
-              {curr}
-            </>
-          ))}
+          {drawerItemGroups.length !== 0 &&
+            drawerItemGroups.reduce((prev, curr) => (
+              <>
+                {prev}
+                <Divider />
+                {curr}
+              </>
+            ))}
         </Box>
       </Drawer>
       {children}
