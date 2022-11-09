@@ -138,8 +138,8 @@ const Layout = ({ children }) => {
           <List key={pageGroup.id}>
             {pageGroup.items.map((page) => {
               let href = page.href;
-              if (href === '/roster/view') {
-                href = getRosterViewRoute();
+              if (href === '/roster/view' || href === '/roster/edit') {
+                href = getRouteWithMonth(href);
               }
               return (
                 <ListItem
@@ -161,9 +161,10 @@ const Layout = ({ children }) => {
     }
   }, [data]);
 
-  function getRosterViewRoute() {
+  /** @param {string} href */
+  function getRouteWithMonth(href) {
     const today = new Date();
-    return `/roster/view/${today.getFullYear()}/${today.getMonth() + 1}`;
+    return `${href}/${today.getFullYear()}/${today.getMonth() + 1}`;
   }
 
   const getMenuOpener = (menuId) => (event) => {
