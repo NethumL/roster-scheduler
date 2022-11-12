@@ -20,16 +20,21 @@ export default async function setLeaveDates(req, res) {
     await dbConnect();
 
     const { doctor, preferenceOrder } = req.body;
+    preferenceOrder.sort((objA, objB) => objA.rank - objB.rank);
+    let prefL = [];
+    preferenceOrder.map((pref) => {
+      prefL.push(pref._id);
+    });
     preferences = await Preferences.findOneAndUpdate(
       { doctor: doctor },
       {
-        preferenceOrder: preferenceOrder,
+        preferenceOrder: prefL,
       }
     );
     if (!preferences) {
       preferences = new Preferences({
         doctor,
-        preferenceOrder,
+        preferenceOrder: prefL,
         leaveDates: [],
       });
     }

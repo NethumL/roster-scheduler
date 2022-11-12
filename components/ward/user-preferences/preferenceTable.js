@@ -13,6 +13,7 @@ import TableHead from '@mui/material/TableHead';
 import col from '@mui/material/';
 import { useState, useEffect } from 'react';
 import colgroup from '@mui/material/';
+import dayjs from 'dayjs';
 
 export default function PreferenceTable({ preferences, setNew }) {
   const [newPreferences, setNewPreferences] = useState(
@@ -65,7 +66,14 @@ export default function PreferenceTable({ preferences, setNew }) {
           {newPreferences.map((pref, i) => (
             <TableRow key={i}>
               <TableCell>{i + 1}</TableCell>
-              <TableCell>{pref.name}</TableCell>
+              <TableCell>
+                {pref.name +
+                  ' [' +
+                  pref.start.slice(-13, -8) +
+                  ' - ' +
+                  pref.end.slice(-13, -8) +
+                  ']'}
+              </TableCell>
               {newPreferences.map((p, j) => (
                 <TableCell key={j} align="center">
                   <Radio

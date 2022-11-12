@@ -18,6 +18,8 @@ export default function DoctorsList({ doctors, handleDelete }) {
 
   useEffect(() => {
     setNewDoctors(doctors.map((obj) => ({ ...obj })));
+    console.log('doctors');
+    console.log('doctors' + doctors);
   }, [doctors]);
 
   return newDoctors.map((doctor, index) => (

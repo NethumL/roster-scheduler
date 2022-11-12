@@ -50,8 +50,8 @@ export default function shiftsList({
     if (!shifts[i]) {
       shifts.push({
         name: '',
-        start: '2014-08-18T00:00:00',
-        end: '2014-08-18T00:00:00',
+        start: '2014-08-18T00:00:00.000z',
+        end: '2014-08-18T00:00:00.000z',
       });
     }
     console.log(shifts[i].start);

@@ -33,7 +33,7 @@ import dbConnect from '@/lib/db';
 import { send } from '@/lib/util';
 import User from '@/lib/models/User';
 import Ward from '@/lib/models/Ward';
-export default function View({ doctors, allDoctors }) {
+export default function View({ doctors, allDoctors, wID }) {
   // const router = useRouter();
   // const data = router.query;
   const theme = useTheme();
@@ -67,11 +67,18 @@ export default function View({ doctors, allDoctors }) {
     setOpenDeleteModal(false);
   };
 
-  const handleAdd = (newName) => {
-    doctors.push({
-      _id: doctors.length,
-      name: newName,
-    });
+  const handleAdd = async (newDoctor) => {
+    const body = {
+      _id: wID,
+      doctor: newDoctor._id,
+    };
+    try {
+      await send('PUT', '/api/ward/doctors/addDoctor', body);
+    } catch (error) {
+      console.log(error);
+    }
+    doctors.push(newDoctor);
+    console.log(doctors);
     setDoctors(doctors.map((obj) => ({ ...obj })));
     setOpenAddModal(false);
   };
@@ -82,8 +89,19 @@ export default function View({ doctors, allDoctors }) {
     setOpenDeleteModal(true);
     // doctors.splice(index, 1);
   };
-  const handleDeleteConfirm = (index) => {
-    doctors.splice(index, 1);
+  const handleDeleteConfirm = async (index) => {
+    const deletedItemL = doctors.splice(index, 1);
+    console.log('deletedItems');
+    console.log(deletedItemL);
+    const body = {
+      _id: wID,
+      doctor: deletedItemL[0]._id,
+    };
+    try {
+      await send('PUT', '/api/ward/doctors/deleteDoctor', body);
+    } catch (error) {
+      console.log(error);
+    }
     setDoctors(doctors.map((obj) => ({ ...obj })));
     console.log(doctors);
     setOpenDeleteModal(false);
@@ -110,7 +128,7 @@ export default function View({ doctors, allDoctors }) {
         }
       });
       setFilteredDoctors(filteredData);
-      console.log(filteredDoctors);
+      // console.log(filteredDoctors);
     }
   }, [searchedText, Doctors]);
   return (
@@ -234,7 +252,8 @@ export async function getServerSideProps(context) {
     doctors = JSON.parse(JSON.stringify(doctors));
     allDoctors = JSON.parse(JSON.stringify(allDoctors));
     console.log(doctors);
-    return { props: { doctors, allDoctors } };
+    const wID = context.query.w_id;
+    return { props: { doctors, allDoctors, wID } };
   } catch (error) {
     return {
       redirect: {

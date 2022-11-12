@@ -29,14 +29,14 @@ export default function AddDoctorModal({
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const width = useMediaQuery(theme.breakpoints.down('md')) ? '100%' : '400px';
 
-  const [newDoctor, setNewDoctor] = useState('');
+  const [newDoctor, setNewDoctor] = useState({});
   const add = () => {
     handleAdd(newDoctor);
-    setNewDoctor('');
+    setNewDoctor({});
   };
   const close = () => {
     setIsInvalid(false);
-    setNewDoctor('');
+    setNewDoctor({});
     handleClose();
   };
 
@@ -89,7 +89,7 @@ export default function AddDoctorModal({
             variant="standard"
           >
             {allDoctors.map((doctor) => (
-              <MenuItem key={doctor._id} value={doctor.name}>
+              <MenuItem key={doctor._id} value={doctor}>
                 {doctor.name}
               </MenuItem>
             ))}

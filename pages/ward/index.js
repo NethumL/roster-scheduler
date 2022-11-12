@@ -64,7 +64,7 @@ export default function View({ wards, consultants }) {
     setOpenViewModal(false);
   };
 
-  const handleSaveEdit = (
+  const handleSaveEdit = async (
     newName,
     newDescription,
     newPersonInCharge,
@@ -75,7 +75,29 @@ export default function View({ wards, consultants }) {
     newMinNumDoctorsPerShift,
     newStatusAdjacentShifts
   ) => {
+    const body = {
+      name: newName,
+      description: newDescription,
+      personInCharge: newPersonInCharge,
+      shifts: newShifts,
+      minNumberOfDoctors: newMinNumDoctors,
+      maxNumberOfLeaves: newMaxNumLeaves,
+      minNumberOfDoctorsPerShift: newMinNumDoctorsPerShift,
+      allowAdjacentShifts: newStatusAdjacentShifts,
+    };
     if (selectedIndex != null) {
+      body._id = wards[selectedIndex]._id;
+      try {
+        const wrd = await send('PUT', '/api/ward/wards/editWard', body);
+        console.log(wrd);
+      } catch (error) {
+        console.log(error);
+      }
+      // const shiftsNew = await Ward.find({ _id: ward[selectedIndex]._id })
+      //   .select('shifts')
+      //   .populate('shifts')
+      //   .lean();
+      console.log(wards[selectedIndex]);
       wards[selectedIndex].name = newName;
       wards[selectedIndex].description = newDescription;
       wards[selectedIndex].personInCharge = newPersonInCharge;
@@ -85,22 +107,43 @@ export default function View({ wards, consultants }) {
       wards[selectedIndex].minNumberOfDoctorsPerShift =
         newMinNumDoctorsPerShift;
       wards[selectedIndex].allowAdjacentShifts = newStatusAdjacentShifts;
+
+      console.log('body');
+      console.log(body);
     } else {
-      console.log(wards[wards.length - 1]._id + 1);
       console.log(wards);
+
+      console.log('body');
+      console.log(body);
+      const wrd = {};
+      try {
+        wrd = await send('POST', '/api/ward/wards/newWard', body);
+        console.log('wrd');
+        console.log(wrd);
+        console.log(wrd.ward._id);
+      } catch (error) {
+        console.log(error);
+      }
+      // const shiftsNew = await Ward.find({ _id: wrd.ward._id })
+      //   .select('shifts')
+      //   .populate('shifts')
+      //   .lean();
       wards.push({
-        _id_: wards[wards.length - 1]._id + 1,
+        _id: wrd._id,
         name: newName,
         description: newDescription,
         personInCharge: newPersonInCharge,
         shifts: newShifts,
-        numDutyCycles: newNumDutyCycles,
-        minNumDoctors: newMinNumDoctors,
-        maxNumLeaves: newMaxNumLeaves,
-        minNumDoctorsPerShift: newMinNumDoctorsPerShift,
-        statusAdjacentShifts: newStatusAdjacentShifts,
+        minNumberOfDoctors: parseInt(newMinNumDoctors),
+        maxNumberOfLeaves: parseInt(newMaxNumLeaves),
+        minNumberOfDoctorsPerShift: parseInt(newMinNumDoctorsPerShift),
+        allowAdjacentShifts: newStatusAdjacentShifts,
       });
+      console.log('***wards');
+      console.log(wards);
     }
+    console.log('***wards');
+    console.log(wards);
     setSelectedWard(null);
     setSelectedIndex(null);
     setOpenViewModal(false);
@@ -301,16 +344,15 @@ export async function getServerSideProps(context) {
         .populate('personInCharge')
         .populate('shifts')
         .lean();
+    } else if (user.type === 'CONSULTANT' || user.type === 'DOCTOR') {
+      console.log('d');
+      return {
+        redirect: {
+          destination: '/ownWard',
+          permanent: false,
+        },
+      };
     }
-    // else if (user.type === 'CONSULTANT' || user.type === 'DOCTOR') {
-    //   console.log('d');
-    //   return {
-    //     redirect: {
-    //       destination: '/ownWard',
-    //       permanent: false,
-    //     },
-    //   };
-    // }
     //   wards = await Ward.find({ consultant: user._id })
     //     .populate('consultant')
     //     .lean();
@@ -321,7 +363,8 @@ export async function getServerSideProps(context) {
     // }
     wards = JSON.parse(JSON.stringify(wards));
     consultants = JSON.parse(JSON.stringify(consultants));
-    console.log(consultants);
+    // console.log(consultants);
+    // console.log(wards);
     type = user.type;
     return { props: { wards, consultants, type } };
   } catch (error) {

@@ -1,5 +1,6 @@
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -46,7 +47,7 @@ export default function ViewWardModal({
   const [close, setClose] = useState('OK');
   const [newName, setNewName] = useState('');
   const [newDescription, setNewDescription] = useState('');
-  const [newPersonInCharge, setNewPersonInCharge] = useState('');
+  const [newPersonInCharge, setNewPersonInCharge] = useState({});
   const [newNumDutyCycles, setNewNumDutyCycles] = useState('');
   const [newShifts, setNewShifts] = useState([]);
   const [newMinNumDoctors, setNewMinNumDoctors] = useState('');
@@ -79,8 +80,15 @@ export default function ViewWardModal({
     setNewName(ward ? ward.name : '');
     setNewDescription(ward ? ward.description : '');
     console.log(ward);
-
-    setNewPersonInCharge(ward ? ward.personInCharge.name : '');
+    console.log(ward?.personInCharge);
+    let s = ward ? ward.personInCharge : {};
+    setNewPersonInCharge((newPersonInCharge) => ({
+      ...newPersonInCharge,
+      ...s,
+    }));
+    console.log('vdvdvd');
+    console.log(ward?.personInCharge);
+    console.log(newPersonInCharge);
     setNewNumDutyCycles(ward ? ward.shifts.length : '');
     setNewShifts(ward ? ward.shifts : []);
     setNewMinNumDoctors(ward ? ward.minNumberOfDoctors : '');
@@ -199,7 +207,7 @@ export default function ViewWardModal({
             variant="standard"
           >
             {consultants.map((consultant, index) => (
-              <MenuItem key={index} value={consultant.name}>
+              <MenuItem key={index} value={consultant}>
                 {consultant.name}
               </MenuItem>
             ))}

@@ -1,6 +1,7 @@
 // import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Ward from '@/lib/models/Ward';
+import Shift from '@/lib/models/Shift';
 
 export default async function newWard(req, res) {
   /**
@@ -17,6 +18,7 @@ export default async function newWard(req, res) {
 
     /** @type {import('@/lib/models/Ward').WardEntity | null} */
     let ward = null;
+    let preference = null;
     // if (session) {
     await dbConnect();
 
@@ -30,11 +32,22 @@ export default async function newWard(req, res) {
       minNumberOfDoctorsPerShift,
       allowAdjacentShifts,
     } = req.body;
+    console.log('api body');
+    console.log(req.body);
+    let shiftsL = [];
+    let shft;
+    shifts.map((shift) => {
+      shft = new Shift(shift);
+      shft.save();
+      shiftsL.push(shft._id);
+    });
+    console.log('shiftsL');
+    console.log(shiftsL);
     ward = new Ward({
       name,
       description,
       personInCharge,
-      shifts,
+      shifts: shiftsL,
       minNumberOfDoctors,
       maxNumberOfLeaves,
       minNumberOfDoctorsPerShift,
@@ -43,7 +56,10 @@ export default async function newWard(req, res) {
     });
 
     await ward.save();
-    res.status(200).json({ ward });
+
+    res
+      .status(200)
+      .json(await Ward.find({ _id: ward._id }).populate('shifts').lean());
     console.log(ward);
     // }
   } catch (error) {

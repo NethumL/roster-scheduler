@@ -33,7 +33,9 @@ import { getUser } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import { send } from '@/lib/util';
 import Preferences from '@/lib/models/Preferences';
-export default function View({ preferences, leaveDates }) {
+import Ward from '@/lib/models/Ward';
+
+export default function View({ preferences, leaveDates, u_id }) {
   const [value, setValue] = useState(
     new Date(
       new Date(Date.now()).getFullYear(),
@@ -61,16 +63,35 @@ export default function View({ preferences, leaveDates }) {
     setPrefs(preferences.map((obj) => ({ ...obj })));
     console.log(preferences);
   };
-  const handleSave = () => {
-    console.log(preferences);
+  const handleSave = async () => {
+    const body = {
+      doctor: u_id,
+      preferenceOrder: prefs,
+    };
+    console.log('body');
+    console.log(body);
     console.log(prefs);
     preferences = prefs.map((obj) => ({ ...obj }));
+    try {
+      await send('PUT', '/api/ward/preferences/setPreference', body);
+    } catch (error) {
+      console.log(error);
+    }
   };
   useEffect(() => {
     setPrefs(preferences.map((obj) => ({ ...obj })));
     console.log(prefs);
   }, [preferences]);
-  const handleSaveLeaves = () => {
+  const handleSaveLeaves = async () => {
+    const body = {
+      doctor: u_id,
+      leaveDates: leaves,
+    };
+    try {
+      await send('PUT', '/api/ward/preferences/setLeaveDates', body);
+    } catch (error) {
+      console.log(error);
+    }
     leaveDates = [...leaves];
   };
   const handleCancelLeaves = () => {
@@ -273,29 +294,65 @@ export default function View({ preferences, leaveDates }) {
 export async function getServerSideProps(context) {
   let preferences = [];
   let leaveDates = [];
-  const user = await getUser(context.req);
-  await dbConnect();
-  if (user.type === 'DOCTOR') {
-    preferences = await Preferences.find({ doctor: user._id })
-      .select('preferenceOrder')
-      .lean();
-    leaveDates = await Preferences.find({ doctor: user._id })
-      .select('leaveDates')
-      .populate('leaveDates')
-      .lean();
-  } else {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    };
+  let shifts = [];
+  var u_id = '';
+  try {
+    const user = await getUser(context.req);
+    u_id = user._id;
+    // const user = await getUser(context.req);
+    await dbConnect();
+    if (user.type === 'DOCTOR') {
+      preferences = await Preferences.find({ doctor: user._id })
+        .select('preferenceOrder')
+        .populate('preferenceOrder')
+        .lean();
+      console.log(preferences);
+      if (preferences.length == 0) {
+        shifts = await Ward.find({ doctors: { $in: [user._id] } })
+          .select('shifts')
+          .populate('shifts')
+          .lean();
+        console.log('initial shifts');
+        console.log(shifts);
+        shifts = JSON.parse(JSON.stringify(shifts[0].shifts));
+        console.log(shifts);
+        shifts.map((pref, index) => {
+          pref.rank = 0;
+        });
+        preferences = [...shifts];
+      } else {
+        preferences = JSON.parse(
+          JSON.stringify(preferences[0].preferenceOrder)
+        );
+        // prefs = JSON.parse(JSON.stringify(prefs[0]));
+        preferences.map((pref, index) => {
+          pref.rank = index + 1;
+        });
+        preferences.sort((objA, objB) => dayjs(objA.start) - dayjs(objB.start));
+        // console.log(sortedAsc);
+        console.log(preferences);
+      }
+      leaveDates = await Preferences.find({ doctor: user._id })
+        .select('leaveDates')
+        // .populate('leaveDates')
+        .lean();
+      if (leaveDates.length != 0) {
+        leaveDates = JSON.parse(JSON.stringify(leaveDates[0].leaveDates));
+      }
+
+      console.log(leaveDates);
+    } else {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
+    }
+  } catch (err) {
+    console.log(err);
   }
-  preferences = JSON.parse(JSON.stringify(preferences[0].preferenceOrder));
-  leaveDates = JSON.parse(JSON.stringify(leaveDates[0].leaveDates));
-  console.log(preferences);
-  console.log(leaveDates);
-  return { props: { preferences, leaveDates } };
+  return { props: { preferences, leaveDates, u_id } };
   // try {
   //   const user = await getUser(context.req);
   //   await dbConnect();
