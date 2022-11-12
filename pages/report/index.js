@@ -3,6 +3,7 @@ import ReportCard from '@/components/reports/reportCard';
 import { getUser } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Report from '@/lib/models/Report';
+import Ward from '@/lib/models/Ward';
 import { send } from '@/lib/util';
 import { Add, AddCircleOutline } from '@mui/icons-material';
 import {
@@ -189,10 +190,10 @@ export async function getServerSideProps(context) {
     } else if (user.type === 'CONSULTANT') {
       await dbConnect();
 
-      /**
-       * TODO: Filter reports by doctors of the ward
-       */
-      reports = await Report.find({}).lean();
+      const { doctors } = await Ward.findOne({
+        personInCharge: user._id,
+      }).lean();
+      reports = await Report.find({ user: { $in: doctors } }).lean();
     } else {
       return {
         redirect: {
