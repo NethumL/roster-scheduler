@@ -93,10 +93,6 @@ export default function View({ wards, consultants }) {
       } catch (error) {
         console.log(error);
       }
-      // const shiftsNew = await Ward.find({ _id: ward[selectedIndex]._id })
-      //   .select('shifts')
-      //   .populate('shifts')
-      //   .lean();
       console.log(wards[selectedIndex]);
       wards[selectedIndex].name = newName;
       wards[selectedIndex].description = newDescription;
@@ -231,103 +227,6 @@ export default function View({ wards, consultants }) {
   );
 }
 
-// export async function getStaticProps() {
-//   const consultants = [
-//     { _id: 1, name: 'Mr.Deepaka' },
-//     { _id: 2, name: 'Mrs.Deepika' },
-//   ];
-//   const wards = [
-//     {
-//       _id: 1,
-//       name: 'ICU',
-//       description: 'Intensive Care Unit',
-//       personInCharge: 'Mr.Deepaka',
-
-//       shifts: [
-//         {
-//           name: 'Morning',
-//           start: '2014-08-18T21:11:54',
-//           end: '2014-08-18T21:11:54',
-//         },
-//         {
-//           name: 'Evening',
-//           start: '2014-08-18T21:11:54',
-//           end: '2014-08-18T21:11:54',
-//         },
-//       ],
-//       minNumDoctors: 10,
-//       maxNumLeaves: 8,
-//       minNumDoctorsPerShift: 2,
-//       statusAdjacentShifts: true,
-//     },
-//     {
-//       _id: 2,
-//       name: 'IpU',
-//       description: 'Intensive Care Unit',
-//       personInCharge: 'Mr.Deepaka',
-
-//       shifts: [
-//         {
-//           name: 'Morning',
-//           start: '2014-08-18T21:11:54',
-//           end: '2014-08-18T21:11:54',
-//         },
-//       ],
-//       minNumDoctors: 11,
-//       maxNumLeaves: 5,
-//       minNumDoctorsPerShift: 2,
-//       statusAdjacentShifts: false,
-//     },
-//     {
-//       _id: 3,
-//       name: 'IgU',
-//       description: 'Intensive Care Unit',
-//       personInCharge: 'Mr.Deepaka',
-
-//       shifts: [
-//         {
-//           name: 'Morning',
-//           start: '2014-08-18T21:11:54',
-//           end: '2014-08-18T21:11:54',
-//         },
-//       ],
-//       minNumDoctors: 12,
-//       maxNumLeaves: 7,
-//       minNumDoctorsPerShift: 2,
-//       statusAdjacentShifts: true,
-//     },
-//     {
-//       _id: 4,
-//       name: 'ICU',
-//       description: 'Intensive Care Unit',
-//       personInCharge: 'Mr.Deepaka',
-
-//       shifts: [
-//         {
-//           name: 'Morning',
-//           start: '2014-08-18T21:11:54',
-//           end: '2014-08-18T21:11:54',
-//         },
-//         {
-//           name: 'Evening',
-//           start: '2014-08-18T21:11:54',
-//           end: '2014-08-18T21:11:54',
-//         },
-//       ],
-//       minNumDoctors: 10,
-//       maxNumLeaves: 8,
-//       minNumDoctorsPerShift: 2,
-//       statusAdjacentShifts: true,
-//     },
-//   ];
-
-//   return {
-//     props: {
-//       wards,
-//       consultants,
-//     },
-//   };
-// }
 /**
  * @param {import('next').NextPageContext} context
  */
@@ -348,7 +247,7 @@ export async function getServerSideProps(context) {
       console.log('d');
       return {
         redirect: {
-          destination: '/ownWard',
+          destination: '/ward/ownWard',
           permanent: false,
         },
       };
@@ -363,8 +262,6 @@ export async function getServerSideProps(context) {
     // }
     wards = JSON.parse(JSON.stringify(wards));
     consultants = JSON.parse(JSON.stringify(consultants));
-    // console.log(consultants);
-    // console.log(wards);
     type = user.type;
     return { props: { wards, consultants, type } };
   } catch (error) {
