@@ -1,4 +1,5 @@
 import { getUser } from '@/lib/auth/session';
+import { send } from '@/lib/util';
 import {
   Button,
   FormControl,
@@ -9,6 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Container } from '@mui/system';
+import Router from 'next/router';
 import { useState } from 'react';
 
 export default function GenerateRosterPage() {
@@ -18,8 +20,28 @@ export default function GenerateRosterPage() {
     setMonth(event.target.value);
   };
 
-  const handleClick = (event) => {
-    // TODO: Generate roster
+  const handleClick = async () => {
+    const today = new Date();
+    let yearNum = today.getFullYear();
+    let monthNum = today.getMonth() + 1;
+    if (month === 'next') {
+      if (monthNum === 12) {
+        monthNum = 1;
+        yearNum++;
+      } else {
+        monthNum++;
+      }
+    }
+
+    try {
+      await send(
+        'GET',
+        `/api/roster/generate?year=${yearNum}&month=${monthNum}`
+      );
+      Router.push(`/roster/view/${yearNum}/${monthNum}`);
+    } catch (error) {
+      console.error(error.message);
+    }
   };
 
   return (
