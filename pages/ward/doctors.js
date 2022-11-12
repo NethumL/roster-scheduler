@@ -207,33 +207,6 @@ export default function View({ doctors, allDoctors, wID }) {
   );
 }
 
-// export async function getStaticProps() {
-//   const doctors = [
-//     { _id: '1', name: 'Deepaka Perera' },
-//     { _id: '2', name: 'Deepika Gimhani' },
-//     { _id: '3', name: 'Thanuj Jayasinge' },
-//     { _id: '4', name: 'Deepaka Perera' },
-//     { _id: '5', name: 'Deepika Gimhani' },
-//     { _id: '6', name: 'Thanuj Jayasinge' },
-//     { _id: '7', name: 'Deepaka Perera' },
-//     { _id: '8', name: 'Deepika Gimhani' },
-//     { _id: '9', name: 'Thanuj Jayasinge' },
-//     { _id: '10', name: 'Deepaka Perera' },
-//   ];
-//   const allDoctors = [
-//     { _id: '1', name: 'Deepaka Perera' },
-//     { _id: '2', name: 'Deepika Gimhani' },
-//     { _id: '3', name: 'Thanuj Jayasinge' },
-//     { _id: '4', name: 'Thanuj Jayasinghe' },
-//   ];
-
-//   return {
-//     props: {
-//       doctors,
-//       allDoctors,
-//     },
-//   };
-// }
 export async function getServerSideProps(context) {
   let doctorsL = [];
   let doctors = [];

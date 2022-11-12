@@ -273,21 +273,6 @@ export default function View({ preferences, leaveDates, u_id }) {
   );
 }
 
-// export async function getStaticProps() {
-//   const preferences = [
-//     { name: 'Morning', rank: 1 },
-//     { name: 'Evening', rank: 3 },
-//     { name: 'Night', rank: 2 },
-//   ];
-//   const leaveDates = ['2022-10-05', '2022-10-06'];
-
-//   return {
-//     props: {
-//       preferences,
-//       leaveDates,
-//     },
-//   };
-// }
 /**
  * @param {import('next').NextPageContext} context
  */
@@ -353,35 +338,4 @@ export async function getServerSideProps(context) {
     console.log(err);
   }
   return { props: { preferences, leaveDates, u_id } };
-  // try {
-  //   const user = await getUser(context.req);
-  //   await dbConnect();
-  //   if (user.type === 'DOCTOR') {
-  //     preferences = await Preferences.find({ doctor: user._id })
-  //       .select('preferenceOrder')
-  //       .populate('preferenceOrder')
-  //       .lean();
-  //     leaveDates = await Preferences.find({ doctor: user._id })
-  //       .select('leaveDates')
-  //       .populate('leaveDates')
-  //       .lean();
-  //   } else {
-  //     return {
-  //       redirect: {
-  //         destination: '/',
-  //         permanent: false,
-  //       },
-  //     };
-  //   }
-  //   preferences = JSON.parse(JSON.stringify(preferences));
-  //   leaveDates = JSON.parse(JSON.stringify(leaveDates));
-  //   return { props: { preferences, leaveDates } };
-  // } catch (error) {
-  //   return {
-  //     redirect: {
-  //       destination: '/auth/login',
-  //       permanent: false,
-  //     },
-  //   };
-  // }
 }
