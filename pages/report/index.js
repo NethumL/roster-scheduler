@@ -193,7 +193,9 @@ export async function getServerSideProps(context) {
       const { doctors } = await Ward.findOne({
         personInCharge: user._id,
       }).lean();
-      reports = await Report.find({ user: { $in: doctors } }).lean();
+      reports = await Report.find({ user: { $in: doctors } })
+        .populate('user')
+        .lean();
     } else {
       return {
         redirect: {
