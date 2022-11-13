@@ -1,9 +1,11 @@
 import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Preferences from '@/lib/models/Preferences';
+import Roster from '@/lib/models/Roster';
 import User from '@/lib/models/User';
 import Ward from '@/lib/models/Ward';
 import { send } from '@/lib/util';
+import mongoose from 'mongoose';
 
 /**
  * @param {import("next").NextApiRequest} req
@@ -42,26 +44,31 @@ export default async function handler(req, res) {
     .populate(['personInCharge', 'doctors'])
     .lean();
 
-  const daysInMonth = new Date(
-    // @ts-ignore
-    parseInt(req.query.year),
-    // @ts-ignore
-    parseInt(req.query.month),
-    0
-  ).getDate();
+  // @ts-ignore
+  const year = parseInt(req.query.year);
+  // @ts-ignore
+  const month = parseInt(req.query.month);
 
-  // Get prefs for ward doctors
-  const result = await Preferences.find({
+  const daysInMonth = new Date(year, month, 0).getDate();
+
+  // Get preferences for doctors in ward
+  const prefs = await Preferences.find({
     doctor: { $in: ward.doctors },
   })
     .populate('doctor')
     .exec();
 
+  /** @type {string[]} */
+  const shifts = ward.shifts.map((shift) => shift.toString());
+
   const doctors = Object.fromEntries(
-    result.map((document) => [
-      document.doctor.username,
+    prefs.map((document) => [
+      document.doctor._id.toString(),
       {
-        prefs: document.preferenceOrder,
+        prefs: document.preferenceOrder.map(
+          (/** @type {import('mongoose').ObjectId} */ shift) =>
+            shifts.indexOf(shift.toString())
+        ),
         leaves: document.leaveDates.map((/** @type {Date} */ date) =>
           date.getDate()
         ),
@@ -69,29 +76,43 @@ export default async function handler(req, res) {
     ])
   );
 
+  const body = {
+    constraints: {
+      minDoctors: Array(ward.shifts.length).fill(
+        ward.minNumberOfDoctorsPerShift
+      ),
+      maxDoctors: Array(ward.shifts.length).fill(
+        ward.minNumberOfDoctorsPerShift * 2
+      ),
+      days: daysInMonth,
+      shifts: ward.shifts.length,
+    },
+    doctors,
+  };
+
   try {
-    const response = await send(
-      'POST',
-      process.env.SERVICE_HOST,
-      {
-        constraints: {
-          minDoctors: Array(ward.shifts.length).fill(
-            ward.minNumberOfDoctorsPerShift
-          ),
-          maxDoctors: Array(ward.shifts.length).fill(
-            ward.minNumberOfDoctorsPerShift * 2
-          ),
-          days: daysInMonth,
-          shifts: ward.shifts.length,
-        },
-        doctors,
-      },
-      {
-        headers: { 'X-secret': process.env.SERVICE_SECRET },
+    const response = await send('POST', process.env.SERVICE_HOST, body, {
+      headers: { 'X-secret': process.env.SERVICE_SECRET },
+    });
+
+    const rosterInsts = Object.entries(response).map(
+      ([doctorId, shiftInds]) => {
+        return {
+          doctor: new mongoose.Types.ObjectId(doctorId),
+          shifts: shiftInds.map((ind) => {
+            if (ind === -1) return null;
+            return new mongoose.Types.ObjectId(shifts[ind]);
+          }),
+        };
       }
     );
 
-    // TODO: Save roster to database
+    const roster = new Roster({
+      ward: ward._id,
+      month: new Date(year, month - 1, 1),
+      rosters: rosterInsts,
+    });
+    await roster.save();
 
     res.status(200).json({ success: true });
   } catch (error) {

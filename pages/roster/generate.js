@@ -10,10 +10,11 @@ import {
   Typography,
 } from '@mui/material';
 import { Container } from '@mui/system';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 export default function GenerateRosterPage() {
+  const router = useRouter();
   const [month, setMonth] = useState('current');
 
   const handleChange = (event) => {
@@ -38,7 +39,7 @@ export default function GenerateRosterPage() {
         'GET',
         `/api/roster/generate?year=${yearNum}&month=${monthNum}`
       );
-      Router.push(`/roster/view/${yearNum}/${monthNum}`);
+      router.push(`/roster/view/${yearNum}/${monthNum}`);
     } catch (error) {
       console.error(error.message);
     }
