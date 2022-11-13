@@ -19,16 +19,20 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 
-export default function ViewRosterPage({ year, month, roster, shifts }) {
+export default function ViewRosterPage({ user, year, month, roster }) {
+  const router = useRouter();
+
   const handleChange = (event) => {
-    Router.push(`/roster/view/${event.target.value}`);
+    router.push(`/roster/view/${event.target.value}`);
   };
 
-  const dayColumns = shifts.map((shift) => (
-    <TableCell key={shift.name}>{shift.name}</TableCell>
-  ));
+  const daysInMonth = roster[0].items.length;
+  const dayColumns = [];
+  for (let day = 1; day <= daysInMonth; day++) {
+    dayColumns.push(<TableCell key={day}>{day}</TableCell>);
+  }
 
   return (
     <Container>
@@ -64,9 +68,17 @@ export default function ViewRosterPage({ year, month, roster, shifts }) {
           </Grid>
           <Grid item xs={1} />
           <Grid item xs={2}>
-            <Button variant="contained" color="warning">
-              Edit
-            </Button>
+            {user.type !== 'DOCTOR' ? (
+              <Button
+                variant="contained"
+                color="warning"
+                onClick={() => router.push(`/roster/edit/${year}/${month}`)}
+              >
+                Edit
+              </Button>
+            ) : (
+              <></>
+            )}
           </Grid>
         </Grid>
       </Grid>
@@ -123,22 +135,38 @@ export async function getServerSideProps(context) {
 
     const ward = await (async () => {
       if (user.type === 'DOCTOR') {
-        const ward = await Ward.findOne({ doctors: user._id })
-          .populate('shifts')
-          .lean();
+        const ward = await Ward.findOne({ doctors: user._id }).lean();
         return ward;
       } else {
-        const ward = await Ward.findOne({ personInCharge: user._id })
-          .populate('shifts')
-          .lean();
+        const ward = await Ward.findOne({ personInCharge: user._id }).lean();
         return ward;
       }
     })();
 
     const roster = await Roster.findOne({
       ward: ward._id,
-      month: `${year}-${month}-01`,
-    }).lean();
+      month: new Date(year, month - 1, 1),
+    })
+      .populate([
+        { path: 'rosters.doctor' },
+        { path: 'rosters.shifts', options: { retainNullValues: true } },
+      ])
+      .select({ _id: 0, ward: 0, month: 0 })
+      .lean();
+
+    const data = roster.rosters.map((rosterInst) => {
+      return {
+        name: rosterInst.doctor.name,
+        username: rosterInst.doctor.username,
+        items: rosterInst.shifts.map((shift) => {
+          if (shift === null) {
+            return '';
+          } else {
+            return shift.name;
+          }
+        }),
+      };
+    });
 
     if (!roster) {
       // No such roster
@@ -150,8 +178,7 @@ export async function getServerSideProps(context) {
         user,
         year,
         month,
-        roster: roster.shifts,
-        shifts: ward.shifts,
+        roster: data,
       },
     };
   } catch (error) {
