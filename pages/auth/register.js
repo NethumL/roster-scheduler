@@ -12,7 +12,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 
 export default function RegisterPage() {
@@ -39,7 +39,7 @@ export default function RegisterPage() {
 
     try {
       await send('POST', '/api/auth/register', body);
-      Router.push('/');
+      router.push('/');
     } catch (error) {
       setErrorMsg(error.message);
     }

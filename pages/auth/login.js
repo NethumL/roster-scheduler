@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 
 export default function LoginPage() {
@@ -29,7 +29,7 @@ export default function LoginPage() {
 
     try {
       await send('POST', '/api/login', body);
-      Router.push('/');
+      router.push('/');
     } catch (error) {
       setErrorMsg(error.message);
     }
