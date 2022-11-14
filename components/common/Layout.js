@@ -57,7 +57,8 @@ const pageGroups = [
     ],
   },
 ];
-const disallowedForDoctor = ['/roster/generate', '/roster/edit'];
+const disallowedForDoctor = ['/roster/generate', '/roster/edit', '/ward'];
+const onlyForDoctor = ['/roster/exchange'];
 const accountLinks = [
   { href: '/api/logout', title: 'Logout' },
   { href: '/auth/change-password', title: 'Change password' },
@@ -112,12 +113,17 @@ const Layout = ({ children, user, setUser }) => {
   const isRouteDisallowed = (user, route) => {
     if (user.type === 'DOCTOR' && disallowedForDoctor.includes(route)) {
       return true;
+    } else if (user.type !== 'DOCTOR' && onlyForDoctor.includes(route)) {
+      return true;
     }
     return false;
   };
 
   /** @param {import('@/lib/models/User').UserEntity} user */
   const getAllowedPages = (user) => {
+    if (!user) {
+      return [];
+    }
     return pageGroups
       .filter((pageGroup) => pageGroup.id !== 'admin' || user.type === 'ADMIN')
       .map((pageGroup) => {
@@ -195,7 +201,7 @@ const Layout = ({ children, user, setUser }) => {
 
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Typography
@@ -214,18 +220,20 @@ const Layout = ({ children, user, setUser }) => {
               <Link href="/">Foo</Link>
             </Typography>
 
-            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={getDrawerToggler(true)}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-            </Box>
+            {user && (
+              <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={getDrawerToggler(true)}
+                  color="inherit"
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Box>
+            )}
             <Typography
               variant="h5"
               noWrap
@@ -243,7 +251,7 @@ const Layout = ({ children, user, setUser }) => {
               <Link href="/">Foo</Link>
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {pageGroups.map((pageGroup) =>
+              {getAllowedPages(user).map((pageGroup) =>
                 pageGroup.items.length > 1 ? (
                   /* For dropdowns in AppBar */
                   <div key={pageGroup.id}>
