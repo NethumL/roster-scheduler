@@ -1,6 +1,7 @@
 import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import User from '@/lib/models/User';
+import validateUser from '@/lib/validation/User';
 
 export default async function updateUser(req, res) {
   /**
@@ -22,6 +23,8 @@ export default async function updateUser(req, res) {
 
         const { _id } = req.query;
         const { name, type } = req.body;
+
+        const { error } = validateUser({ name, type }, ['name', 'type']);
 
         user = await User.findByIdAndUpdate(
           _id,
