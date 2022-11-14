@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Select from '@mui/material/Select';
+import { Select, InputLabel, FormControl } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -41,13 +41,14 @@ export default function ViewWardModal({
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const width = useMediaQuery(theme.breakpoints.down('md')) ? '100%' : '400px';
-
   const [isEdit, setIsEdit] = useState(false);
   const [topic, setTopic] = useState('VIEW WARD');
   const [close, setClose] = useState('OK');
   const [newName, setNewName] = useState('');
   const [newDescription, setNewDescription] = useState('');
-  const [newPersonInCharge, setNewPersonInCharge] = useState({});
+  const [newPersonInCharge, setNewPersonInCharge] = useState(
+    ward?.personInCharge._id
+  );
   const [newNumDutyCycles, setNewNumDutyCycles] = useState('');
   const [newShifts, setNewShifts] = useState([]);
   const [newMinNumDoctors, setNewMinNumDoctors] = useState('');
@@ -56,11 +57,11 @@ export default function ViewWardModal({
   const [newStatusAdjacentShifts, setNewStatusAdjacentShifts] = useState(false);
 
   const save = () => {
-    console.log(newName);
+    let PIC = consultants.find((x) => x._id === newPersonInCharge);
     handleSave(
       newName,
       newDescription,
-      newPersonInCharge,
+      PIC,
       newNumDutyCycles,
       newShifts.slice(0, newNumDutyCycles),
       newMinNumDoctors,
@@ -79,16 +80,9 @@ export default function ViewWardModal({
   useEffect(() => {
     setNewName(ward ? ward.name : '');
     setNewDescription(ward ? ward.description : '');
-    console.log(ward);
+    setNewPersonInCharge(ward ? ward.personInCharge._id : '');
+    console.log('pic');
     console.log(ward?.personInCharge);
-    let s = ward ? ward.personInCharge : {};
-    setNewPersonInCharge((newPersonInCharge) => ({
-      ...newPersonInCharge,
-      ...s,
-    }));
-    console.log('vdvdvd');
-    console.log(ward?.personInCharge);
-    console.log(newPersonInCharge);
     setNewNumDutyCycles(ward ? ward.shifts.length : '');
     setNewShifts(ward ? ward.shifts : []);
     setNewMinNumDoctors(ward ? ward.minNumberOfDoctors : '');
@@ -193,25 +187,26 @@ export default function ViewWardModal({
             fullWidth
             disabled={!isEdit}
             variant="standard"
+            sx={{ mb: 3 }}
           />
-          <TextField
-            required
-            id="select-personInCharge"
-            select
-            label="Person in charge"
-            onChange={(e) => setNewPersonInCharge(e.target.value)}
-            value={newPersonInCharge}
-            fullWidth
-            disabled={!isEdit}
-            sx={{ mt: 3 }}
-            variant="standard"
-          >
-            {consultants.map((consultant, index) => (
-              <MenuItem key={index} value={consultant}>
-                {consultant.name}
-              </MenuItem>
-            ))}
-          </TextField>
+          <FormControl fullWidth>
+            <InputLabel id="doctor-select-label">Person in charge</InputLabel>
+            <Select
+              labelId="doctor-select-label"
+              id="doctor-select"
+              fullWidth
+              disabled={!isEdit}
+              value={newPersonInCharge}
+              label="Person in charge"
+              onChange={(e) => setNewPersonInCharge(e.target.value)}
+            >
+              {consultants.map((consultant, index) => (
+                <MenuItem key={index} value={consultant._id}>
+                  {consultant.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             required
             autoFocus

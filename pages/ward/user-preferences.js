@@ -43,45 +43,45 @@ export default function View({ preferences, leaveDates, u_id }) {
       1
     )
   );
-  const [leaves, setLeaves] = useState([...leaveDates]);
+  const [leaves, setLeaves] = useState(leaveDates.map((str) => new Date(str)));
+  const [savedLeaves, setSavedLeaves] = useState(
+    leaveDates.map((str) => new Date(str))
+  );
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const direction = useMediaQuery(theme.breakpoints.down('md'))
     ? 'column'
     : 'row';
   const height = useMediaQuery(theme.breakpoints.down('md')) ? 'auto' : 530;
-  const [selectedValue, setSelectedValue] = React.useState('a');
+
+  const [savedPrefs, setSavedPrefs] = useState(
+    preferences.map((obj) => ({ ...obj }))
+  );
   const [prefs, setPrefs] = useState(preferences.map((obj) => ({ ...obj })));
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
   };
 
   const handleCancel = () => {
-    console.log(preferences);
-    console.log(prefs);
-    setPrefs(null);
-    setPrefs(preferences.map((obj) => ({ ...obj })));
-    console.log(preferences);
+    // setPrefs(null);
+    setPrefs(savedPrefs.map((obj) => ({ ...obj })));
   };
   const handleSave = async () => {
     const body = {
       doctor: u_id,
       preferenceOrder: prefs,
     };
-    console.log('body');
-    console.log(body);
-    console.log(prefs);
-    preferences = prefs.map((obj) => ({ ...obj }));
+    saved = prefs.map((obj) => ({ ...obj }));
+    setSavedPrefs(prefs.map((obj) => ({ ...obj })));
     try {
       await send('PUT', '/api/ward/preferences/setPreference', body);
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    setPrefs(preferences.map((obj) => ({ ...obj })));
-    console.log(prefs);
-  }, [preferences]);
+  // useEffect(() => {
+  //   setPrefs(preferences.map((obj) => ({ ...obj })));
+  // }, [preferences]);
   const handleSaveLeaves = async () => {
     const body = {
       doctor: u_id,
@@ -92,14 +92,14 @@ export default function View({ preferences, leaveDates, u_id }) {
     } catch (error) {
       console.log(error);
     }
-    leaveDates = [...leaves];
+    setSavedLeaves([...leaves]);
   };
   const handleCancelLeaves = () => {
-    setLeaves([...leaveDates]);
+    setLeaves([...savedLeaves]);
   };
-  useEffect(() => {
-    setLeaves([...leaveDates]);
-  }, [leaveDates]);
+  // useEffect(() => {
+  //   setLeaves([...leaveDates]);
+  // }, [leaveDates]);
   return (
     <Container>
       <Typography
@@ -128,11 +128,8 @@ export default function View({ preferences, leaveDates, u_id }) {
                   value={value}
                   sx={{ margin: 5 }}
                   onChange={(newValue) => {
-                    setValue(newValue);
-                    setLeaves((leaves) => [
-                      ...leaves,
-                      newValue.toISOString().slice(0, 10),
-                    ]);
+                    setValue(newValue['$d']);
+                    setLeaves((leaves) => [...leaves, newValue['$d']]);
                   }}
                   inputVariant="outlined"
                   minDate={
@@ -171,11 +168,8 @@ export default function View({ preferences, leaveDates, u_id }) {
                 value={value}
                 sx={{ margin: 5 }}
                 onChange={(newValue) => {
-                  setValue(newValue);
-                  setLeaves((leaves) => [
-                    ...leaves,
-                    newValue.toISOString().slice(0, 10),
-                  ]);
+                  setValue(newValue['$d']);
+                  setLeaves((leaves) => [...leaves, newValue['$d']]);
                 }}
                 inputVariant="outlined"
                 minDate={
@@ -291,16 +285,12 @@ export async function getServerSideProps(context) {
         .select('preferenceOrder')
         .populate('preferenceOrder')
         .lean();
-      console.log(preferences);
       if (preferences.length == 0) {
         shifts = await Ward.find({ doctors: { $in: [user._id] } })
           .select('shifts')
           .populate('shifts')
           .lean();
-        console.log('initial shifts');
-        console.log(shifts);
         shifts = JSON.parse(JSON.stringify(shifts[0].shifts));
-        console.log(shifts);
         shifts.map((pref, index) => {
           pref.rank = 0;
         });
@@ -314,8 +304,6 @@ export async function getServerSideProps(context) {
           pref.rank = index + 1;
         });
         preferences.sort((objA, objB) => dayjs(objA.start) - dayjs(objB.start));
-        // console.log(sortedAsc);
-        console.log(preferences);
       }
       leaveDates = await Preferences.find({ doctor: user._id })
         .select('leaveDates')
@@ -324,8 +312,6 @@ export async function getServerSideProps(context) {
       if (leaveDates.length != 0) {
         leaveDates = JSON.parse(JSON.stringify(leaveDates[0].leaveDates));
       }
-
-      console.log(leaveDates);
     } else {
       return {
         redirect: {
