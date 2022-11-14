@@ -1,10 +1,13 @@
 import Layout from '@/components/common/Layout';
+import { useState } from 'react';
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }) {
+  const [user, setUser] = useState(pageProps?.user);
+
   return (
-    <Layout>
-      <Component {...pageProps} />
+    <Layout user={user} setUser={setUser}>
+      <Component {...pageProps} user={user} setUser={setUser} />
     </Layout>
   );
 }

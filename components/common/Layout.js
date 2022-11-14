@@ -1,4 +1,3 @@
-import { fetcher } from '@/lib/util';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
@@ -23,7 +22,6 @@ import { deepOrange } from '@mui/material/colors';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import useSWR from 'swr';
 
 const pageGroups = [
   {
@@ -65,7 +63,7 @@ const accountLinks = [
   { href: '/auth/change-password', title: 'Change password' },
 ];
 
-const Layout = ({ children }) => {
+const Layout = ({ children, user, setUser }) => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [drawerItemGroups, setDrawerItemGroups] = useState([]);
@@ -86,6 +84,9 @@ const Layout = ({ children }) => {
   };
 
   const getAccountLinkRedirector = (href) => (event) => {
+    if (href === '/api/auth/logout') {
+      setUser(null);
+    }
     handleCloseUserMenu();
     getRedirector(href)(event);
   };
@@ -129,12 +130,10 @@ const Layout = ({ children }) => {
       });
   };
 
-  const { data, error } = useSWR('/api/user', fetcher);
-
   useEffect(() => {
-    if (data && data.user) {
+    if (user) {
       setDrawerItemGroups(
-        getAllowedPages(data.user).map((pageGroup) => (
+        getAllowedPages(user).map((pageGroup) => (
           <List key={pageGroup.id}>
             {pageGroup.items.map((page) => {
               let href = page.href;
@@ -159,7 +158,7 @@ const Layout = ({ children }) => {
         ))
       );
     }
-  }, [data]);
+  }, [user]);
 
   /** @param {string} href */
   function getRouteWithMonth(href) {
@@ -299,23 +298,13 @@ const Layout = ({ children }) => {
 
             {/* Account actions */}
             <Box sx={{ flexGrow: 0 }}>
-              {data ? (
+              {user ? (
                 <>
                   <Tooltip title="Account">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                      {error ? (
-                        <Avatar
-                          alt="Not logged in"
-                          sx={{ bgcolor: deepOrange[500] }}
-                        ></Avatar>
-                      ) : (
-                        <Avatar
-                          alt={data.user.name}
-                          sx={{ bgcolor: deepOrange[500] }}
-                        >
-                          {getInitials(data.user.name)}
-                        </Avatar>
-                      )}
+                      <Avatar alt={user.name} sx={{ bgcolor: deepOrange[500] }}>
+                        {getInitials(user.name)}
+                      </Avatar>
                     </IconButton>
                   </Tooltip>
                   <Menu
@@ -345,14 +334,12 @@ const Layout = ({ children }) => {
                   </Menu>
                 </>
               ) : (
-                error && (
-                  <Button
-                    sx={{ color: 'white' }}
-                    onClick={getRedirector('/auth/login')}
-                  >
-                    Login
-                  </Button>
-                )
+                <Button
+                  sx={{ color: 'white' }}
+                  onClick={getRedirector('/auth/login')}
+                >
+                  Login
+                </Button>
               )}
             </Box>
           </Toolbar>
