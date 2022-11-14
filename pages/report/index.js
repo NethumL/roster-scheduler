@@ -54,7 +54,7 @@ export default function ViewReports({ reports, user }) {
         resolved: false,
       },
     ];
-    console.log(newFiltered);
+
     const original = [...filtered];
 
     setFiltered(newFiltered);
