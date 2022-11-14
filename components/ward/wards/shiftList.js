@@ -15,7 +15,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
 
-export default function shiftsList({
+export default function ShiftsList({
   newNumDutyCycles,
   setNew,
   isEdit,
@@ -54,9 +54,9 @@ export default function shiftsList({
         end: '2014-08-18T00:00:00.000z',
       });
     }
-    console.log(shifts[i].start);
+
     indents.push(
-      <TableRow>
+      <TableRow key={i}>
         <TableCell align="right">{i + 1}</TableCell>
         <TableCell align="right">
           <TextField

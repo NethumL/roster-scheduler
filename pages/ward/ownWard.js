@@ -31,7 +31,7 @@ export default function ViewWard({ ward }) {
           </Typography>
 
           <Typography sx={{ mt: 2 }} color="text.secondary">
-            personInCharge
+            Person in charge
           </Typography>
           <Typography variant="body2" paddingLeft="15px">
             {ward.personInCharge.name}
