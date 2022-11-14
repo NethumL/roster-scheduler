@@ -1,12 +1,10 @@
 import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import User from '@/lib/models/User';
+import validateUser from '@/lib/validation/User';
 import { hashSync } from 'bcryptjs';
 
 export default async function resetPassword(req, res) {
-  /**
-   * TODO: Validate the password
-   */
   try {
     if (req.method !== 'PUT') {
       return res.status(405).end();
@@ -23,6 +21,12 @@ export default async function resetPassword(req, res) {
 
         const { _id } = req.query;
         const { password } = req.body;
+
+        const { error } = validateUser({ password }, ['password']);
+        if (error) {
+          return res.status(400).json({ error: error.details });
+        }
+
         const hashedPassword = hashSync(password);
 
         user = await User.findByIdAndUpdate(
