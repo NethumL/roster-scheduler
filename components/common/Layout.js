@@ -1,4 +1,3 @@
-import { fetcher } from '@/lib/util';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
@@ -23,7 +22,6 @@ import { deepOrange } from '@mui/material/colors';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import useSWR from 'swr';
 
 const pageGroups = [
   {
@@ -59,13 +57,14 @@ const pageGroups = [
     ],
   },
 ];
-const disallowedForDoctor = ['/roster/generate', '/roster/edit'];
+const disallowedForDoctor = ['/roster/generate', '/roster/edit', '/ward'];
+const onlyForDoctor = ['/roster/exchange'];
 const accountLinks = [
   { href: '/api/logout', title: 'Logout' },
   { href: '/auth/change-password', title: 'Change password' },
 ];
 
-const Layout = ({ children }) => {
+const Layout = ({ children, user, setUser }) => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [drawerItemGroups, setDrawerItemGroups] = useState([]);
@@ -86,6 +85,9 @@ const Layout = ({ children }) => {
   };
 
   const getAccountLinkRedirector = (href) => (event) => {
+    if (href === '/api/auth/logout') {
+      setUser(null);
+    }
     handleCloseUserMenu();
     getRedirector(href)(event);
   };
@@ -111,12 +113,17 @@ const Layout = ({ children }) => {
   const isRouteDisallowed = (user, route) => {
     if (user.type === 'DOCTOR' && disallowedForDoctor.includes(route)) {
       return true;
+    } else if (user.type !== 'DOCTOR' && onlyForDoctor.includes(route)) {
+      return true;
     }
     return false;
   };
 
   /** @param {import('@/lib/models/User').UserEntity} user */
   const getAllowedPages = (user) => {
+    if (!user) {
+      return [];
+    }
     return pageGroups
       .filter((pageGroup) => pageGroup.id !== 'admin' || user.type === 'ADMIN')
       .map((pageGroup) => {
@@ -129,12 +136,10 @@ const Layout = ({ children }) => {
       });
   };
 
-  const { data, error } = useSWR('/api/user', fetcher);
-
   useEffect(() => {
-    if (data && data.user) {
+    if (user) {
       setDrawerItemGroups(
-        getAllowedPages(data.user).map((pageGroup) => (
+        getAllowedPages(user).map((pageGroup) => (
           <List key={pageGroup.id}>
             {pageGroup.items.map((page) => {
               let href = page.href;
@@ -159,7 +164,7 @@ const Layout = ({ children }) => {
         ))
       );
     }
-  }, [data]);
+  }, [user]);
 
   /** @param {string} href */
   function getRouteWithMonth(href) {
@@ -196,7 +201,7 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Typography
@@ -215,18 +220,20 @@ const Layout = ({ children }) => {
               <Link href="/">Foo</Link>
             </Typography>
 
-            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={getDrawerToggler(true)}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-            </Box>
+            {user && (
+              <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={getDrawerToggler(true)}
+                  color="inherit"
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Box>
+            )}
             <Typography
               variant="h5"
               noWrap
@@ -244,7 +251,7 @@ const Layout = ({ children }) => {
               <Link href="/">Foo</Link>
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {pageGroups.map((pageGroup) =>
+              {getAllowedPages(user).map((pageGroup) =>
                 pageGroup.items.length > 1 ? (
                   /* For dropdowns in AppBar */
                   <div key={pageGroup.id}>
@@ -299,23 +306,13 @@ const Layout = ({ children }) => {
 
             {/* Account actions */}
             <Box sx={{ flexGrow: 0 }}>
-              {data ? (
+              {user ? (
                 <>
                   <Tooltip title="Account">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                      {error ? (
-                        <Avatar
-                          alt="Not logged in"
-                          sx={{ bgcolor: deepOrange[500] }}
-                        ></Avatar>
-                      ) : (
-                        <Avatar
-                          alt={data.user.name}
-                          sx={{ bgcolor: deepOrange[500] }}
-                        >
-                          {getInitials(data.user.name)}
-                        </Avatar>
-                      )}
+                      <Avatar alt={user.name} sx={{ bgcolor: deepOrange[500] }}>
+                        {getInitials(user.name)}
+                      </Avatar>
                     </IconButton>
                   </Tooltip>
                   <Menu
@@ -345,14 +342,12 @@ const Layout = ({ children }) => {
                   </Menu>
                 </>
               ) : (
-                error && (
-                  <Button
-                    sx={{ color: 'white' }}
-                    onClick={getRedirector('/auth/login')}
-                  >
-                    Login
-                  </Button>
-                )
+                <Button
+                  sx={{ color: 'white' }}
+                  onClick={getRedirector('/auth/login')}
+                >
+                  Login
+                </Button>
               )}
             </Box>
           </Toolbar>

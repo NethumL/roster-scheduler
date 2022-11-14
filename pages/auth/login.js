@@ -8,10 +8,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 
-export default function LoginPage() {
+export default function LoginPage({ setUser }) {
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -28,8 +28,9 @@ export default function LoginPage() {
     };
 
     try {
-      await send('POST', '/api/login', body);
-      Router.push('/');
+      const response = await send('POST', '/api/login', body);
+      router.push('/');
+      setUser(response.user);
     } catch (error) {
       setErrorMsg(error.message);
     }

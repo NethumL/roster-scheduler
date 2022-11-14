@@ -1,7 +1,9 @@
 import { getUser } from '@/lib/auth/session';
 import { send } from '@/lib/util';
 import {
+  Box,
   Button,
+  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
@@ -10,11 +12,13 @@ import {
   Typography,
 } from '@mui/material';
 import { Container } from '@mui/system';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 export default function GenerateRosterPage() {
+  const router = useRouter();
   const [month, setMonth] = useState('current');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (event) => {
     setMonth(event.target.value);
@@ -34,13 +38,15 @@ export default function GenerateRosterPage() {
     }
 
     try {
+      setIsLoading(true);
       await send(
         'GET',
         `/api/roster/generate?year=${yearNum}&month=${monthNum}`
       );
-      Router.push(`/roster/view/${yearNum}/${monthNum}`);
+      router.push(`/roster/view/${yearNum}/${monthNum}`);
     } catch (error) {
       console.error(error.message);
+      setIsLoading(false);
     }
   };
 
@@ -88,9 +94,27 @@ export default function GenerateRosterPage() {
       <Grid container justifyContent="space-between" sx={{ marginTop: '55px' }}>
         <Grid item xs={7}></Grid>
         <Grid item xs={3}>
-          <Button variant="contained" color="success" onClick={handleClick}>
-            Generate
-          </Button>
+          <Box sx={{ m: 1, position: 'relative' }}>
+            <Button
+              variant="contained"
+              color="success"
+              disabled={isLoading}
+              onClick={handleClick}
+            >
+              Generate
+            </Button>
+            {isLoading && (
+              <CircularProgress
+                size={24}
+                disableShrink
+                sx={{
+                  position: 'absolute',
+                  top: '20%',
+                  left: '50%',
+                }}
+              />
+            )}
+          </Box>
         </Grid>
         <Grid item xs></Grid>
       </Grid>

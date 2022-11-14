@@ -16,107 +16,48 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 export default function EditRosterPage({
   year,
   month,
+  roster: originalRoster,
   shifts,
-  roster: origRoster,
 }) {
-  const [roster, setRoster] = useState(origRoster);
+  const router = useRouter();
+
+  const [roster, setRoster] = useState(originalRoster);
 
   /** @type {import('react').MouseEventHandler} */
   const handleUpdate = async (e) => {
     try {
       await send('PUT', `/api/roster/${year}/${month}`, { roster });
-      Router.push(`/roster/view/${year}/${month}`);
+      router.push(`/roster/view/${year}/${month}`);
     } catch (error) {
       console.error(error.message);
     }
   };
 
-  const dayColumns = shifts.map((shift) => (
-    <TableCell key={shift.name}>{shift.name}</TableCell>
-  ));
+  const daysInMonth = roster[0].items.length;
+  const dayColumns = [];
+  for (let day = 1; day <= daysInMonth; day++) {
+    dayColumns.push(<TableCell key={day}>{day}</TableCell>);
+  }
 
-  /** @type {import('react').DragEventHandler<HTMLTableCellElement>} */
-  const handleDragStart = (e) => {
+  /** @type {import('react').ChangeEventHandler} */
+  function handleShiftChange(e) {
     // @ts-ignore
-    const { name, shift, index } = e.target.dataset;
-    e.dataTransfer.setData('text', `${name}/${shift}/${index}`);
-  };
-
-  /** @type {import('react').DragEventHandler} */
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const [otherName, otherShift, otherIndex] = e.dataTransfer
-      .getData('text')
-      .split('/');
-    // @ts-ignore
-    const { name, shift, index } = e.target.dataset;
-
-    setRoster(
-      roster
-        .map((doctor) => {
-          if (doctor.name === name) {
-            return {
-              name: name,
-              items: doctor.items.map((s, i) => {
-                if (parseInt(index) === i) {
-                  return otherShift;
-                } else {
-                  return s;
-                }
-              }),
-            };
-          } else {
-            return doctor;
-          }
-        })
-        .map((doctor) => {
-          if (doctor.name === otherName) {
-            return {
-              name: otherName,
-              items: doctor.items.map((s, i) => {
-                if (parseInt(otherIndex) === i) {
-                  return shift;
-                } else {
-                  return s;
-                }
-              }),
-            };
-          } else {
-            return doctor;
-          }
-        })
-    );
-  };
-
-  /** @type {import('react').MouseEventHandler<HTMLElement>} */
-  const handleDoubleClick = (e) => {
-    e.target.contentEditable = 'true';
-    e.target.addEventListener('blur', handleStopEditing);
-  };
-
-  /** @type {EventListener} */
-  function handleStopEditing(e) {
-    e.target.contentEditable = 'false';
-    e.target.removeEventListener('blur', handleStopEditing);
-
-    // @ts-ignore
-    const { name, index } = e.target.dataset;
-    // @ts-ignore
-    e.target.dataset.shift = e.target.textContent;
+    const shift = e.target.value;
+    const { name, index } = e.target.parentElement.dataset;
     setRoster(
       roster.map((doctor) => {
         if (doctor.name === name) {
           return {
-            name: name,
+            ...doctor,
             items: doctor.items.map((s, i) => {
               if (parseInt(index) === i) {
-                return e.target.textContent;
+                return shift;
               } else {
                 return s;
               }
@@ -174,17 +115,18 @@ export default function EditRosterPage({
                   </TableCell>
                   {row.items.map((shift, index) => (
                     <TableCell
-                      draggable
-                      onDragStart={handleDragStart}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={handleDrop}
-                      onDoubleClick={handleDoubleClick}
                       key={`${shift}${index}`}
                       data-name={row.name}
-                      data-shift={shift}
                       data-index={index}
                     >
-                      {shift}
+                      <select onChange={handleShiftChange}>
+                        <option value=""></option>
+                        {shifts.map((s) => (
+                          <option value={s._id} selected={s._id === shift}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
                     </TableCell>
                   ))}
                 </TableRow>
@@ -193,8 +135,8 @@ export default function EditRosterPage({
           </Table>
         </TableContainer>
       </Grid>
-      <Grid container justifyContent="space-between" sx={{ marginTop: '55px' }}>
-        <Grid item xs={7}></Grid>
+      <Grid container justifyContent="space-between" sx={{ marginY: '55px' }}>
+        <Grid item xs={8}></Grid>
         <Grid item xs={3}>
           <Button variant="contained" color="success" onClick={handleUpdate}>
             Update
@@ -245,8 +187,29 @@ export async function getServerSideProps(context) {
 
     const roster = await Roster.findOne({
       ward: ward._id,
-      month: `${year}-${month}-01`,
-    }).lean();
+      month: { $gte: `${year}-${month}-01`, $lte: `${year}-${month}-30` },
+    })
+      .populate([
+        { path: 'rosters.doctor' },
+        { path: 'rosters.shifts', options: { retainNullValues: true } },
+      ])
+      .select({ _id: 0, ward: 0, month: 0 })
+      .lean();
+
+    const data = roster.rosters.map((rosterInst) => {
+      return {
+        _id: rosterInst.doctor._id.toString(),
+        name: rosterInst.doctor.name,
+        username: rosterInst.doctor.username,
+        items: rosterInst.shifts.map((shift) => {
+          if (shift === null) {
+            return '';
+          } else {
+            return shift._id.toString();
+          }
+        }),
+      };
+    });
 
     if (!roster) {
       // No such roster
@@ -254,7 +217,16 @@ export async function getServerSideProps(context) {
     }
 
     return {
-      props: { user, year, month, roster: roster.shifts, shifts: ward.shifts },
+      props: {
+        user,
+        year,
+        month,
+        roster: data,
+        shifts: ward.shifts.map((shift) => {
+          const { _id, ...result } = shift;
+          return { ...result, _id: _id.toString() };
+        }),
+      },
     };
   } catch (error) {
     return {

@@ -26,7 +26,7 @@ export default nextConnect()
       await setLoginSession(res, session);
 
       // @ts-ignore
-      res.status(200).send({ done: true });
+      res.status(200).send({ user: session });
     } catch (error) {
       console.error(error);
       // @ts-ignore

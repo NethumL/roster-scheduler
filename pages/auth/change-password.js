@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 
 export default function ChangePasswordPage() {
@@ -30,7 +30,7 @@ export default function ChangePasswordPage() {
 
     try {
       await send('POST', '/api/auth/change-password', body);
-      Router.push('/api/logout');
+      router.push('/api/logout');
     } catch (error) {
       setErrorMsg(JSON.parse(error.message).error);
     }
