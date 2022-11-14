@@ -187,7 +187,7 @@ export async function getServerSideProps(context) {
 
     const roster = await Roster.findOne({
       ward: ward._id,
-      month: new Date(year, month - 1, 1),
+      month: { $gte: `${year}-${month}-01`, $lte: `${year}-${month}-30` },
     })
       .populate([
         { path: 'rosters.doctor' },

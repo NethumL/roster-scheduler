@@ -109,7 +109,7 @@ export default async function handler(req, res) {
 
     const roster = new Roster({
       ward: ward._id,
-      month: new Date(year, month - 1, 1),
+      month: `${year}-${month}-01`,
       rosters: rosterInsts,
     });
     await roster.save();
