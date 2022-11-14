@@ -4,9 +4,6 @@ import User from '@/lib/models/User';
 import validateUser from '@/lib/validation/User';
 
 export default async function updateUser(req, res) {
-  /**
-   * TODO: Validate the request body
-   */
   try {
     if (req.method !== 'PUT') {
       return res.status(405).end();
@@ -25,6 +22,9 @@ export default async function updateUser(req, res) {
         const { name, type } = req.body;
 
         const { error } = validateUser({ name, type }, ['name', 'type']);
+        if (error) {
+          return res.status(400).json({ error: error.details });
+        }
 
         user = await User.findByIdAndUpdate(
           _id,
