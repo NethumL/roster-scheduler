@@ -1,6 +1,7 @@
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 import ModalHeader from '@/components/common/modalHeader';
+import validateUser from '@/lib/validation/User';
 
 export default function ResetPasswordModal({
   open,
@@ -11,21 +12,36 @@ export default function ResetPasswordModal({
   const [password, setPassword] = useState('');
   const [confPassword, setConfPassword] = useState('');
   const [passwordErr, setPasswordErr] = useState('');
-  const [confPasswordErr, setConfPasswordErr] = useState(false);
+  const [confPasswordErr, setConfPasswordErr] = useState('');
 
   const checkConfirmPassword = () => {
     if (confPassword && password !== confPassword) {
-      setPasswordErr('Passwords do not match');
-      setConfPasswordErr(true);
-    } else {
-      setPasswordErr('');
-      setConfPasswordErr(false);
+      setConfPasswordErr('Passwords do not match');
+      return true;
     }
+    setConfPasswordErr('');
+    return false;
+  };
+
+  const checkPassword = (skipZero) => {
+    setPasswordErr('');
+    if (password.length == 0 && skipZero) {
+      return false;
+    }
+
+    const { error } = validateUser({ password }, ['password']);
+    if (error) {
+      setPasswordErr(error.details[0].message);
+      return true;
+    }
+
+    return false;
   };
 
   const save = () => {
-    checkConfirmPassword();
-    if (passwordErr || confPasswordErr) return;
+    const pwdErr = checkPassword(false);
+    const confPwdErr = checkConfirmPassword();
+    if (pwdErr || confPwdErr) return;
     handleSave(user._id, password);
     setPassword('');
     setConfPassword('');
@@ -85,7 +101,7 @@ export default function ResetPasswordModal({
           label="New Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          onBlur={checkConfirmPassword}
+          onBlur={() => checkPassword(true)}
           type="password"
           error={passwordErr !== ''}
           helperText={passwordErr}
@@ -101,7 +117,8 @@ export default function ResetPasswordModal({
           onChange={(e) => setConfPassword(e.target.value)}
           onBlur={checkConfirmPassword}
           type="password"
-          error={confPasswordErr}
+          error={confPasswordErr !== ''}
+          helperText={confPasswordErr}
           fullWidth
           variant="standard"
           sx={{ mt: 3 }}

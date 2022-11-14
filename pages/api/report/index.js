@@ -1,12 +1,9 @@
 import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Report from '@/lib/models/Report';
+import validateReport from '@/lib/validation/Report';
 
 export default async function report(req, res) {
-  /**
-   * TODO: Validate user input
-   */
-
   try {
     if (req.method !== 'POST') {
       return res.status(405).end();
@@ -20,6 +17,16 @@ export default async function report(req, res) {
     if (session) {
       if (session.type === 'DOCTOR') {
         await dbConnect();
+
+        const { error } = validateReport({
+          ...req.body,
+          user: session._id,
+          resolved: false,
+        });
+
+        if (error) {
+          return res.status(400).json({ error: error.details });
+        }
 
         const { subject, description } = req.body;
         report = new Report({

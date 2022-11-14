@@ -34,6 +34,10 @@ export default function Edit({ users }) {
   };
 
   const handleSaveEdit = async (_id, newName, newType) => {
+    const original = users.map((u) => {
+      return { ...u };
+    });
+
     const newUsers = users.map((u) => {
       if (u._id === _id) {
         u.name = newName;
@@ -42,8 +46,6 @@ export default function Edit({ users }) {
       return u;
     });
     filter(newUsers);
-
-    const original = [...users];
 
     setSelectedUser(null);
     setOpenEditModal(false);

@@ -54,7 +54,7 @@ export default function ViewReports({ reports, user }) {
         resolved: false,
       },
     ];
-    console.log(newFiltered);
+
     const original = [...filtered];
 
     setFiltered(newFiltered);
@@ -193,7 +193,9 @@ export async function getServerSideProps(context) {
       const { doctors } = await Ward.findOne({
         personInCharge: user._id,
       }).lean();
-      reports = await Report.find({ user: { $in: doctors } }).lean();
+      reports = await Report.find({ user: { $in: doctors } })
+        .populate('user')
+        .lean();
     } else {
       return {
         redirect: {
