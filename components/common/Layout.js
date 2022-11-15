@@ -57,7 +57,7 @@ const pageGroups = [
     ],
   },
 ];
-const disallowedForDoctor = ['/roster/generate', '/roster/edit', '/ward'];
+const disallowedForDoctor = ['/roster/generate', '/roster/edit'];
 const onlyForDoctor = ['/roster/exchange'];
 const accountLinks = [
   { href: '/api/logout', title: 'Logout' },
