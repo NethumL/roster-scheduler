@@ -88,17 +88,24 @@ export default function NewUsersPage({ newUsers }) {
         type={type}
         setType={setType}
       />
-      <Paper elevation={2} sx={{ p: 5, mb: 5 }}>
-        <Grid
-          container
-          id="new-users-grid"
-          spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}
-        >
-          {filtered.map((user, index) => (
-            <NewUserCard key={index} user={user} action={action} />
-          ))}
-        </Grid>
-      </Paper>
+      {filtered.length !== 0 && (
+        <Paper elevation={2} sx={{ p: 5, mb: 5 }}>
+          <Grid
+            container
+            id="new-users-grid"
+            spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}
+          >
+            {filtered.map((user, index) => (
+              <NewUserCard key={index} user={user} action={action} />
+            ))}
+          </Grid>
+        </Paper>
+      )}
+      {filtered.length === 0 && (
+        <Alert severity="info" sx={{ mb: 5 }}>
+          No new users found!
+        </Alert>
+      )}
       <Snackbar
         open={openToast}
         autoHideDuration={6000}
