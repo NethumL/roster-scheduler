@@ -3,6 +3,7 @@ import dbConnect from '@/lib/db';
 import Exchange from '@/lib/models/Exchange';
 import Roster from '@/lib/models/Roster';
 import Ward from '@/lib/models/Ward';
+import mongoose from 'mongoose';
 
 /**
  * @param {import("next").NextApiRequest} req
@@ -30,11 +31,18 @@ export default async function handler(req, res) {
   const { id } = req.query;
   const { status } = req.body;
 
+  // @ts-ignore
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(422).json({ error: 'ID is invalid' });
+  }
+
+  if (status !== 'ACCEPTED' && status !== 'REJECTED') {
+    return res.status(422).json({ error: 'Status is invalid' });
+  }
+
   await dbConnect();
 
-  const ward = await Ward.findOne({ doctors: user._id })
-    .populate('doctors')
-    .exec();
+  const ward = await Ward.findOne({ doctors: user._id }).exec();
 
   const exchange = await Exchange.findOne({ _id: id }).exec();
 
