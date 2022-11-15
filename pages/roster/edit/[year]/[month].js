@@ -156,9 +156,12 @@ export async function getServerSideProps(context) {
     const user = await getUser(context.req);
 
     if (!['CONSULTANT', 'ADMIN'].includes(user.type)) {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth() + 1;
       return {
         redirect: {
-          destination: '/roster/view',
+          destination: `/roster/view/${year}/${month}`,
           permanent: false,
         },
       };
