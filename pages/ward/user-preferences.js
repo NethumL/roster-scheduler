@@ -205,7 +205,11 @@ export default function View({
               }}
             >
               Dates:
-              <LeavesList dates={[...leaves]} setNew={setLeaves} />
+              <LeavesList
+                dates={[...leaves]}
+                setNew={setLeaves}
+                setIsSavedLeaves={setIsSavedLeaves}
+              />
             </Card>
           </Stack>
           {error && (
