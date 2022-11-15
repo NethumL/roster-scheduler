@@ -122,22 +122,29 @@ export default function ViewReports({ reports, user }) {
           </Button>
         )}
       </Box>
-      <Paper elevation={2} sx={{ p: 5, mb: 5 }}>
-        <Grid
-          container
-          id="reports-grid"
-          spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}
-        >
-          {filtered.map((report, index) => (
-            <ReportCard
-              key={index}
-              report={report}
-              isDoctor={isDoctor}
-              resolve={resolve}
-            />
-          ))}
-        </Grid>
-      </Paper>
+      {filtered.length !== 0 && (
+        <Paper elevation={2} sx={{ p: 5, mb: 5 }}>
+          <Grid
+            container
+            id="reports-grid"
+            spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}
+          >
+            {filtered.map((report, index) => (
+              <ReportCard
+                key={index}
+                report={report}
+                isDoctor={isDoctor}
+                resolve={resolve}
+              />
+            ))}
+          </Grid>
+        </Paper>
+      )}
+      {filtered.length === 0 && (
+        <Alert severity="info" sx={{ mb: 5 }}>
+          No reports found
+        </Alert>
+      )}
       {isDoctor && mobileView && (
         <Fab
           color="primary"
@@ -190,12 +197,15 @@ export async function getServerSideProps(context) {
     } else if (user.type === 'CONSULTANT') {
       await dbConnect();
 
-      const { doctors } = await Ward.findOne({
+      const ward = await Ward.findOne({
         personInCharge: user._id,
       }).lean();
-      reports = await Report.find({ user: { $in: doctors } })
-        .populate('user')
-        .lean();
+
+      if (ward !== null) {
+        reports = await Report.find({ user: { $in: ward.doctors } })
+          .populate('user')
+          .lean();
+      }
     } else {
       return {
         redirect: {
