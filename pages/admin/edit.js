@@ -150,11 +150,18 @@ export default function Edit({ users }) {
         type={type}
         setType={setType}
       />
-      <UserTable
-        users={filtered}
-        handleEdit={handleClickOpenEditModal}
-        handleReset={handleClickOpenResetModal}
-      />
+      {filtered.length !== 0 && (
+        <UserTable
+          users={filtered}
+          handleEdit={handleClickOpenEditModal}
+          handleReset={handleClickOpenResetModal}
+        />
+      )}
+      {filtered.length === 0 && (
+        <Alert severity="info" sx={{ mb: 5 }}>
+          No users found!
+        </Alert>
+      )}
       <EditUserModal
         open={openEditModal}
         user={selectedUser}
