@@ -43,7 +43,7 @@ export default function GenerateRosterPage() {
         'GET',
         `/api/roster/generate?year=${yearNum}&month=${monthNum}`
       );
-      router.push(`/roster/view/${yearNum}/${monthNum}`);
+      router.push('/');
     } catch (error) {
       console.error(error.message);
       setIsLoading(false);
