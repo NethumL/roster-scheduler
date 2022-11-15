@@ -8,6 +8,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 
@@ -42,71 +43,80 @@ export default function LoginPage({ setUser }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        rowSpacing={5}
-        marginTop="5px"
-      >
-        <Grid item>
-          <Typography variant="h4">Login</Typography>
-        </Grid>
-      </Grid>
-      <Container sx={{ marginTop: '15px' }}>
-        {errorMsg && (
-          <Alert severity="error" sx={{ marginY: '10px' }}>
-            {errorMsg}
-          </Alert>
-        )}
+    <>
+      <Head>
+        <title>{`Login to ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
+      <form onSubmit={handleSubmit}>
         <Grid
           container
-          alignItems="center"
           justifyContent="center"
+          alignItems="center"
           rowSpacing={5}
+          marginTop="5px"
         >
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item container xs={6} md={2} justifyContent="center">
-            <TextField
-              variant="standard"
-              label="Username"
-              inputRef={usernameRef}
-            />
+          <Grid item>
+            <Typography variant="h4">Login</Typography>
           </Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item container xs={6} md={2} justifyContent="center">
-            <TextField
-              variant="standard"
-              label="Password"
-              inputRef={passwordRef}
-              type="password"
-            />
-          </Grid>
-          <Grid item xs={3} md={5}></Grid>
         </Grid>
-      </Container>
-      <Grid container justifyContent="space-between" sx={{ marginTop: '55px' }}>
-        <Grid item xs={3} md={5} />
-        <Grid item container xs={4} md={1} justifyContent="center">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={getRedirector('/auth/register')}
+        <Container sx={{ marginTop: '15px' }}>
+          {errorMsg && (
+            <Alert severity="error" sx={{ marginY: '10px' }}>
+              {errorMsg}
+            </Alert>
+          )}
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            rowSpacing={5}
           >
-            Register
-          </Button>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item container xs={6} md={2} justifyContent="center">
+              <TextField
+                variant="standard"
+                label="Username"
+                inputRef={usernameRef}
+              />
+            </Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item container xs={6} md={2} justifyContent="center">
+              <TextField
+                variant="standard"
+                label="Password"
+                inputRef={passwordRef}
+                type="password"
+              />
+            </Grid>
+            <Grid item xs={3} md={5}></Grid>
+          </Grid>
+        </Container>
+        <Grid
+          container
+          justifyContent="space-between"
+          sx={{ marginTop: '55px' }}
+        >
+          <Grid item xs={3} md={5} />
+          <Grid item container xs={4} md={1} justifyContent="center">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={getRedirector('/auth/register')}
+            >
+              Register
+            </Button>
+          </Grid>
+          <Grid item xs={0} md={0} />
+          <Grid item container xs={3} md={1} justifyContent="center">
+            <Button variant="contained" color="success" type="submit">
+              Login
+            </Button>
+          </Grid>
+          <Grid item xs md={5} />
         </Grid>
-        <Grid item xs={0} md={0} />
-        <Grid item container xs={3} md={1} justifyContent="center">
-          <Button variant="contained" color="success" type="submit">
-            Login
-          </Button>
-        </Grid>
-        <Grid item xs md={5} />
-      </Grid>
-    </form>
+      </form>
+    </>
   );
 }
 
