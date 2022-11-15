@@ -1,5 +1,6 @@
 import { getLoginSession } from '@/lib/auth/session';
 import { send } from '@/lib/util';
+import schemaRegister from '@/lib/validation/auth/register';
 import {
   Alert,
   Button,
@@ -17,8 +18,9 @@ import { useRef, useState } from 'react';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [errorMsg, setErrorMsg] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  const [errors, setErrors] = useState({});
 
   const nameRef = useRef(null);
   const usernameRef = useRef(null);
@@ -37,11 +39,26 @@ export default function RegisterPage() {
       userType: userTypeRef.current.value,
     };
 
+    const { error, value } = schemaRegister.validate(body, {
+      abortEarly: false,
+    });
+
+    if (error) {
+      setErrors(
+        Object.fromEntries(
+          error.details.map((err) => {
+            return [err.path[0], err.message];
+          })
+        )
+      );
+      return;
+    }
+
     try {
-      await send('POST', '/api/auth/register', body);
+      await send('POST', '/api/auth/register', value);
       router.push('/');
     } catch (error) {
-      setErrorMsg(error.message);
+      console.log(error.message);
     }
   }
 
@@ -50,9 +67,9 @@ export default function RegisterPage() {
       confirmPasswordRef.current.value &&
       passwordRef.current.value != confirmPasswordRef.current.value
     ) {
-      setPasswordError('Passwords do not match');
+      setConfirmPasswordError('Passwords do not match');
     } else {
-      setPasswordError('');
+      setConfirmPasswordError('');
     }
   };
 
@@ -74,8 +91,7 @@ export default function RegisterPage() {
           <Typography variant="h4">Register</Typography>
         </Grid>
       </Grid>
-      <Container>
-        {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+      <Container sx={{ marginTop: '20px' }}>
         <Grid
           container
           alignItems="center"
@@ -84,7 +100,13 @@ export default function RegisterPage() {
         >
           <Grid item xs={3} md={5}></Grid>
           <Grid item xs={6} md={2}>
-            <TextField variant="standard" label="Name" inputRef={nameRef} />
+            <TextField
+              variant="standard"
+              label="Name"
+              inputRef={nameRef}
+              error={!!errors['name']}
+              helperText={errors['name']}
+            />
           </Grid>
           <Grid item xs={3} md={5}></Grid>
           <Grid item xs={3} md={5}></Grid>
@@ -93,6 +115,8 @@ export default function RegisterPage() {
               variant="standard"
               label="Username"
               inputRef={usernameRef}
+              error={!!errors['username']}
+              helperText={errors['username']}
             />
           </Grid>
           <Grid item xs={3} md={5}></Grid>
@@ -104,7 +128,8 @@ export default function RegisterPage() {
               inputRef={passwordRef}
               type="password"
               onBlur={checkConfirmPassword}
-              error={passwordError ? true : false}
+              error={!!errors['password']}
+              helperText={errors['password']}
             />
           </Grid>
           <Grid item xs={3} md={5}></Grid>
@@ -116,8 +141,8 @@ export default function RegisterPage() {
               type="password"
               inputRef={confirmPasswordRef}
               onBlur={checkConfirmPassword}
-              error={passwordError ? true : false}
-              helperText={passwordError}
+              error={!!confirmPasswordError}
+              helperText={confirmPasswordError}
             />
           </Grid>
           <Grid item xs={3} md={5}></Grid>
@@ -140,7 +165,11 @@ export default function RegisterPage() {
         </Grid>
       </Container>
 
-      <Grid container justifyContent="space-between" sx={{ marginTop: '55px' }}>
+      <Grid
+        container
+        justifyContent="space-between"
+        sx={{ marginTop: '55px', marginBottom: '20px' }}
+      >
         <Grid item xs={3}></Grid>
         <Grid item xs={4}>
           <Button

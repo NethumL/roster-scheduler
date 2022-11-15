@@ -2,6 +2,7 @@ import { getUser } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Exchange from '@/lib/models/Exchange';
 import mongoose from 'mongoose';
+import schemaExchange from '@/lib/validation/roster/exchange';
 
 /**
  * @param {import("next").NextApiRequest} req
@@ -28,8 +29,14 @@ export default async function handler(req, res) {
 
   await dbConnect();
 
-  const { shiftDate, shift, otherDoctor, otherShiftDate, otherShift } =
-    req.body;
+  const { error, value } = schemaExchange.validate(req.body);
+
+  if (error) {
+    console.error(error);
+    return res.status(422).json(error.details);
+  }
+
+  const { shiftDate, shift, otherDoctor, otherShiftDate, otherShift } = value;
 
   const exchange = new Exchange({
     doctor: user._id,
@@ -41,6 +48,7 @@ export default async function handler(req, res) {
   });
 
   await exchange.save();
+  await exchange.populate(['otherDoctor', 'shift', 'otherShift']);
 
-  res.json({ success: true });
+  res.json({ exchange });
 }
