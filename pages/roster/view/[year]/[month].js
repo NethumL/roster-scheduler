@@ -88,6 +88,7 @@ export default function ViewRosterPage({ user, year, month, roster }) {
         alignItems="center"
         rowSpacing={5}
         marginTop="5px"
+        marginBottom="20px"
       >
         <TableContainer component={Paper}>
           <Table stickyHeader sx={{ minWidth: 650 }} aria-label="simple table">

@@ -10,6 +10,21 @@ const user = {
 
 const doctors = [{ _id: 'jane', username: 'jane', name: 'Jane Doe' }];
 
+const shifts = {
+  john: {
+    'Tue Nov 01 2022': { _id: 'morning', name: 'Morning' },
+  },
+  jane: {
+    'Wed Nov 02 2022': { _id: 'afternoon', name: 'Afternoon' },
+  },
+};
+
+const getShift = jest.fn((doctor, date) =>
+  date.toDateString() in shifts[doctor]
+    ? shifts[doctor][date.toDateString()]
+    : { _id: null, name: null }
+);
+
 describe('NewExchangeModal', () => {
   it('renders a heading', () => {
     render(
@@ -19,7 +34,7 @@ describe('NewExchangeModal', () => {
         open={true}
         handleClose={() => {}}
         save={() => {}}
-        getShift={() => {}}
+        getShift={getShift}
       />
     );
 
@@ -40,7 +55,7 @@ describe('NewExchangeModal', () => {
         open={true}
         handleClose={handleClose}
         save={() => {}}
-        getShift={() => {}}
+        getShift={getShift}
       />
     );
     const cancelButton = screen.getByRole('button', { name: /Cancel/ });
@@ -50,20 +65,6 @@ describe('NewExchangeModal', () => {
   });
 
   it('fetches the shift', async () => {
-    const shifts = {
-      john: {
-        'Tue Nov 01 2022': { _id: 'morning', name: 'Morning' },
-      },
-      jane: {
-        'Wed Nov 02 2022': { _id: 'afternoon', name: 'Afternoon' },
-      },
-    };
-    const getShift = jest.fn((doctor, date) =>
-      date.toDateString() in shifts[doctor]
-        ? shifts[doctor][date.toDateString()]
-        : { _id: null, name: null }
-    );
-
     render(
       <NewExchangeModal
         user={user}

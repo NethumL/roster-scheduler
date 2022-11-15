@@ -1,11 +1,9 @@
 import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Preferences from '@/lib/models/Preferences';
-import Roster from '@/lib/models/Roster';
 import User from '@/lib/models/User';
 import Ward from '@/lib/models/Ward';
 import { send } from '@/lib/util';
-import mongoose from 'mongoose';
 
 /**
  * @param {import("next").NextApiRequest} req
@@ -87,32 +85,18 @@ export default async function handler(req, res) {
       days: daysInMonth,
       shifts: ward.shifts.length,
     },
+    data: {
+      year,
+      month,
+      ward: ward._id,
+    },
     doctors,
   };
 
   try {
-    const response = await send('POST', process.env.SERVICE_HOST, body, {
+    await send('POST', process.env.SERVICE_HOST, body, {
       headers: { 'X-secret': process.env.SERVICE_SECRET },
     });
-
-    const rosterInsts = Object.entries(response).map(
-      ([doctorId, shiftInds]) => {
-        return {
-          doctor: new mongoose.Types.ObjectId(doctorId),
-          shifts: shiftInds.map((ind) => {
-            if (ind === -1) return null;
-            return new mongoose.Types.ObjectId(shifts[ind]);
-          }),
-        };
-      }
-    );
-
-    const roster = new Roster({
-      ward: ward._id,
-      month: `${year}-${month}-01`,
-      rosters: rosterInsts,
-    });
-    await roster.save();
 
     res.status(200).json({ success: true });
   } catch (error) {

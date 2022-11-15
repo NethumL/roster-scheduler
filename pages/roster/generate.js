@@ -43,7 +43,7 @@ export default function GenerateRosterPage() {
         'GET',
         `/api/roster/generate?year=${yearNum}&month=${monthNum}`
       );
-      router.push(`/roster/view/${yearNum}/${monthNum}`);
+      router.push('/');
     } catch (error) {
       console.error(error.message);
       setIsLoading(false);
@@ -130,9 +130,12 @@ export async function getServerSideProps(context) {
     const user = await getUser(context.req);
 
     if (!['CONSULTANT', 'ADMIN'].includes(user.type)) {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth() + 1;
       return {
         redirect: {
-          destination: '/roster/view',
+          destination: `/roster/view/${year}/${month}`,
           permanent: false,
         },
       };
