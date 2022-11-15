@@ -34,7 +34,7 @@ import dbConnect from '@/lib/db';
 import { send } from '@/lib/util';
 import User from '@/lib/models/User';
 import Ward from '@/lib/models/Ward';
-export default function View({ wards, consultants }) {
+export default function View({ wards, consultants, assignedConsultants }) {
   const [open, setOpen] = useState(true);
   const handleClick = () => {
     setOpen(!open);
@@ -49,7 +49,8 @@ export default function View({ wards, consultants }) {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const mr = useMediaQuery(theme.breakpoints.down('lg')) ? 0 : 5;
   const flx = useMediaQuery(theme.breakpoints.down('sm')) ? '' : 'flex';
-
+  const [assignedConsultants_state, setAssignedConsultants_state] =
+    useState(assignedConsultants);
   const handleClickOpenViewModal = (ward, index) => {
     setSelectedWard(ward);
 
@@ -86,6 +87,14 @@ export default function View({ wards, consultants }) {
       allowAdjacentShifts: newStatusAdjacentShifts,
     };
     if (selectedIndex != null) {
+      let arr = [...assignedConsultants_state];
+      let index = assignedConsultants_state.findIndex((id) => {
+        return id === wards[selectedIndex].personInCharge._id;
+      });
+
+      arr.splice(index, 1);
+      arr.push(newPersonInCharge._id);
+      setAssignedConsultants_state([...arr]);
       body._id = wards[selectedIndex]._id;
       try {
         const wrd = await send('PUT', '/api/ward/wards/editWard', body);
@@ -124,6 +133,9 @@ export default function View({ wards, consultants }) {
       //   .select('shifts')
       //   .populate('shifts')
       //   .lean();
+      let arr = [...assignedConsultants_state];
+      arr.push(newPersonInCharge._id);
+      setAssignedConsultants_state([...arr]);
       wards.push({
         _id: wrd._id,
         name: newName,
@@ -222,6 +234,7 @@ export default function View({ wards, consultants }) {
         handleClose={handleCloseViewModal}
         handleSave={handleSaveEdit}
         consultants={consultants}
+        assignedConsultants={assignedConsultants_state}
       />
     </Container>
   );
@@ -233,18 +246,21 @@ export default function View({ wards, consultants }) {
 export async function getServerSideProps(context) {
   let wards = [];
   let consultants = [];
-  let type = '';
+  let assignedConsultants = [];
   try {
     const user = await getUser(context.req);
     await dbConnect();
     if (user.type === 'ADMIN') {
       consultants = await User.find({ type: 'CONSULTANT' }).lean();
+      assignedConsultants = await Ward.find({})
+        .select('personInCharge')
+        .populate('personInCharge')
+        .lean();
       wards = await Ward.find({})
         .populate('personInCharge')
         .populate('shifts')
         .lean();
     } else if (user.type === 'CONSULTANT' || user.type === 'DOCTOR') {
-      console.log('d');
       return {
         redirect: {
           destination: '/ward/ownWard',
@@ -262,8 +278,13 @@ export async function getServerSideProps(context) {
     // }
     wards = JSON.parse(JSON.stringify(wards));
     consultants = JSON.parse(JSON.stringify(consultants));
-    type = user.type;
-    return { props: { wards, consultants, type } };
+    assignedConsultants = JSON.parse(JSON.stringify(assignedConsultants));
+    assignedConsultants = assignedConsultants.map(
+      (obj) => obj.personInCharge._id
+    );
+    console.log(assignedConsultants);
+    console.log(consultants);
+    return { props: { wards, consultants, assignedConsultants } };
   } catch (error) {
     return {
       redirect: {

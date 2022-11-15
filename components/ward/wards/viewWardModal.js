@@ -37,6 +37,7 @@ export default function ViewWardModal({
   handleClose,
   handleSave,
   consultants,
+  assignedConsultants,
 }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -55,7 +56,9 @@ export default function ViewWardModal({
   const [newMaxNumLeaves, setNewMaxNumLeaves] = useState('');
   const [newMinNumDoctorsPerShift, setNewMinNumDoctorsPerShift] = useState('');
   const [newStatusAdjacentShifts, setNewStatusAdjacentShifts] = useState(false);
-
+  // const [assignedConsultants_state, setAssignedConsultants] = usestate([
+  //   ...assignedConsultants,
+  // ]);
   const save = () => {
     let PIC = consultants.find((x) => x._id === newPersonInCharge);
     handleSave(
@@ -89,6 +92,14 @@ export default function ViewWardModal({
     setNewMaxNumLeaves(ward ? ward.maxNumberOfLeaves : '');
     setNewMinNumDoctorsPerShift(ward ? ward.minNumberOfDoctorsPerShift : '');
     setNewStatusAdjacentShifts(ward ? ward.allowAdjacentShifts : false);
+    // setAssignedConsultants([...assignedConsultants]);
+    // let arr = [...assignedConsultants_state];
+    // let index = assignedConsultants_state.findIndex((id) => {
+    //   return id === newPersonInCharge;
+    // });
+
+    // arr.splice(index, 1);
+    // setAssignedConsultants([...arr]);
   }, [ward, open]);
 
   useEffect(() => {
@@ -201,7 +212,15 @@ export default function ViewWardModal({
               onChange={(e) => setNewPersonInCharge(e.target.value)}
             >
               {consultants.map((consultant, index) => (
-                <MenuItem key={index} value={consultant._id}>
+                // !assignedConsultants?.includes(consultant._id) &&
+                <MenuItem
+                  key={index}
+                  value={consultant._id}
+                  disabled={
+                    assignedConsultants?.includes(consultant._id) &&
+                    consultant._id != ward?.personInCharge._id
+                  }
+                >
                   {consultant.name}
                 </MenuItem>
               ))}

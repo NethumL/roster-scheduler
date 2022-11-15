@@ -24,6 +24,7 @@ export default function AddDoctorModal({
   handleAdd,
   allDoctors,
   doctors,
+  assignedDoctors,
 }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -35,7 +36,6 @@ export default function AddDoctorModal({
     setNewDoctor({});
   };
   const close = () => {
-    setIsInvalid(false);
     setNewDoctor({});
     handleClose();
   };
@@ -89,7 +89,11 @@ export default function AddDoctorModal({
             variant="standard"
           >
             {allDoctors.map((doctor) => (
-              <MenuItem key={doctor._id} value={doctor}>
+              <MenuItem
+                key={doctor._id}
+                value={doctor}
+                disabled={assignedDoctors?.includes(doctor._id)}
+              >
                 {doctor.name}
               </MenuItem>
             ))}

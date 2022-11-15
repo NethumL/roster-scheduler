@@ -33,7 +33,12 @@ import dbConnect from '@/lib/db';
 import { send } from '@/lib/util';
 import User from '@/lib/models/User';
 import Ward from '@/lib/models/Ward';
-export default function View({ doctors, allDoctors, wID }) {
+export default function View({
+  doctors,
+  allDoctors,
+  wID,
+  assignedDoctorsFinal,
+}) {
   // const router = useRouter();
   // const data = router.query;
   const theme = useTheme();
@@ -58,7 +63,8 @@ export default function View({ doctors, allDoctors, wID }) {
   const [searchedText, setSearchedText] = useState('');
   const [filteredDoctors, setFilteredDoctors] = useState(doctors);
   const [deleteIndex, setDeleteIndex] = useState(null);
-  //***
+  const [assignedDoctors_state, setAssignedDoctors_state] =
+    useState(assignedDoctorsFinal);
   const [Doctors, setDoctors] = useState(null);
   const handleCloseAddModal = () => {
     setOpenAddModal(false);
@@ -77,6 +83,14 @@ export default function View({ doctors, allDoctors, wID }) {
     } catch (error) {
       console.log(error);
     }
+    let arr = [...assignedDoctors_state];
+    // let index = assignedDoctors_state.findIndex((obj) => {
+    //   return obj._id === newDoctor._id;
+    // });
+
+    // arr.splice(index, 1);
+    arr.push(newDoctor._id);
+    setAssignedDoctors_state([...arr]);
     doctors.push(newDoctor);
     console.log(doctors);
     setDoctors(doctors.map((obj) => ({ ...obj })));
@@ -102,6 +116,13 @@ export default function View({ doctors, allDoctors, wID }) {
     } catch (error) {
       console.log(error);
     }
+    let arr = [...assignedDoctors_state];
+    let indx = assignedDoctors_state.findIndex((id) => {
+      return id === deletedItemL[0]._id;
+    });
+
+    arr.splice(indx, 1);
+    setAssignedDoctors_state([...arr]);
     setDoctors(doctors.map((obj) => ({ ...obj })));
     console.log(doctors);
     setOpenDeleteModal(false);
@@ -196,6 +217,7 @@ export default function View({ doctors, allDoctors, wID }) {
         handleAdd={handleAdd}
         allDoctors={allDoctors}
         doctors={doctors}
+        assignedDoctors={assignedDoctors_state}
       />
       <DeleteConfirmModal
         open={openDeleteModal}
@@ -211,6 +233,7 @@ export async function getServerSideProps(context) {
   let doctorsL = [];
   let doctors = [];
   let allDoctors = [];
+  let assignedDoctors = [];
   // const { data } = context.query;
   // console.log(context.query.data);
   try {
@@ -221,12 +244,19 @@ export async function getServerSideProps(context) {
       .select('doctors')
       .populate('doctors')
       .lean();
+    assignedDoctors = await Ward.find({}).select('doctors').lean();
+    let assignedDoctorsFinal = [];
+    assignedDoctors.forEach((doc) => {
+      assignedDoctorsFinal.push(...JSON.parse(JSON.stringify(doc.doctors)));
+    });
+    console.log('assignedDoctors');
+    console.log('assignedDoctors', assignedDoctorsFinal);
     doctors = doctorsL[0].doctors;
     doctors = JSON.parse(JSON.stringify(doctors));
     allDoctors = JSON.parse(JSON.stringify(allDoctors));
     console.log(doctors);
     const wID = context.query.w_id;
-    return { props: { doctors, allDoctors, wID } };
+    return { props: { doctors, allDoctors, wID, assignedDoctorsFinal } };
   } catch (error) {
     return {
       redirect: {
