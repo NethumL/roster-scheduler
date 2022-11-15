@@ -49,7 +49,7 @@ export default function ExchangePage({
 
   const saveNewExchange = async (newExchange) => {
     const response = await send('POST', `/api/roster/exchange`, newExchange);
-    setExchangeRequests([...exchangeRequests, newExchange]);
+    setExchangeRequests([...exchangeRequests, response.exchange]);
   };
 
   /**
@@ -109,7 +109,7 @@ export default function ExchangePage({
   );
 
   return (
-    <Container>
+    <Container sx={{ marginBottom: '15px' }}>
       <Typography textAlign="right">Ward: ER</Typography>
       <Grid
         container
