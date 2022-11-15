@@ -143,7 +143,7 @@ export async function getServerSideProps(context) {
   if (user.type === 'CONSULTANT') {
     ward = await Ward.find({ consultant: user._id })
       .populate('personInCharge')
-      .populate('docotrs')
+      .populate('doctors')
       .populate('shifts')
       .lean();
   } else if (user.type === 'DOCTOR') {
