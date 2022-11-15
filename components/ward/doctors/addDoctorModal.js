@@ -17,6 +17,7 @@ import {
 import { useState } from 'react';
 import { Close } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
+import Alert from '@mui/material/Alert';
 
 export default function AddDoctorModal({
   open,
@@ -25,6 +26,8 @@ export default function AddDoctorModal({
   allDoctors,
   doctors,
   assignedDoctors,
+  isEmpty,
+  setIsEmpty,
 }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -78,6 +81,17 @@ export default function AddDoctorModal({
           <DialogTitle sx={{ ml: 2, flex: 1 }}>ADD DOCTOR</DialogTitle>
         )}
         <DialogContent sx={{ p: 5 }}>
+          {isEmpty && (
+            <Alert
+              severity="error"
+              sx={{ marginY: '10px' }}
+              onClose={() => {
+                setIsEmpty(false);
+              }}
+            >
+              One of the doctors must be selected
+            </Alert>
+          )}
           <TextField
             id="select-doctor"
             select

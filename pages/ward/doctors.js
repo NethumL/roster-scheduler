@@ -66,7 +66,10 @@ export default function View({
   const [assignedDoctors_state, setAssignedDoctors_state] =
     useState(assignedDoctorsFinal);
   const [Doctors, setDoctors] = useState(null);
+  const [isEmpty, setIsEmpty] = useState(false);
+
   const handleCloseAddModal = () => {
+    setIsEmpty(false);
     setOpenAddModal(false);
   };
   const handleCloseDeleteModal = () => {
@@ -74,27 +77,28 @@ export default function View({
   };
 
   const handleAdd = async (newDoctor) => {
-    const body = {
-      _id: wID,
-      doctor: newDoctor._id,
-    };
-    try {
-      await send('PUT', '/api/ward/doctors/addDoctor', body);
-    } catch (error) {
-      console.log(error);
-    }
-    let arr = [...assignedDoctors_state];
-    // let index = assignedDoctors_state.findIndex((obj) => {
-    //   return obj._id === newDoctor._id;
-    // });
+    if (newDoctor != undefined && newDoctor._id != undefined) {
+      setIsEmpty(false);
+      const body = {
+        _id: wID,
+        doctor: newDoctor._id,
+      };
+      try {
+        await send('PUT', '/api/ward/doctors/addDoctor', body);
+      } catch (error) {
+        console.log(error);
+      }
+      let arr = [...assignedDoctors_state];
 
-    // arr.splice(index, 1);
-    arr.push(newDoctor._id);
-    setAssignedDoctors_state([...arr]);
-    doctors.push(newDoctor);
-    console.log(doctors);
-    setDoctors(doctors.map((obj) => ({ ...obj })));
-    setOpenAddModal(false);
+      arr.push(newDoctor._id);
+      setAssignedDoctors_state([...arr]);
+      doctors.push(newDoctor);
+      console.log(doctors);
+      setDoctors(doctors.map((obj) => ({ ...obj })));
+      setOpenAddModal(false);
+    } else {
+      setIsEmpty(true);
+    }
   };
   const handleDelete = (index) => {
     console.log('handleDelete');
@@ -218,6 +222,8 @@ export default function View({
         allDoctors={allDoctors}
         doctors={doctors}
         assignedDoctors={assignedDoctors_state}
+        isEmpty={isEmpty}
+        setIsEmpty={setIsEmpty}
       />
       <DeleteConfirmModal
         open={openDeleteModal}

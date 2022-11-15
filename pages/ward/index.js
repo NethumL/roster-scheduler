@@ -42,6 +42,7 @@ export default function View({ wards, consultants, assignedConsultants }) {
   const [selectedWard, setSelectedWard] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [openViewModal, setOpenViewModal] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const [searchedText, setSearchedText] = useState('');
   const [filteredWards, setFilteredWards] = useState(wards);
@@ -60,6 +61,7 @@ export default function View({ wards, consultants, assignedConsultants }) {
   };
 
   const handleCloseViewModal = () => {
+    setIsEmpty(false);
     setSelectedWard(null);
     setSelectedIndex(null);
     setOpenViewModal(false);
@@ -76,85 +78,103 @@ export default function View({ wards, consultants, assignedConsultants }) {
     newMinNumDoctorsPerShift,
     newStatusAdjacentShifts
   ) => {
-    const body = {
-      name: newName,
-      description: newDescription,
-      personInCharge: newPersonInCharge,
-      shifts: newShifts,
-      minNumberOfDoctors: newMinNumDoctors,
-      maxNumberOfLeaves: newMaxNumLeaves,
-      minNumberOfDoctorsPerShift: newMinNumDoctorsPerShift,
-      allowAdjacentShifts: newStatusAdjacentShifts,
-    };
-    if (selectedIndex != null) {
-      let arr = [...assignedConsultants_state];
-      let index = assignedConsultants_state.findIndex((id) => {
-        return id === wards[selectedIndex].personInCharge._id;
-      });
-
-      arr.splice(index, 1);
-      arr.push(newPersonInCharge._id);
-      setAssignedConsultants_state([...arr]);
-      body._id = wards[selectedIndex]._id;
-      try {
-        const wrd = await send('PUT', '/api/ward/wards/editWard', body);
-        console.log(wrd);
-      } catch (error) {
-        console.log(error);
+    if (
+      newName != '' &&
+      newDescription != '' &&
+      newPersonInCharge != undefined &&
+      newNumDutyCycles != '' &&
+      newMaxNumLeaves != ''
+    ) {
+      var err = false;
+      for (var i = 0; i < newNumDutyCycles; i++) {
+        if (newShifts[i].name == '') {
+          err = true;
+          break;
+        }
       }
-      console.log(wards[selectedIndex]);
-      wards[selectedIndex].name = newName;
-      wards[selectedIndex].description = newDescription;
-      wards[selectedIndex].personInCharge = newPersonInCharge;
-      wards[selectedIndex].shifts = newShifts;
-      wards[selectedIndex].minNumberOfDoctors = newMinNumDoctors;
-      wards[selectedIndex].maxNumberOfLeaves = newMaxNumLeaves;
-      wards[selectedIndex].minNumberOfDoctorsPerShift =
-        newMinNumDoctorsPerShift;
-      wards[selectedIndex].allowAdjacentShifts = newStatusAdjacentShifts;
+      if (!err) {
+        setIsEmpty(false);
+        const body = {
+          name: newName,
+          description: newDescription,
+          personInCharge: newPersonInCharge,
+          shifts: newShifts,
+          minNumberOfDoctors: newMinNumDoctors,
+          maxNumberOfLeaves: newMaxNumLeaves,
+          minNumberOfDoctorsPerShift: newMinNumDoctorsPerShift,
+          allowAdjacentShifts: newStatusAdjacentShifts,
+        };
+        if (selectedIndex != null) {
+          let arr = [...assignedConsultants_state];
+          let index = assignedConsultants_state.findIndex((id) => {
+            return id === wards[selectedIndex].personInCharge._id;
+          });
 
-      console.log('body');
-      console.log(body);
+          arr.splice(index, 1);
+          arr.push(newPersonInCharge._id);
+          setAssignedConsultants_state([...arr]);
+          body._id = wards[selectedIndex]._id;
+          try {
+            const wrd = await send('PUT', '/api/ward/wards/editWard', body);
+            console.log(wrd);
+          } catch (error) {
+            console.log(error);
+          }
+          console.log(wards[selectedIndex]);
+          wards[selectedIndex].name = newName;
+          wards[selectedIndex].description = newDescription;
+          wards[selectedIndex].personInCharge = newPersonInCharge;
+          wards[selectedIndex].shifts = newShifts;
+          wards[selectedIndex].minNumberOfDoctors = newMinNumDoctors;
+          wards[selectedIndex].maxNumberOfLeaves = newMaxNumLeaves;
+          wards[selectedIndex].minNumberOfDoctorsPerShift =
+            newMinNumDoctorsPerShift;
+          wards[selectedIndex].allowAdjacentShifts = newStatusAdjacentShifts;
+
+          console.log('body');
+          console.log(body);
+        } else {
+          console.log(wards);
+
+          console.log('body');
+          console.log(body);
+          const wrd = {};
+          try {
+            wrd = await send('POST', '/api/ward/wards/newWard', body);
+            console.log('wrd');
+            console.log(wrd);
+            console.log(wrd.ward._id);
+          } catch (error) {
+            console.log(error);
+          }
+          // const shiftsNew = await Ward.find({ _id: wrd.ward._id })
+          //   .select('shifts')
+          //   .populate('shifts')
+          //   .lean();
+          let arr = [...assignedConsultants_state];
+          arr.push(newPersonInCharge._id);
+          setAssignedConsultants_state([...arr]);
+          wards.push({
+            _id: wrd._id,
+            name: newName,
+            description: newDescription,
+            personInCharge: newPersonInCharge,
+            shifts: newShifts,
+            minNumberOfDoctors: parseInt(newMinNumDoctors),
+            maxNumberOfLeaves: parseInt(newMaxNumLeaves),
+            minNumberOfDoctorsPerShift: parseInt(newMinNumDoctorsPerShift),
+            allowAdjacentShifts: newStatusAdjacentShifts,
+          });
+        }
+        setSelectedWard(null);
+        setSelectedIndex(null);
+        setOpenViewModal(false);
+      } else {
+        setIsEmpty(true);
+      }
     } else {
-      console.log(wards);
-
-      console.log('body');
-      console.log(body);
-      const wrd = {};
-      try {
-        wrd = await send('POST', '/api/ward/wards/newWard', body);
-        console.log('wrd');
-        console.log(wrd);
-        console.log(wrd.ward._id);
-      } catch (error) {
-        console.log(error);
-      }
-      // const shiftsNew = await Ward.find({ _id: wrd.ward._id })
-      //   .select('shifts')
-      //   .populate('shifts')
-      //   .lean();
-      let arr = [...assignedConsultants_state];
-      arr.push(newPersonInCharge._id);
-      setAssignedConsultants_state([...arr]);
-      wards.push({
-        _id: wrd._id,
-        name: newName,
-        description: newDescription,
-        personInCharge: newPersonInCharge,
-        shifts: newShifts,
-        minNumberOfDoctors: parseInt(newMinNumDoctors),
-        maxNumberOfLeaves: parseInt(newMaxNumLeaves),
-        minNumberOfDoctorsPerShift: parseInt(newMinNumDoctorsPerShift),
-        allowAdjacentShifts: newStatusAdjacentShifts,
-      });
-      console.log('***wards');
-      console.log(wards);
+      setIsEmpty(true);
     }
-    console.log('***wards');
-    console.log(wards);
-    setSelectedWard(null);
-    setSelectedIndex(null);
-    setOpenViewModal(false);
   };
   const handleNewWardModal = () => {
     setOpenViewModal(true);
@@ -235,6 +255,8 @@ export default function View({ wards, consultants, assignedConsultants }) {
         handleSave={handleSaveEdit}
         consultants={consultants}
         assignedConsultants={assignedConsultants_state}
+        isEmpty={isEmpty}
+        setIsEmpty={setIsEmpty}
       />
     </Container>
   );
@@ -282,7 +304,7 @@ export async function getServerSideProps(context) {
     assignedConsultants = assignedConsultants.map(
       (obj) => obj.personInCharge._id
     );
-    console.log(assignedConsultants);
+    console.log(wards);
     console.log(consultants);
     return { props: { wards, consultants, assignedConsultants } };
   } catch (error) {

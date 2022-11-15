@@ -51,6 +51,8 @@ export default function View({
     )
   );
   const [error, setError] = useState(false);
+  const [isSavedLeaves, setIsSavedLeaves] = useState(false);
+  const [isSavedPrefs, setIsSavedPrefs] = useState(false);
   const [leaves, setLeaves] = useState(leaveDates.map((str) => new Date(str)));
   const [savedLeaves, setSavedLeaves] = useState(
     leaveDates.map((str) => new Date(str))
@@ -61,7 +63,10 @@ export default function View({
     ? 'column'
     : 'row';
   const height = useMediaQuery(theme.breakpoints.down('md')) ? 'auto' : 530;
-
+  const margn = useMediaQuery(theme.breakpoints.down('md')) ? 'auto' : 7;
+  const bordr = useMediaQuery(theme.breakpoints.down('md'))
+    ? '10px solid #e9f3fc'
+    : '37px solid #e9f3fc';
   const [savedPrefs, setSavedPrefs] = useState(
     preferences.map((obj) => ({ ...obj }))
   );
@@ -71,7 +76,7 @@ export default function View({
   };
 
   const handleCancel = () => {
-    // setPrefs(null);
+    setIsSavedPrefs(false);
     setPrefs(savedPrefs.map((obj) => ({ ...obj })));
   };
   const handleSave = async () => {
@@ -79,17 +84,15 @@ export default function View({
       doctor: u_id,
       preferenceOrder: prefs,
     };
-    // saved = prefs.map((obj) => ({ ...obj }));
     setSavedPrefs(prefs.map((obj) => ({ ...obj })));
     try {
       await send('PUT', '/api/ward/preferences/setPreference', body);
     } catch (error) {
       console.log(error);
     }
+    setIsSavedPrefs(true);
   };
-  // useEffect(() => {
-  //   setPrefs(preferences.map((obj) => ({ ...obj })));
-  // }, [preferences]);
+
   const handleSaveLeaves = async () => {
     const body = {
       doctor: u_id,
@@ -101,8 +104,10 @@ export default function View({
       console.log(error);
     }
     setSavedLeaves([...leaves]);
+    setIsSavedLeaves(true);
   };
   const handleCancelLeaves = () => {
+    setIsSavedLeaves(false);
     setLeaves([...savedLeaves]);
   };
   // useEffect(() => {
@@ -122,72 +127,34 @@ export default function View({
           >
             Leave Dates for Next Month
           </Typography>
+          {isSavedLeaves && (
+            <Alert
+              severity="success"
+              sx={{ marginY: '10px' }}
+              onClose={() => {
+                setIsSavedLeaves(false);
+              }}
+            >
+              Successfully saved.
+            </Alert>
+          )}
           <Stack
             direction={direction}
             spacing={2}
             width="100%"
             justifyContent="center"
           >
-            {!fullScreen && (
-              <Card sx={{ border: '37px solid #e9f3fc' }}>
-                <Box sx={{ margin: 7 }}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <StaticDatePicker
-                      displayStaticWrapperAs="desktop"
-                      disableHighlightToday={true}
-                      value={value}
-                      sx={{ margin: 5 }}
-                      onChange={(newValue) => {
-                        if (leaves.length != maxLeaves) {
-                          if (
-                            !leaves
-                              .map((obj) => obj.getTime())
-                              .includes(newValue['$d'].getTime())
-                          ) {
-                            setValue(newValue['$d']);
-                            setLeaves((leaves) => [...leaves, newValue['$d']]);
-                          }
-                        } else {
-                          setError(true);
-                        }
-                      }}
-                      inputVariant="outlined"
-                      minDate={
-                        new Date(
-                          new Date(Date.now()).getFullYear(),
-                          new Date(Date.now()).getMonth() + 1,
-                          1
-                        )
-                      }
-                      maxDate={
-                        new Date(
-                          new Date(Date.now()).getFullYear(),
-                          new Date(Date.now()).getMonth() + 2,
-                          0
-                        )
-                      }
-                      defaultDate={
-                        new Date(
-                          new Date(Date.now()).getFullYear(),
-                          new Date(Date.now()).getMonth() + 1,
-                          1
-                        )
-                      }
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                  </LocalizationProvider>
-                </Box>
-              </Card>
-            )}
-            {fullScreen && (
-              <Card sx={{ border: '10px solid #e9f3fc' }}>
+            <Card sx={{ border: bordr }}>
+              <Box sx={{ margin: margn }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <StaticDatePicker
                     displayStaticWrapperAs="desktop"
+                    // openTo="month"
                     disableHighlightToday={true}
                     value={value}
                     sx={{ margin: 5 }}
                     onChange={(newValue) => {
+                      setIsSavedLeaves(false);
                       if (leaves.length != maxLeaves) {
                         if (
                           !leaves
@@ -226,8 +193,9 @@ export default function View({
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </LocalizationProvider>
-              </Card>
-            )}
+              </Box>
+            </Card>
+            {/* )} */}
             <Card
               sx={{
                 padding: 2,
@@ -251,7 +219,8 @@ export default function View({
               Maximum number of leaves can not be exceeded.
             </Alert>
           )}
-          <Box sx={{ paddingTop: 1, paddingBottom: 4 }}>
+
+          <Box sx={{ paddingTop: 1, paddingBottom: 4, mb: 2 }}>
             <Button
               variant="contained"
               onClick={handleSaveLeaves}
@@ -268,7 +237,8 @@ export default function View({
               CANCEL
             </Button>
           </Box>
-          <Box>
+
+          <Box sx={{ mb: 8 }}>
             <Typography
               variant="h5"
               component="div"
@@ -283,8 +253,23 @@ export default function View({
             >
               Preference Order for Duty Cycles
             </Typography>
+            {isSavedPrefs && (
+              <Alert
+                severity="success"
+                sx={{ mb: 3 }}
+                onClose={() => {
+                  setIsSavedPrefs(false);
+                }}
+              >
+                Successfully saved.
+              </Alert>
+            )}
             <Card sx={{ ml: 1, mr: 1, border: '10px solid #e9f3fc' }}>
-              <PreferenceTable preferences={[...prefs]} setNew={setPrefs} />
+              <PreferenceTable
+                preferences={[...prefs]}
+                setNew={setPrefs}
+                setSavedPrefs={setIsSavedPrefs}
+              />
             </Card>
 
             <Button

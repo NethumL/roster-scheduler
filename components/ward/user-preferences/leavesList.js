@@ -10,7 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import { Tooltip } from '@mui/material';
 import { useState, useEffect } from 'react';
 
-export default function LeaveList({ dates, setNew }) {
+export default function LeaveList({ dates, setNew, setIsSavedLeaves }) {
   const [newDates, setNewDates] = useState([]);
   const handleDelete = (index) => {
     var temp = [...newDates];
@@ -39,7 +39,10 @@ export default function LeaveList({ dates, setNew }) {
             <IconButton
               edge="end"
               aria-label="doctors"
-              onClick={() => handleDelete(index)}
+              onClick={() => {
+                setIsSavedLeaves(false);
+                handleDelete(index);
+              }}
             >
               <Tooltip title="Discard">
                 <CloseIcon />

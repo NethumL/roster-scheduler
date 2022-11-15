@@ -15,13 +15,23 @@ import { useState, useEffect } from 'react';
 import colgroup from '@mui/material/';
 import dayjs from 'dayjs';
 
-export default function PreferenceTable({ preferences, setNew }) {
+export default function PreferenceTable({
+  preferences,
+  setNew,
+  setSavedPrefs,
+}) {
   const [newPreferences, setNewPreferences] = useState(
     preferences.map((obj) => ({ ...obj }))
   );
   const handleChange = (val, i, j) => {
+    setSavedPrefs(false);
     var temp = [...newPreferences];
     if (val) {
+      temp.map((pref) => {
+        if (pref.rank == j + 1) {
+          pref.rank = temp[i].rank;
+        }
+      });
       temp[i].rank = j + 1;
     }
     setNewPreferences(temp.map((obj) => ({ ...obj })));

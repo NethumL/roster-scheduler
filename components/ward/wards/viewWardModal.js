@@ -30,7 +30,7 @@ import { Close } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import ShiftList from './shiftList';
 import { Tooltip } from '@mui/material';
-
+import Alert from '@mui/material/Alert';
 export default function ViewWardModal({
   open,
   ward,
@@ -38,6 +38,8 @@ export default function ViewWardModal({
   handleSave,
   consultants,
   assignedConsultants,
+  isEmpty,
+  setIsEmpty,
 }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -50,7 +52,7 @@ export default function ViewWardModal({
   const [newPersonInCharge, setNewPersonInCharge] = useState(
     ward?.personInCharge._id
   );
-  const [newNumDutyCycles, setNewNumDutyCycles] = useState('');
+  const [newNumDutyCycles, setNewNumDutyCycles] = useState(1);
   const [newShifts, setNewShifts] = useState([]);
   const [newMinNumDoctors, setNewMinNumDoctors] = useState('');
   const [newMaxNumLeaves, setNewMaxNumLeaves] = useState('');
@@ -86,7 +88,7 @@ export default function ViewWardModal({
     setNewPersonInCharge(ward ? ward.personInCharge._id : '');
     console.log('pic');
     console.log(ward?.personInCharge);
-    setNewNumDutyCycles(ward ? ward.shifts.length : '');
+    setNewNumDutyCycles(ward ? ward.shifts.length : 1);
     setNewShifts(ward ? ward.shifts : []);
     setNewMinNumDoctors(ward ? ward.minNumberOfDoctors : '');
     setNewMaxNumLeaves(ward ? ward.maxNumberOfLeaves : '');
@@ -173,6 +175,18 @@ export default function ViewWardModal({
           </DialogTitle>
         )}
         <DialogContent sx={{ p: 5 }}>
+          {isEmpty && (
+            <Alert
+              severity="error"
+              sx={{ marginY: '10px' }}
+              onClose={() => {
+                setIsEmpty(false);
+              }}
+            >
+              Name, Description,Person in charge, Number of duty cycles per day,
+              Shift details Maximum number of leaves can not be empty
+            </Alert>
+          )}
           <TextField
             required
             autoFocus
@@ -235,7 +249,7 @@ export default function ViewWardModal({
             value={newNumDutyCycles}
             onChange={(e) => setNewNumDutyCycles(e.target.value)}
             type="number"
-            InputProps={{ inputProps: { min: 0 } }}
+            InputProps={{ inputProps: { min: 1 } }}
             fullWidth
             disabled={!isEdit}
             variant="standard"
@@ -281,6 +295,7 @@ export default function ViewWardModal({
           />
           <TextField
             autoFocus
+            required
             margin="dense"
             id="edit-MaxNumLeaves"
             label="Maximum number of leaves"
