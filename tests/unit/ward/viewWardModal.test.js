@@ -8,6 +8,12 @@ describe('ViewWardModal', () => {
       _id: '63399f126812100f54957454',
       name: 'Ward 2',
       description: 'children ward',
+      personInCharge: {
+        _id: '633adc7cc3fa58ef887b8b0d',
+        name: 'Sasitha Kumarasinghe',
+        username: 'sasitha',
+        type: 'CONSULTANT',
+      },
       shifts: [
         {
           name: 'morning',
@@ -22,6 +28,10 @@ describe('ViewWardModal', () => {
           _id: '63399f126812100f54957456',
         },
       ],
+      minNumberOfDoctors: 1,
+      maxNumberOfLeaves: 0,
+      minNumberOfDoctorsPerShift: 1,
+      allowAdjacentShifts: true,
     };
     const consultants = [
       {
