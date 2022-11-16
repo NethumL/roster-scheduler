@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/router';
 
-export default function ViewRosterPage({ user, year, month, roster }) {
+export default function ViewRosterPage({ user, year, month, roster, months }) {
   const router = useRouter();
 
   const handleChange = (event) => {
@@ -61,8 +61,9 @@ export default function ViewRosterPage({ user, year, month, roster }) {
                 label="Month"
                 onChange={handleChange}
               >
-                <MenuItem value={'2022/11'}>November 2022</MenuItem>
-                <MenuItem value={'2022/12'}>December 2022</MenuItem>
+                {months.map((m) => (
+                  <MenuItem value={m.id}>{m.name}</MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
@@ -127,6 +128,18 @@ export async function getServerSideProps(context) {
   try {
     const user = await getUser(context.req);
 
+    if (
+      !context.query.hasOwnProperty('year') ||
+      !context.query.hasOwnProperty('month')
+    ) {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
+    }
+
     // @ts-ignore
     const year = parseInt(context.query.year);
     // @ts-ignore
@@ -174,12 +187,24 @@ export async function getServerSideProps(context) {
       return { redirect: { destination: '/', permanent: false } };
     }
 
+    const allRosters = await Roster.find({ ward: ward._id }).lean();
+    const months = allRosters.map((r) => {
+      const y = r.month.getFullYear();
+      const m = r.month.getMonth() + 1;
+      return {
+        id: `${y}/${m}`,
+        name: r.month.toLocaleString('en-US', { month: 'long' }) + ' ' + y,
+      };
+    });
+    console.log(months);
+
     return {
       props: {
         user,
         year,
         month,
         roster: data,
+        months,
       },
     };
   } catch (error) {
