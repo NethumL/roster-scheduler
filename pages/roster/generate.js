@@ -4,7 +4,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
-  CircularProgress,
   FormControl,
   Grid,
   IconButton,
@@ -17,10 +16,15 @@ import {
 import { Container } from '@mui/system';
 import { useState } from 'react';
 
+const GENERATING_ROSTER_MESSAGE = 'Generating roster...';
+const GENERATING_ROSTER_ERROR = 'Error while generating roster';
+
 export default function GenerateRosterPage() {
   const [month, setMonth] = useState('current');
-  const [isLoading, setIsLoading] = useState(false);
 
+  const [snackbarMessage, setSnackbarMessage] = useState(
+    GENERATING_ROSTER_MESSAGE
+  );
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
   const handleChange = (event) => {
@@ -41,15 +45,15 @@ export default function GenerateRosterPage() {
     }
 
     try {
-      setIsLoading(true);
       await send(
         'GET',
         `/api/roster/generate?year=${yearNum}&month=${monthNum}`
       );
       setIsSnackbarOpen(true);
+      setSnackbarMessage(GENERATING_ROSTER_MESSAGE);
     } catch (error) {
       console.error(error.message);
-      setIsLoading(false);
+      setSnackbarMessage(GENERATING_ROSTER_ERROR);
     }
   };
 
@@ -119,25 +123,9 @@ export default function GenerateRosterPage() {
         <Grid item xs={7}></Grid>
         <Grid item xs={3}>
           <Box sx={{ m: 1, position: 'relative' }}>
-            <Button
-              variant="contained"
-              color="success"
-              disabled={isLoading}
-              onClick={handleClick}
-            >
+            <Button variant="contained" color="success" onClick={handleClick}>
               Generate
             </Button>
-            {isLoading && (
-              <CircularProgress
-                size={24}
-                disableShrink
-                sx={{
-                  position: 'absolute',
-                  top: '20%',
-                  left: '50%',
-                }}
-              />
-            )}
           </Box>
         </Grid>
         <Grid item xs></Grid>
@@ -146,7 +134,7 @@ export default function GenerateRosterPage() {
         open={isSnackbarOpen}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        message="Generating roster..."
+        message={snackbarMessage}
         action={snackbarAction}
       />
     </Container>
