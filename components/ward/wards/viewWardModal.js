@@ -183,8 +183,8 @@ export default function ViewWardModal({
                 setIsEmpty(false);
               }}
             >
-              Name, Description,Person in charge, Number of duty cycles per day,
-              Shift details Maximum number of leaves can not be empty
+              Name, Description,Person in charge, Number of duty cycles per day
+              and Shift details can not be empty
             </Alert>
           )}
           <TextField
@@ -315,7 +315,7 @@ export default function ViewWardModal({
             value={newMinNumDoctorsPerShift}
             onChange={(e) => setNewMinNumDoctorsPerShift(e.target.value)}
             type="number"
-            InputProps={{ inputProps: { min: 1 } }}
+            InputProps={{ inputProps: { min: 0 } }}
             fullWidth
             disabled={!isEdit}
             variant="standard"

@@ -82,8 +82,7 @@ export default function View({ wards, consultants, assignedConsultants }) {
       newName != '' &&
       newDescription != '' &&
       newPersonInCharge != undefined &&
-      newNumDutyCycles != '' &&
-      newMaxNumLeaves != ''
+      newNumDutyCycles != ''
     ) {
       var err = false;
       for (var i = 0; i < newNumDutyCycles; i++) {
