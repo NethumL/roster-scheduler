@@ -1,24 +1,27 @@
 import { getUser } from '@/lib/auth/session';
 import { send } from '@/lib/util';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
   CircularProgress,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
   Typography,
 } from '@mui/material';
 import { Container } from '@mui/system';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 export default function GenerateRosterPage() {
-  const router = useRouter();
   const [month, setMonth] = useState('current');
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
   const handleChange = (event) => {
     setMonth(event.target.value);
@@ -43,12 +46,33 @@ export default function GenerateRosterPage() {
         'GET',
         `/api/roster/generate?year=${yearNum}&month=${monthNum}`
       );
-      router.push('/');
+      setIsSnackbarOpen(true);
     } catch (error) {
       console.error(error.message);
       setIsLoading(false);
     }
   };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setIsSnackbarOpen(false);
+  };
+
+  const snackbarAction = (
+    <>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleCloseSnackbar}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  );
 
   return (
     <Container>
@@ -118,6 +142,13 @@ export default function GenerateRosterPage() {
         </Grid>
         <Grid item xs></Grid>
       </Grid>
+      <Snackbar
+        open={isSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message="Generating roster..."
+        action={snackbarAction}
+      />
     </Container>
   );
 }
