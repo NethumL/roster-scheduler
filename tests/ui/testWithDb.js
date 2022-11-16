@@ -1,8 +1,9 @@
 import { loadEnvConfig } from '@next/env';
+import { test } from '@playwright/test';
 import mongoose from 'mongoose';
 import User from '../../lib/models/User';
 
-export const setupDb = async () => {
+test.beforeEach(async () => {
   const projectDir = process.cwd();
   loadEnvConfig(projectDir);
 
@@ -15,9 +16,11 @@ export const setupDb = async () => {
     type: 'ADMIN',
   });
   await user.save();
-};
+});
 
-export const teardownDb = async () => {
+test.afterEach(async () => {
   await mongoose.connect(process.env.MONGODB_URI);
   await User.deleteMany({});
-};
+});
+
+export default test;
