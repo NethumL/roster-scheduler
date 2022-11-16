@@ -119,7 +119,7 @@ const Layout = ({ children, user, setUser }) => {
       return true;
     } else if (
       user.type === 'CONSULTANT' &&
-      disallowedForAdmin.includes(route)
+      disallowedForConsultant.includes(route)
     ) {
       return true;
     } else if (user.type === 'ADMIN' && disallowedForAdmin.includes(route)) {
