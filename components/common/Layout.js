@@ -58,6 +58,8 @@ const pageGroups = [
   },
 ];
 const disallowedForDoctor = ['/roster/generate', '/roster/edit'];
+const disallowedForConsultant = ['/ward/user-preferences'];
+const disallowedForAdmin = ['/report', '/ward/user-preferences'];
 const onlyForDoctor = ['/roster/exchange'];
 const accountLinks = [
   { href: '/api/logout', title: 'Logout' },
@@ -115,6 +117,13 @@ const Layout = ({ children, user, setUser }) => {
       return true;
     } else if (user.type !== 'DOCTOR' && onlyForDoctor.includes(route)) {
       return true;
+    } else if (
+      user.type === 'CONSULTANT' &&
+      disallowedForAdmin.includes(route)
+    ) {
+      return true;
+    } else if (user.type === 'ADMIN' && disallowedForAdmin.includes(route)) {
+      return true;
     }
     return false;
   };
@@ -133,7 +142,8 @@ const Layout = ({ children, user, setUser }) => {
             (page) => !isRouteDisallowed(user, page.href)
           ),
         };
-      });
+      })
+      .filter((pageGroup) => pageGroup.items.length > 0);
   };
 
   useEffect(() => {
