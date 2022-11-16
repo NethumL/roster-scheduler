@@ -24,9 +24,6 @@ jobs:
     services:
       mongodb:
         image: healthcheck/mongo
-        env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: password
         options: >-
           --health-cmd mongo
           --health-interval 10s
@@ -35,7 +32,7 @@ jobs:
         ports:
           - 27017:27017
     env:
-      MONGODB_URI: mongodb://root:password@localhost:27017/test
+      MONGODB_URI: mongodb://localhost:27017/test
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
       NODE_ENV: test
     steps:
