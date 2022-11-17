@@ -170,8 +170,8 @@ export default function RegisterPage() {
         justifyContent="space-between"
         sx={{ marginTop: '55px', marginBottom: '20px' }}
       >
-        <Grid item xs={3}></Grid>
-        <Grid item xs={4}>
+        <Grid item xs={3} md={5}></Grid>
+        <Grid item xs={4} md={1}>
           <Button
             variant="contained"
             color="primary"
@@ -180,12 +180,12 @@ export default function RegisterPage() {
             Login
           </Button>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} md={1} sx={{ textAlign: 'right' }}>
           <Button variant="contained" color="success" type="submit">
             Register
           </Button>
         </Grid>
-        <Grid item xs></Grid>
+        <Grid item xs={2} md={5}></Grid>
       </Grid>
     </form>
   );
