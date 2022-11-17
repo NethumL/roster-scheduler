@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import mongoose from 'mongoose';
 import NewUser from '../../../lib/models/NewUser';
-import test from '../testWithDb';
+import test from '../fixtures';
 
 test('should redirect after successful register', async ({ page, baseURL }) => {
   await page.goto('/auth/register');

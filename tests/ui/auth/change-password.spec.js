@@ -1,7 +1,7 @@
 import User from '../../../lib/models/User';
 import { expect } from '@playwright/test';
 import mongoose from 'mongoose';
-import test from '../testWithDb';
+import test from '../fixtures';
 import { compareSync } from 'bcryptjs';
 
 test('should change password', async ({ page, baseURL }) => {

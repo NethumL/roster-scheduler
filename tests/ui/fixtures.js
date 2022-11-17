@@ -4,7 +4,19 @@ import mongoose from 'mongoose';
 import NewUser from '../../lib/models/NewUser';
 import User from '../../lib/models/User';
 
-test.beforeEach(async () => {
+export default test.extend({
+  sharedBeforeEach: [
+    async ({}, use) => {
+      await setup();
+      await use();
+      await teardown();
+    },
+    // @ts-ignore
+    { scope: 'test', auto: true },
+  ],
+});
+
+async function setup() {
   const projectDir = process.cwd();
   loadEnvConfig(projectDir);
 
@@ -18,16 +30,14 @@ test.beforeEach(async () => {
       type: 'ADMIN',
     },
   ]);
-});
+}
 
-test.afterEach(async () => {
+async function teardown() {
   await mongoose.connect(process.env.MONGODB_URI);
   await clearDb();
-});
+}
 
 async function clearDb() {
   await User.deleteMany({});
   await NewUser.deleteMany({});
 }
-
-export default test;

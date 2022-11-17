@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import test from '../testWithDb';
+import test from '../fixtures';
 
 test('should redirect to login', async ({ page, baseURL }) => {
   await page.goto('/auth/change-password');
