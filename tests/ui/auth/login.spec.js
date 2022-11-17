@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import test from './testWithDb';
+import test from '../testWithDb';
 
 test('should redirect to login', async ({ page, baseURL }) => {
   await page.goto('/auth/change-password');
@@ -9,7 +9,7 @@ test('should redirect to login', async ({ page, baseURL }) => {
 test('should redirect after successful login', async ({ page, baseURL }) => {
   await page.goto('/auth/login');
   expect(page.url()).toBe(baseURL + '/auth/login');
-  await page.getByLabel('Username').fill('john');
+  await page.getByLabel('Username').fill('admin');
   await page.getByLabel('Password').fill('password');
   await page.getByRole('button', { name: 'Login' }).last().click();
   await page.waitForLoadState('networkidle');
@@ -19,7 +19,7 @@ test('should redirect after successful login', async ({ page, baseURL }) => {
 test('should show error for invalid credentials', async ({ page, baseURL }) => {
   await page.goto('/auth/login');
   expect(page.url()).toBe(baseURL + '/auth/login');
-  await page.getByLabel('Username').fill('john');
+  await page.getByLabel('Username').fill('admin');
   await page.getByLabel('Password').fill('passwor');
   await page.getByRole('button', { name: 'Login' }).last().click();
   await page.waitForLoadState('networkidle');
