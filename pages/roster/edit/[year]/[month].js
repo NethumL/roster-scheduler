@@ -1,4 +1,5 @@
 import { getUser } from '@/lib/auth/session';
+import Head from 'next/head';
 import dbConnect from '@/lib/db';
 import Roster from '@/lib/models/Roster';
 import Ward from '@/lib/models/Ward';
@@ -71,80 +72,85 @@ export default function EditRosterPage({
   }
 
   return (
-    <Container>
-      <Typography textAlign="right">Ward: ER</Typography>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        rowSpacing={5}
-        marginTop="5px"
-      >
-        <Grid item>
-          <Typography variant="h4" textAlign="center">
-            Edit roster
-          </Typography>
-          <Typography variant="subtitle1" textAlign="center">
-            {year}/{month}
-          </Typography>
+    <>
+      <Head>
+        <title>{`Edit roster for ${year}/${month} | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
+      <Container>
+        <Typography textAlign="right">Ward: ER</Typography>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          rowSpacing={5}
+          marginTop="5px"
+        >
+          <Grid item>
+            <Typography variant="h4" textAlign="center">
+              Edit roster
+            </Typography>
+            <Typography variant="subtitle1" textAlign="center">
+              {year}/{month}
+            </Typography>
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        rowSpacing={5}
-        marginTop="5px"
-      >
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                {dayColumns}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {roster.map((row) => (
-                <TableRow
-                  key={row.name}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {row.name}
-                  </TableCell>
-                  {row.items.map((shift, index) => (
-                    <TableCell
-                      key={`${shift}${index}`}
-                      data-name={row.name}
-                      data-index={index}
-                    >
-                      <select onChange={handleShiftChange}>
-                        <option value=""></option>
-                        {shifts.map((s) => (
-                          <option value={s._id} selected={s._id === shift}>
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
-                    </TableCell>
-                  ))}
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          rowSpacing={5}
+          marginTop="5px"
+        >
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  {dayColumns}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Grid>
-      <Grid container justifyContent="space-between" sx={{ marginY: '55px' }}>
-        <Grid item xs={8}></Grid>
-        <Grid item xs={3}>
-          <Button variant="contained" color="success" onClick={handleUpdate}>
-            Update
-          </Button>
+              </TableHead>
+              <TableBody>
+                {roster.map((row) => (
+                  <TableRow
+                    key={row.name}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {row.name}
+                    </TableCell>
+                    {row.items.map((shift, index) => (
+                      <TableCell
+                        key={`${shift}${index}`}
+                        data-name={row.name}
+                        data-index={index}
+                      >
+                        <select onChange={handleShiftChange}>
+                          <option value=""></option>
+                          {shifts.map((s) => (
+                            <option value={s._id} selected={s._id === shift}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Grid>
-        <Grid item xs></Grid>
-      </Grid>
-    </Container>
+        <Grid container justifyContent="space-between" sx={{ marginY: '55px' }}>
+          <Grid item xs={8}></Grid>
+          <Grid item xs={3}>
+            <Button variant="contained" color="success" onClick={handleUpdate}>
+              Update
+            </Button>
+          </Grid>
+          <Grid item xs></Grid>
+        </Grid>
+      </Container>
+    </>
   );
 }
 

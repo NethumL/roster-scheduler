@@ -1,4 +1,5 @@
 import { getUser } from '@/lib/auth/session';
+import Head from 'next/head';
 import { send } from '@/lib/util';
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -79,65 +80,74 @@ export default function GenerateRosterPage() {
   );
 
   return (
-    <Container>
-      <Typography textAlign="right">Ward: ER</Typography>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        rowSpacing={5}
-        marginTop="5px"
-      >
-        <Grid item>
-          <Typography variant="h4" textAlign="center">
-            Generate roster
-          </Typography>
+    <>
+      <Head>
+        <title>{`Generate roster | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
+      <Container>
+        <Typography textAlign="right">Ward: ER</Typography>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          rowSpacing={5}
+          marginTop="5px"
+        >
+          <Grid item>
+            <Typography variant="h4" textAlign="center">
+              Generate roster
+            </Typography>
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        rowSpacing={5}
-        marginTop="5px"
-      >
-        <Grid item xs={3} md={5}></Grid>
-        <Grid item xs={6} md={2}>
-          <FormControl fullWidth>
-            <InputLabel id="month-select-label">Month</InputLabel>
-            <Select
-              labelId="month-select-label"
-              id="month-select"
-              value={month}
-              label="Month"
-              onChange={handleChange}
-            >
-              <MenuItem value="current">Current</MenuItem>
-              <MenuItem value="next">Next</MenuItem>
-            </Select>
-          </FormControl>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          rowSpacing={5}
+          marginTop="5px"
+        >
+          <Grid item xs={3} md={5}></Grid>
+          <Grid item xs={6} md={2}>
+            <FormControl fullWidth>
+              <InputLabel id="month-select-label">Month</InputLabel>
+              <Select
+                labelId="month-select-label"
+                id="month-select"
+                value={month}
+                label="Month"
+                onChange={handleChange}
+              >
+                <MenuItem value="current">Current</MenuItem>
+                <MenuItem value="next">Next</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={3} md={5}></Grid>
         </Grid>
-        <Grid item xs={3} md={5}></Grid>
-      </Grid>
-      <Grid container justifyContent="space-between" sx={{ marginTop: '55px' }}>
-        <Grid item xs={7}></Grid>
-        <Grid item xs={3}>
-          <Box sx={{ m: 1, position: 'relative' }}>
-            <Button variant="contained" color="success" onClick={handleClick}>
-              Generate
-            </Button>
-          </Box>
+        <Grid
+          container
+          justifyContent="space-between"
+          sx={{ marginTop: '55px' }}
+        >
+          <Grid item xs={7}></Grid>
+          <Grid item xs={3}>
+            <Box sx={{ m: 1, position: 'relative' }}>
+              <Button variant="contained" color="success" onClick={handleClick}>
+                Generate
+              </Button>
+            </Box>
+          </Grid>
+          <Grid item xs></Grid>
         </Grid>
-        <Grid item xs></Grid>
-      </Grid>
-      <Snackbar
-        open={isSnackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        message={snackbarMessage}
-        action={snackbarAction}
-      />
-    </Container>
+        <Snackbar
+          open={isSnackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          message={snackbarMessage}
+          action={snackbarAction}
+        />
+      </Container>
+    </>
   );
 }
 

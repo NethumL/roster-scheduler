@@ -8,6 +8,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 
@@ -37,74 +38,83 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        rowSpacing={5}
-        marginTop="5px"
-      >
-        <Grid item>
-          <Typography variant="h4" textAlign="center">
-            Change password
-          </Typography>
-        </Grid>
-      </Grid>
-      <Container>
-        {errorMsg && (
-          <Alert severity="error" sx={{ marginY: '10px' }}>
-            {errorMsg}
-          </Alert>
-        )}
+    <>
+      <Head>
+        <title>{`Change password | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
+      <form onSubmit={handleSubmit}>
         <Grid
           container
-          alignItems="center"
           justifyContent="center"
+          alignItems="center"
           rowSpacing={5}
+          marginTop="5px"
         >
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={6} md={2}>
-            <TextField
-              variant="standard"
-              label="Current password"
-              inputRef={currentPasswordRef}
-              type="password"
-            />
+          <Grid item>
+            <Typography variant="h4" textAlign="center">
+              Change password
+            </Typography>
           </Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={6} md={2}>
-            <TextField
-              variant="standard"
-              label="New password"
-              inputRef={newPasswordRef}
-              type="password"
-            />
-          </Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={6} md={2}>
-            <TextField
-              variant="standard"
-              label="Confirm password"
-              inputRef={confirmPasswordRef}
-              type="password"
-            />
-          </Grid>
-          <Grid item xs={3} md={5}></Grid>
         </Grid>
-      </Container>
-      <Grid container justifyContent="space-between" sx={{ marginTop: '55px' }}>
-        <Grid item xs={7}></Grid>
-        <Grid item xs={3}>
-          <Button variant="contained" color="success" type="submit">
-            Update
-          </Button>
+        <Container>
+          {errorMsg && (
+            <Alert severity="error" sx={{ marginY: '10px' }}>
+              {errorMsg}
+            </Alert>
+          )}
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            rowSpacing={5}
+          >
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={6} md={2}>
+              <TextField
+                variant="standard"
+                label="Current password"
+                inputRef={currentPasswordRef}
+                type="password"
+              />
+            </Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={6} md={2}>
+              <TextField
+                variant="standard"
+                label="New password"
+                inputRef={newPasswordRef}
+                type="password"
+              />
+            </Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={6} md={2}>
+              <TextField
+                variant="standard"
+                label="Confirm password"
+                inputRef={confirmPasswordRef}
+                type="password"
+              />
+            </Grid>
+            <Grid item xs={3} md={5}></Grid>
+          </Grid>
+        </Container>
+        <Grid
+          container
+          justifyContent="space-between"
+          sx={{ marginTop: '55px' }}
+        >
+          <Grid item xs={7}></Grid>
+          <Grid item xs={3}>
+            <Button variant="contained" color="success" type="submit">
+              Update
+            </Button>
+          </Grid>
+          <Grid item xs></Grid>
         </Grid>
-        <Grid item xs></Grid>
-      </Grid>
-    </form>
+      </form>
+    </>
   );
 }
 
