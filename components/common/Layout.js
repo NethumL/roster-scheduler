@@ -138,9 +138,15 @@ const Layout = ({ children, user, setUser }) => {
       .map((pageGroup) => {
         return {
           ...pageGroup,
-          items: pageGroup.items.filter(
-            (page) => !isRouteDisallowed(user, page.href)
-          ),
+          items: pageGroup.items
+            .filter((page) => !isRouteDisallowed(user, page.href))
+            .map((page) => {
+              let href = page.href;
+              if (href === '/roster/view' || href === '/roster/edit') {
+                href = getRouteWithMonth(href);
+              }
+              return { ...page, href };
+            }),
         };
       })
       .filter((pageGroup) => pageGroup.items.length > 0);
@@ -152,16 +158,12 @@ const Layout = ({ children, user, setUser }) => {
         getAllowedPages(user).map((pageGroup) => (
           <List key={pageGroup.id}>
             {pageGroup.items.map((page) => {
-              let href = page.href;
-              if (href === '/roster/view' || href === '/roster/edit') {
-                href = getRouteWithMonth(href);
-              }
               return (
                 <ListItem
-                  key={href}
+                  key={page.href}
                   component="a"
-                  href={href}
-                  onClick={getRedirector(href)}
+                  href={page.href}
+                  onClick={getRedirector(page.href)}
                   disablePadding
                 >
                   <ListItemButton>
@@ -293,7 +295,7 @@ const Layout = ({ children, user, setUser }) => {
                     >
                       {pageGroup.items.map((page) => (
                         <MenuItem
-                          key={page.id}
+                          key={page.href}
                           onClick={getMenuRedirector(page.href, pageGroup.id)}
                         >
                           {page.title}
