@@ -15,6 +15,7 @@ import { useRef, useState } from 'react';
 export default function ChangePasswordPage() {
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
   const currentPasswordRef = useRef(null);
   const newPasswordRef = useRef(null);
@@ -36,6 +37,17 @@ export default function ChangePasswordPage() {
       setErrorMsg(JSON.parse(error.message).error);
     }
   }
+
+  const checkConfirmPassword = () => {
+    if (
+      confirmPasswordRef.current.value &&
+      newPasswordRef.current.value != confirmPasswordRef.current.value
+    ) {
+      setConfirmPasswordError('Passwords do not match');
+    } else {
+      setConfirmPasswordError('');
+    }
+  };
 
   return (
     <>
@@ -85,6 +97,7 @@ export default function ChangePasswordPage() {
                 label="New password"
                 inputRef={newPasswordRef}
                 type="password"
+                onBlur={checkConfirmPassword}
               />
             </Grid>
             <Grid item xs={3} md={5}></Grid>
@@ -95,6 +108,9 @@ export default function ChangePasswordPage() {
                 label="Confirm password"
                 inputRef={confirmPasswordRef}
                 type="password"
+                onBlur={checkConfirmPassword}
+                error={!!confirmPasswordError}
+                helperText={confirmPasswordError}
               />
             </Grid>
             <Grid item xs={3} md={5}></Grid>
