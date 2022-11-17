@@ -59,7 +59,7 @@ export default function RegisterPage() {
       await send('POST', '/api/auth/register', value);
       router.push('/');
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
     }
   }
 

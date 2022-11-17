@@ -172,6 +172,7 @@ export async function getServerSideProps(context) {
 
     return { props: { user } };
   } catch (error) {
+    console.error(error);
     return {
       redirect: {
         destination: '/auth/login',
