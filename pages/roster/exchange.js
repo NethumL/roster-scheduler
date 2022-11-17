@@ -1,5 +1,4 @@
 import NewExchangeModal from '@/components/roster/newExchangeModal';
-import Head from 'next/head';
 import { getUser } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Exchange from '@/lib/models/Exchange';
@@ -22,6 +21,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import Head from 'next/head';
 import { useState } from 'react';
 
 const statusToColorMap = {
@@ -283,9 +283,7 @@ export default function ExchangePage({
   );
 }
 
-/**
- * @param {import('next').NextPageContext} context
- */
+/** @type {import('next').GetServerSideProps} */
 export async function getServerSideProps(context) {
   try {
     const user = await getUser(context.req);
@@ -385,6 +383,13 @@ export async function getServerSideProps(context) {
   }
 }
 
+/**
+ * @typedef {{[key: string]: any} & { _id: import('mongoose').Types.ObjectId; }} HasObjectId
+ */
+
+/**
+ * @param {HasObjectId} document
+ */
 function serializeDocument(document) {
   return { ...document, _id: document._id.toString() };
 }

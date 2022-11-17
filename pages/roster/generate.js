@@ -151,9 +151,7 @@ export default function GenerateRosterPage() {
   );
 }
 
-/**
- * @param {import('next').NextPageContext} context
- */
+/** @type {import('next').GetServerSideProps} */
 export async function getServerSideProps(context) {
   try {
     const user = await getUser(context.req);
