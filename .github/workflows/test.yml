@@ -2,21 +2,21 @@ name: Test
 on:
   push:
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   jest:
     name: Jest Tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '14.x'
-    - name: Install dependencies
-      run: npm ci
-    - name: Run Jest tests
-      run: npm run test:unit
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Jest tests
+        run: npm run test:unit
   playwright:
     name: Playwright Tests
     timeout-minutes: 60
@@ -24,9 +24,6 @@ jobs:
     services:
       mongodb:
         image: healthcheck/mongo
-        env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: password
         options: >-
           --health-cmd mongo
           --health-interval 10s
@@ -35,23 +32,25 @@ jobs:
         ports:
           - 27017:27017
     env:
-      MONGODB_URI: mongodb://root:password@localhost:27017/test
+      MONGODB_URI: mongodb://localhost:27017/test
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
       NODE_ENV: test
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '14.x'
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
-    - uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Build for production
+        run: npm run build
+      - name: Run Playwright tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

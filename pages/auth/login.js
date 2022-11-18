@@ -120,9 +120,7 @@ export default function LoginPage({ setUser }) {
   );
 }
 
-/**
- * @param {import('next').NextPageContext} context
- */
+/** @type {import('next').GetServerSideProps} */
 export async function getServerSideProps(context) {
   try {
     const session = await getLoginSession(context.req);

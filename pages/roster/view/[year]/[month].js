@@ -1,4 +1,5 @@
 import { getUser } from '@/lib/auth/session';
+import Head from 'next/head';
 import dbConnect from '@/lib/db';
 import Roster from '@/lib/models/Roster';
 import Ward from '@/lib/models/Ward';
@@ -21,7 +22,7 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/router';
 
-export default function ViewRosterPage({ user, year, month, roster }) {
+export default function ViewRosterPage({ user, year, month, roster, months }) {
   const router = useRouter();
 
   const handleChange = (event) => {
@@ -35,97 +36,117 @@ export default function ViewRosterPage({ user, year, month, roster }) {
   }
 
   return (
-    <Container>
-      <Typography textAlign="right">Ward: ER</Typography>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        rowSpacing={5}
-        marginTop="5px"
-      >
-        <Grid item>
-          <Typography variant="h4" textAlign="center">
-            View roster
-          </Typography>
-        </Grid>
-        <Grid item container alignItems="center">
-          <Grid item xs={3} />
-          <Grid item xs={6}>
-            <FormControl fullWidth sx={{ marginY: '15px' }}>
-              <InputLabel id="month-select-label">Month</InputLabel>
-              <Select
-                labelId="month-select-label"
-                id="month-select"
-                value={`${year}/${month}`}
-                label="Month"
-                onChange={handleChange}
-              >
-                <MenuItem value={'2022/11'}>November 2022</MenuItem>
-                <MenuItem value={'2022/12'}>December 2022</MenuItem>
-              </Select>
-            </FormControl>
+    <>
+      <Head>
+        <title>{`View roster for ${year}/${month} | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
+      <Container>
+        <Typography textAlign="right">Ward: ER</Typography>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          rowSpacing={5}
+          marginTop="5px"
+        >
+          <Grid item>
+            <Typography variant="h4" textAlign="center">
+              View roster
+            </Typography>
           </Grid>
-          <Grid item xs={1} />
-          <Grid item xs={2}>
-            {user.type !== 'DOCTOR' ? (
-              <Button
-                variant="contained"
-                color="warning"
-                onClick={() => router.push(`/roster/edit/${year}/${month}`)}
-              >
-                Edit
-              </Button>
-            ) : (
-              <></>
-            )}
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        rowSpacing={5}
-        marginTop="5px"
-        marginBottom="20px"
-      >
-        <TableContainer component={Paper}>
-          <Table stickyHeader sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                {dayColumns}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {roster.map((row) => (
-                <TableRow
-                  key={row.name}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+          <Grid item container alignItems="center">
+            <Grid item xs={3} />
+            <Grid item xs={6}>
+              <FormControl fullWidth sx={{ marginY: '15px' }}>
+                <InputLabel id="month-select-label">Month</InputLabel>
+                <Select
+                  labelId="month-select-label"
+                  id="month-select"
+                  value={`${year}/${month}`}
+                  label="Month"
+                  onChange={handleChange}
                 >
-                  <TableCell>{row.name}</TableCell>
-                  {row.items.map((shift, index) => (
-                    <TableCell key={shift + index.toString()} align="left">
-                      {shift}
-                    </TableCell>
+                  {months.map((m) => (
+                    <MenuItem value={m.id}>{m.name}</MenuItem>
                   ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1} />
+            <Grid item xs={2}>
+              {user.type !== 'DOCTOR' ? (
+                <Button
+                  variant="contained"
+                  color="warning"
+                  onClick={() => router.push(`/roster/edit/${year}/${month}`)}
+                >
+                  Edit
+                </Button>
+              ) : (
+                <></>
+              )}
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          rowSpacing={5}
+          marginTop="5px"
+          marginBottom="20px"
+        >
+          <TableContainer component={Paper}>
+            <Table
+              stickyHeader
+              sx={{ minWidth: 650 }}
+              aria-label="simple table"
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  {dayColumns}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Grid>
-    </Container>
+              </TableHead>
+              <TableBody>
+                {roster.map((row) => (
+                  <TableRow
+                    key={row.name}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell>{row.name}</TableCell>
+                    {row.items.map((shift, index) => (
+                      <TableCell key={shift + index.toString()} align="left">
+                        {shift}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      </Container>
+    </>
   );
 }
 
-/**
- * @param {import('next').NextPageContext} context
- */
+/** @type {import('next').GetServerSideProps} */
 export async function getServerSideProps(context) {
   try {
     const user = await getUser(context.req);
+
+    if (
+      !context.query.hasOwnProperty('year') ||
+      !context.query.hasOwnProperty('month')
+    ) {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
+    }
 
     // @ts-ignore
     const year = parseInt(context.query.year);
@@ -174,12 +195,23 @@ export async function getServerSideProps(context) {
       return { redirect: { destination: '/', permanent: false } };
     }
 
+    const allRosters = await Roster.find({ ward: ward._id }).lean();
+    const months = allRosters.map((r) => {
+      const y = r.month.getFullYear();
+      const m = r.month.getMonth() + 1;
+      return {
+        id: `${y}/${m}`,
+        name: r.month.toLocaleString('en-US', { month: 'long' }) + ' ' + y,
+      };
+    });
+
     return {
       props: {
         user,
         year,
         month,
         roster: data,
+        months,
       },
     };
   } catch (error) {

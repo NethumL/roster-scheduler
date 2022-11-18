@@ -40,6 +40,11 @@ export default async function handler(req, res) {
       }
     );
 
+    await Roster.deleteOne({
+      ward: ward._id,
+      month: { $gte: `${year}-${month}-01`, $lte: `${year}-${month}-30` },
+    }).exec();
+
     const roster = new Roster({
       ward: ward._id,
       month: `${year}-${month}-01`,

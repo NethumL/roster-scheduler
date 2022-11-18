@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 
@@ -58,7 +59,7 @@ export default function RegisterPage() {
       await send('POST', '/api/auth/register', value);
       router.push('/');
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
     }
   }
 
@@ -79,121 +80,124 @@ export default function RegisterPage() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        rowSpacing={5}
-        marginTop="5px"
-      >
-        <Grid item>
-          <Typography variant="h4">Register</Typography>
-        </Grid>
-      </Grid>
-      <Container sx={{ marginTop: '20px' }}>
+    <>
+      <Head>
+        <title>{`Register to ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
+      <form onSubmit={handleSubmit}>
         <Grid
           container
-          alignItems="center"
           justifyContent="center"
+          alignItems="center"
           rowSpacing={5}
+          marginTop="5px"
+        >
+          <Grid item>
+            <Typography variant="h4">Register</Typography>
+          </Grid>
+        </Grid>
+        <Container sx={{ marginTop: '20px' }}>
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            rowSpacing={5}
+          >
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={6} md={2}>
+              <TextField
+                variant="standard"
+                label="Name"
+                inputRef={nameRef}
+                error={!!errors['name']}
+                helperText={errors['name']}
+              />
+            </Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={6} md={2}>
+              <TextField
+                variant="standard"
+                label="Username"
+                inputRef={usernameRef}
+                error={!!errors['username']}
+                helperText={errors['username']}
+              />
+            </Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={6} md={2}>
+              <TextField
+                variant="standard"
+                label="Password"
+                inputRef={passwordRef}
+                type="password"
+                onBlur={checkConfirmPassword}
+                error={!!errors['password']}
+                helperText={errors['password']}
+              />
+            </Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={6} md={2}>
+              <TextField
+                variant="standard"
+                label="Confirm password"
+                type="password"
+                inputRef={confirmPasswordRef}
+                onBlur={checkConfirmPassword}
+                error={!!confirmPasswordError}
+                helperText={confirmPasswordError}
+              />
+            </Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={3} md={5}></Grid>
+            <Grid item xs={6} md={2}>
+              <FormControl fullWidth>
+                <InputLabel id="user-type-select-label">Type</InputLabel>
+                <Select
+                  labelId="user-type-select-label"
+                  id="user-type-select"
+                  label="Type"
+                  inputProps={{ ref: userTypeRef }}
+                >
+                  <MenuItem value="DOCTOR">Doctor</MenuItem>
+                  <MenuItem value="CONSULTANT">Consultant</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={3} md={5}></Grid>
+          </Grid>
+        </Container>
+
+        <Grid
+          container
+          justifyContent="space-between"
+          sx={{ marginTop: '55px', marginBottom: '20px' }}
         >
           <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={6} md={2}>
-            <TextField
-              variant="standard"
-              label="Name"
-              inputRef={nameRef}
-              error={!!errors['name']}
-              helperText={errors['name']}
-            />
+          <Grid item xs={4} md={1}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={getRedirector('/auth/login')}
+            >
+              Login
+            </Button>
           </Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={6} md={2}>
-            <TextField
-              variant="standard"
-              label="Username"
-              inputRef={usernameRef}
-              error={!!errors['username']}
-              helperText={errors['username']}
-            />
+          <Grid item xs={3} md={1} sx={{ textAlign: 'right' }}>
+            <Button variant="contained" color="success" type="submit">
+              Register
+            </Button>
           </Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={6} md={2}>
-            <TextField
-              variant="standard"
-              label="Password"
-              inputRef={passwordRef}
-              type="password"
-              onBlur={checkConfirmPassword}
-              error={!!errors['password']}
-              helperText={errors['password']}
-            />
-          </Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={6} md={2}>
-            <TextField
-              variant="standard"
-              label="Confirm password"
-              type="password"
-              inputRef={confirmPasswordRef}
-              onBlur={checkConfirmPassword}
-              error={!!confirmPasswordError}
-              helperText={confirmPasswordError}
-            />
-          </Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={3} md={5}></Grid>
-          <Grid item xs={6} md={2}>
-            <FormControl fullWidth>
-              <InputLabel id="user-type-select-label">Type</InputLabel>
-              <Select
-                labelId="user-type-select-label"
-                id="user-type-select"
-                label="Type"
-                inputProps={{ ref: userTypeRef }}
-              >
-                <MenuItem value="DOCTOR">Doctor</MenuItem>
-                <MenuItem value="CONSULTANT">Consultant</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={3} md={5}></Grid>
+          <Grid item xs={2} md={5}></Grid>
         </Grid>
-      </Container>
-
-      <Grid
-        container
-        justifyContent="space-between"
-        sx={{ marginTop: '55px', marginBottom: '20px' }}
-      >
-        <Grid item xs={3}></Grid>
-        <Grid item xs={4}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={getRedirector('/auth/login')}
-          >
-            Login
-          </Button>
-        </Grid>
-        <Grid item xs={3}>
-          <Button variant="contained" color="success" type="submit">
-            Register
-          </Button>
-        </Grid>
-        <Grid item xs></Grid>
-      </Grid>
-    </form>
+      </form>
+    </>
   );
 }
 
-/**
- * @param {import('next').NextPageContext} context
- */
+/** @type {import('next').GetServerSideProps} */
 export async function getServerSideProps(context) {
   try {
     const session = await getLoginSession(context.req);

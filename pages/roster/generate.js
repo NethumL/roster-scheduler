@@ -1,24 +1,32 @@
 import { getUser } from '@/lib/auth/session';
+import Head from 'next/head';
 import { send } from '@/lib/util';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
-  CircularProgress,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
   Typography,
 } from '@mui/material';
 import { Container } from '@mui/system';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 
+const GENERATING_ROSTER_MESSAGE = 'Generating roster...';
+const GENERATING_ROSTER_ERROR = 'Error while generating roster';
+
 export default function GenerateRosterPage() {
-  const router = useRouter();
   const [month, setMonth] = useState('current');
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [snackbarMessage, setSnackbarMessage] = useState(
+    GENERATING_ROSTER_MESSAGE
+  );
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
   const handleChange = (event) => {
     setMonth(event.target.value);
@@ -38,93 +46,112 @@ export default function GenerateRosterPage() {
     }
 
     try {
-      setIsLoading(true);
       await send(
         'GET',
         `/api/roster/generate?year=${yearNum}&month=${monthNum}`
       );
-      router.push('/');
+      setIsSnackbarOpen(true);
+      setSnackbarMessage(GENERATING_ROSTER_MESSAGE);
     } catch (error) {
       console.error(error.message);
-      setIsLoading(false);
+      setSnackbarMessage(GENERATING_ROSTER_ERROR);
     }
   };
 
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setIsSnackbarOpen(false);
+  };
+
+  const snackbarAction = (
+    <>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleCloseSnackbar}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  );
+
   return (
-    <Container>
-      <Typography textAlign="right">Ward: ER</Typography>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        rowSpacing={5}
-        marginTop="5px"
-      >
-        <Grid item>
-          <Typography variant="h4" textAlign="center">
-            Generate roster
-          </Typography>
+    <>
+      <Head>
+        <title>{`Generate roster | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
+      <Container>
+        <Typography textAlign="right">Ward: ER</Typography>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          rowSpacing={5}
+          marginTop="5px"
+        >
+          <Grid item>
+            <Typography variant="h4" textAlign="center">
+              Generate roster
+            </Typography>
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        rowSpacing={5}
-        marginTop="5px"
-      >
-        <Grid item xs={3} md={5}></Grid>
-        <Grid item xs={6} md={2}>
-          <FormControl fullWidth>
-            <InputLabel id="month-select-label">Month</InputLabel>
-            <Select
-              labelId="month-select-label"
-              id="month-select"
-              value={month}
-              label="Month"
-              onChange={handleChange}
-            >
-              <MenuItem value="current">Current</MenuItem>
-              <MenuItem value="next">Next</MenuItem>
-            </Select>
-          </FormControl>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          rowSpacing={5}
+          marginTop="5px"
+        >
+          <Grid item xs={3} md={5}></Grid>
+          <Grid item xs={6} md={2}>
+            <FormControl fullWidth>
+              <InputLabel id="month-select-label">Month</InputLabel>
+              <Select
+                labelId="month-select-label"
+                id="month-select"
+                value={month}
+                label="Month"
+                onChange={handleChange}
+              >
+                <MenuItem value="current">Current</MenuItem>
+                <MenuItem value="next">Next</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={3} md={5}></Grid>
         </Grid>
-        <Grid item xs={3} md={5}></Grid>
-      </Grid>
-      <Grid container justifyContent="space-between" sx={{ marginTop: '55px' }}>
-        <Grid item xs={7}></Grid>
-        <Grid item xs={3}>
-          <Box sx={{ m: 1, position: 'relative' }}>
-            <Button
-              variant="contained"
-              color="success"
-              disabled={isLoading}
-              onClick={handleClick}
-            >
-              Generate
-            </Button>
-            {isLoading && (
-              <CircularProgress
-                size={24}
-                disableShrink
-                sx={{
-                  position: 'absolute',
-                  top: '20%',
-                  left: '50%',
-                }}
-              />
-            )}
-          </Box>
+        <Grid
+          container
+          justifyContent="space-between"
+          sx={{ marginTop: '55px' }}
+        >
+          <Grid item xs={7}></Grid>
+          <Grid item xs={3}>
+            <Box sx={{ m: 1, position: 'relative' }}>
+              <Button variant="contained" color="success" onClick={handleClick}>
+                Generate
+              </Button>
+            </Box>
+          </Grid>
+          <Grid item xs></Grid>
         </Grid>
-        <Grid item xs></Grid>
-      </Grid>
-    </Container>
+        <Snackbar
+          open={isSnackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          message={snackbarMessage}
+          action={snackbarAction}
+        />
+      </Container>
+    </>
   );
 }
 
-/**
- * @param {import('next').NextPageContext} context
- */
+/** @type {import('next').GetServerSideProps} */
 export async function getServerSideProps(context) {
   try {
     const user = await getUser(context.req);
@@ -143,6 +170,7 @@ export async function getServerSideProps(context) {
 
     return { props: { user } };
   } catch (error) {
+    console.error(error);
     return {
       redirect: {
         destination: '/auth/login',
