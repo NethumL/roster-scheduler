@@ -29,7 +29,6 @@ const pageGroups = [
     title: 'Admin',
     items: [
       { href: '/admin/new-users', title: 'New users' },
-      { href: '/admin/settings', title: 'Settings' },
       { href: '/admin/edit', title: 'Edit users' },
     ],
   },
