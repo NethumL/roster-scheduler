@@ -33,6 +33,8 @@ import dbConnect from '@/lib/db';
 import { send } from '@/lib/util';
 import User from '@/lib/models/User';
 import Ward from '@/lib/models/Ward';
+import Head from 'next/head';
+
 export default function View({
   doctors,
   allDoctors,
@@ -158,6 +160,9 @@ export default function View({
   }, [searchedText, Doctors]);
   return (
     <Container sx={{ overflowY: 'hidden', minWidth: 325 }}>
+      <Head>
+        <title>{`Doctors | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
       <Typography
         variant="h4"
         component="div"

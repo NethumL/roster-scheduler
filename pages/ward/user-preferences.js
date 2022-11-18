@@ -35,6 +35,7 @@ import { send } from '@/lib/util';
 import Preferences from '@/lib/models/Preferences';
 import Ward from '@/lib/models/Ward';
 import Alert from '@mui/material/Alert';
+import Head from 'next/head';
 
 export default function View({
   preferences,
@@ -115,6 +116,9 @@ export default function View({
   // }, [leaveDates]);
   return (
     <Container>
+      <Head>
+        <title>{`Preferences | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
       {hasWard && (
         <Container>
           <Typography

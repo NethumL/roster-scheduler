@@ -34,6 +34,8 @@ import dbConnect from '@/lib/db';
 import { send } from '@/lib/util';
 import User from '@/lib/models/User';
 import Ward from '@/lib/models/Ward';
+import Head from 'next/head';
+
 export default function View({ wards, consultants, assignedConsultants }) {
   const [open, setOpen] = useState(true);
   const handleClick = () => {
@@ -199,6 +201,9 @@ export default function View({ wards, consultants, assignedConsultants }) {
         paddingLeft: 2,
       }}
     >
+      <Head>
+        <title>{`Wards | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
       <Typography
         variant="h4"
         component="div"

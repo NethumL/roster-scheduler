@@ -11,10 +11,14 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Head from 'next/head';
 
 export default function ViewWard({ ward, hasWard }) {
   return (
     <Container>
+      <Head>
+        <title>{`Ward | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
       {hasWard && (
         <Box
           sx={{
