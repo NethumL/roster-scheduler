@@ -22,6 +22,7 @@ import {
 } from '@mui/material';
 import { Container } from '@mui/system';
 import { useEffect, useState } from 'react';
+import Head from 'next/head';
 
 export default function ViewRequests({ requests, user }) {
   let isDoctor = user.type === 'DOCTOR';
@@ -132,95 +133,100 @@ export default function ViewRequests({ requests, user }) {
   useEffect(filter, [status, allRequests]);
 
   return (
-    <Container sx={{ mt: 5 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 5 }}>
-        <Typography variant="h4" component="span">
-          {isDoctor ? 'My Requests' : 'Requests'}
-        </Typography>
-        {isDoctor && !mobileView && (
-          <Button
-            variant="contained"
-            startIcon={<AddCircleOutline />}
+    <>
+      <Head>
+        <title>{`Requests | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
+      <Container sx={{ mt: 5 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 5 }}>
+          <Typography variant="h4" component="span">
+            {isDoctor ? 'My Requests' : 'Requests'}
+          </Typography>
+          {isDoctor && !mobileView && (
+            <Button
+              variant="contained"
+              startIcon={<AddCircleOutline />}
+              onClick={handleClickOpenRequestModal}
+            >
+              New
+            </Button>
+          )}
+        </Box>
+        <Autocomplete
+          multiple
+          id="filter-status"
+          onChange={(event, value) => setStatus(value)}
+          value={status}
+          options={['Pending', 'Resolved']}
+          getOptionLabel={(option) => option}
+          defaultValue={[]}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="standard"
+              label="Status"
+              placeholder="Status"
+            />
+          )}
+          sx={{ mb: 5 }}
+        />
+        {filtered.length !== 0 && (
+          <Paper elevation={2} sx={{ p: 5, mb: 5 }}>
+            <Grid
+              container
+              id="requests-grid"
+              spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}
+            >
+              {filtered.map((request, index) => (
+                <RequestCard
+                  key={index}
+                  request={request}
+                  isDoctor={isDoctor}
+                  resolve={resolve}
+                />
+              ))}
+            </Grid>
+          </Paper>
+        )}
+        {filtered.length === 0 && (
+          <Alert severity="info" sx={{ mb: 5 }}>
+            No requests found
+          </Alert>
+        )}
+        {isDoctor && mobileView && (
+          <Fab
+            color="primary"
+            aria-label="add"
+            sx={{ position: 'fixed', bottom: 16, right: 16 }}
             onClick={handleClickOpenRequestModal}
           >
-            New
-          </Button>
+            <Add />
+          </Fab>
         )}
-      </Box>
-      <Autocomplete
-        multiple
-        id="filter-status"
-        onChange={(event, value) => setStatus(value)}
-        value={status}
-        options={['Pending', 'Resolved']}
-        getOptionLabel={(option) => option}
-        defaultValue={[]}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="standard"
-            label="Status"
-            placeholder="Status"
+        {isDoctor && (
+          <NewRequestModal
+            open={openRequestModal}
+            handleClose={handleCloseRequestModal}
+            handleSave={handleSaveRequest}
           />
         )}
-        sx={{ mb: 5 }}
-      />
-      {filtered.length !== 0 && (
-        <Paper elevation={2} sx={{ p: 5, mb: 5 }}>
-          <Grid
-            container
-            id="requests-grid"
-            spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}
-          >
-            {filtered.map((request, index) => (
-              <RequestCard
-                key={index}
-                request={request}
-                isDoctor={isDoctor}
-                resolve={resolve}
-              />
-            ))}
-          </Grid>
-        </Paper>
-      )}
-      {filtered.length === 0 && (
-        <Alert severity="info" sx={{ mb: 5 }}>
-          No requests found
-        </Alert>
-      )}
-      {isDoctor && mobileView && (
-        <Fab
-          color="primary"
-          aria-label="add"
-          sx={{ position: 'fixed', bottom: 16, right: 16 }}
-          onClick={handleClickOpenRequestModal}
-        >
-          <Add />
-        </Fab>
-      )}
-      {isDoctor && (
-        <NewRequestModal
-          open={openRequestModal}
-          handleClose={handleCloseRequestModal}
-          handleSave={handleSaveRequest}
-        />
-      )}
-      <Snackbar
-        open={openToast}
-        autoHideDuration={6000}
-        onClose={handleCloseToast}
-      >
-        <Alert
+        <Snackbar
+          open={openToast}
+          autoHideDuration={6000}
           onClose={handleCloseToast}
-          severity="error"
-          sx={{ width: '100%' }}
         >
-          {isDoctor
-            ? 'The request could not be saved!'
-            : 'The request could not be completed!'}
-        </Alert>
-      </Snackbar>
-    </Container>
+          <Alert
+            onClose={handleCloseToast}
+            severity="error"
+            sx={{ width: '100%' }}
+          >
+            {isDoctor
+              ? 'The request could not be saved!'
+              : 'The request could not be completed!'}
+          </Alert>
+        </Snackbar>
+      </Container>
+    </>
   );
 }
 
