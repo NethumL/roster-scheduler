@@ -3,10 +3,6 @@ import dbConnect from '@/lib/db';
 import Ward from '@/lib/models/Ward';
 
 export default async function addDoctor(req, res) {
-  /**
-   * TODO: Verify whether admin logged in
-   */
-
   try {
     if (req.method !== 'PUT') {
       return res.status(405).end();
@@ -28,7 +24,6 @@ export default async function addDoctor(req, res) {
       res.status(200).json({ out });
     }
   } catch (error) {
-    console.error(error);
     res.status(500).end('Authentication token is invalid, please log in');
   }
 }

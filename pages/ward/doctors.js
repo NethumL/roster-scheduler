@@ -41,8 +41,6 @@ export default function View({
   wID,
   assignedDoctorsFinal,
 }) {
-  // const router = useRouter();
-  // const data = router.query;
   const theme = useTheme();
   const border = useMediaQuery(theme.breakpoints.down('sm'))
     ? ''
@@ -95,7 +93,6 @@ export default function View({
       arr.push(newDoctor._id);
       setAssignedDoctors_state([...arr]);
       doctors.push(newDoctor);
-      console.log(doctors);
       setDoctors(doctors.map((obj) => ({ ...obj })));
       setOpenAddModal(false);
     } else {
@@ -103,16 +100,11 @@ export default function View({
     }
   };
   const handleDelete = (index) => {
-    console.log('handleDelete');
-    console.log(index);
     setDeleteIndex(index);
     setOpenDeleteModal(true);
-    // doctors.splice(index, 1);
   };
   const handleDeleteConfirm = async (index) => {
     const deletedItemL = doctors.splice(index, 1);
-    console.log('deletedItems');
-    console.log(deletedItemL);
     const body = {
       _id: wID,
       doctor: deletedItemL[0]._id,
@@ -130,7 +122,6 @@ export default function View({
     arr.splice(indx, 1);
     setAssignedDoctors_state([...arr]);
     setDoctors(doctors.map((obj) => ({ ...obj })));
-    console.log(doctors);
     setOpenDeleteModal(false);
     setDeleteIndex(null);
   };
@@ -138,9 +129,6 @@ export default function View({
     setOpenAddModal(true);
   };
   useEffect(() => {
-    console.log('g');
-    console.log(ward);
-    //***
     setDoctors(doctors.map((obj) => ({ ...obj })));
   }, [doctors]);
   useEffect(() => {
@@ -148,14 +136,11 @@ export default function View({
       const filteredData = Doctors.filter((el) => {
         if (searchedText === '') {
           return el;
-        }
-        //return the item which contains the user input
-        else {
+        } else {
           return el.name.toLowerCase().includes(searchedText);
         }
       });
       setFilteredDoctors(filteredData);
-      // console.log(filteredDoctors);
     }
   }, [searchedText, Doctors]);
   return (
@@ -187,7 +172,6 @@ export default function View({
             sx={{
               float: 'right',
               marginLeft: '3%',
-              // marginRight: mr,
               height: 35,
               mt: 1,
             }}
@@ -245,8 +229,6 @@ export async function getServerSideProps(context) {
   let doctors = [];
   let allDoctors = [];
   let assignedDoctors = [];
-  // const { data } = context.query;
-  // console.log(context.query.data);
   try {
     const user = await getUser(context.req);
     await dbConnect();
@@ -260,12 +242,9 @@ export async function getServerSideProps(context) {
     assignedDoctors.forEach((doc) => {
       assignedDoctorsFinal.push(...JSON.parse(JSON.stringify(doc.doctors)));
     });
-    console.log('assignedDoctors');
-    console.log('assignedDoctors', assignedDoctorsFinal);
     doctors = doctorsL[0].doctors;
     doctors = JSON.parse(JSON.stringify(doctors));
     allDoctors = JSON.parse(JSON.stringify(allDoctors));
-    console.log(doctors);
     const wID = context.query.w_id;
     return { props: { doctors, allDoctors, wID, assignedDoctorsFinal } };
   } catch (error) {

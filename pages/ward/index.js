@@ -117,11 +117,9 @@ export default function View({ wards, consultants, assignedConsultants }) {
           body._id = wards[selectedIndex]._id;
           try {
             const wrd = await send('PUT', '/api/ward/wards/editWard', body);
-            console.log(wrd);
           } catch (error) {
             console.log(error);
           }
-          console.log(wards[selectedIndex]);
           wards[selectedIndex].name = newName;
           wards[selectedIndex].description = newDescription;
           wards[selectedIndex].personInCharge = newPersonInCharge;
@@ -131,27 +129,13 @@ export default function View({ wards, consultants, assignedConsultants }) {
           wards[selectedIndex].minNumberOfDoctorsPerShift =
             newMinNumDoctorsPerShift;
           wards[selectedIndex].allowAdjacentShifts = newStatusAdjacentShifts;
-
-          console.log('body');
-          console.log(body);
         } else {
-          console.log(wards);
-
-          console.log('body');
-          console.log(body);
           var wrd = {};
           try {
             wrd = await send('POST', '/api/ward/wards/newWard', body);
-            console.log('wrd');
-            console.log(wrd);
-            console.log(wrd.ward._id);
           } catch (error) {
             console.log(error);
           }
-          // const shiftsNew = await Ward.find({ _id: wrd.ward._id })
-          //   .select('shifts')
-          //   .populate('shifts')
-          //   .lean();
           let arr = [...assignedConsultants_state];
           arr.push(newPersonInCharge._id);
           setAssignedConsultants_state([...arr]);
@@ -184,9 +168,7 @@ export default function View({ wards, consultants, assignedConsultants }) {
     const filteredData = wards.filter((el) => {
       if (searchedText === '') {
         return el;
-      }
-      //return the item which contains the user input
-      else {
+      } else {
         return el.name.toLowerCase().includes(searchedText);
       }
     });
@@ -232,7 +214,6 @@ export default function View({ wards, consultants, assignedConsultants }) {
               height: 35,
               mt: 1,
             }}
-            // sx={{ ml: 2, mr: 2 }}
           >
             New Ward
           </Button>
@@ -294,22 +275,14 @@ export async function getServerSideProps(context) {
         },
       };
     }
-    //   wards = await Ward.find({ consultant: user._id })
-    //     .populate('consultant')
-    //     .lean();
-    // } else {
-    //   wards = await Ward.find({ doctors: user._id })
-    //     .populate('consultant')
-    //     .lean();
-    // }
+
     wards = JSON.parse(JSON.stringify(wards));
     consultants = JSON.parse(JSON.stringify(consultants));
     assignedConsultants = JSON.parse(JSON.stringify(assignedConsultants));
     assignedConsultants = assignedConsultants.map(
       (obj) => obj.personInCharge._id
     );
-    console.log(wards);
-    console.log(consultants);
+
     return { props: { wards, consultants, assignedConsultants } };
   } catch (error) {
     return {

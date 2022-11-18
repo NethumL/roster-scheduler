@@ -111,9 +111,6 @@ export default function View({
     setIsSavedLeaves(false);
     setLeaves([...savedLeaves]);
   };
-  // useEffect(() => {
-  //   setLeaves([...leaveDates]);
-  // }, [leaveDates]);
   return (
     <Container>
       <Head>
@@ -153,10 +150,8 @@ export default function View({
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <StaticDatePicker
                     displayStaticWrapperAs="desktop"
-                    // openTo="month"
                     disableHighlightToday={true}
                     value={value}
-                    // sx={{ margin: 5 }}
                     onChange={(newValue) => {
                       setIsSavedLeaves(false);
                       if (leaves.length != maxLeaves) {
@@ -338,27 +333,23 @@ export async function getServerSideProps(context) {
   try {
     const user = await getUser(context.req);
     u_id = user._id;
-    // const user = await getUser(context.req);
     await dbConnect();
     if (user.type === 'DOCTOR') {
       maxLeaves = await Ward.find({ doctors: { $in: [user._id] } })
         .select('maxNumberOfLeaves')
         .lean();
 
-      console.log(maxLeaves);
       if (maxLeaves.length != 0) {
         maxLeaves = maxLeaves[0].maxNumberOfLeaves;
         preferences = await Preferences.find({ doctor: user._id })
           .select('preferenceOrder')
           .populate('preferenceOrder')
           .lean();
-        console.log('pref', preferences);
         if (
           preferences.length != 0
             ? preferences[0].preferenceOrder.length == 0
             : true
         ) {
-          console.log('hee');
           shifts = await Ward.find({ doctors: { $in: [user._id] } })
             .select('shifts')
             .populate('shifts')
@@ -372,7 +363,6 @@ export async function getServerSideProps(context) {
           preferences = JSON.parse(
             JSON.stringify(preferences[0].preferenceOrder)
           );
-          // prefs = JSON.parse(JSON.stringify(prefs[0]));
           preferences.map((pref, index) => {
             pref.rank = index + 1;
           });
@@ -382,14 +372,12 @@ export async function getServerSideProps(context) {
         }
         leaveDates = await Preferences.find({ doctor: user._id })
           .select('leaveDates')
-          // .populate('leaveDates')
           .lean();
         if (leaveDates.length != 0) {
           leaveDates = JSON.parse(JSON.stringify(leaveDates[0].leaveDates));
         }
       } else {
         hasWard = false;
-        console.log('rgoo');
       }
     } else {
       return {

@@ -58,9 +58,7 @@ export default function ViewWardModal({
   const [newMaxNumLeaves, setNewMaxNumLeaves] = useState('');
   const [newMinNumDoctorsPerShift, setNewMinNumDoctorsPerShift] = useState('');
   const [newStatusAdjacentShifts, setNewStatusAdjacentShifts] = useState(false);
-  // const [assignedConsultants_state, setAssignedConsultants] = usestate([
-  //   ...assignedConsultants,
-  // ]);
+
   const save = () => {
     let PIC = consultants.find((x) => x._id === newPersonInCharge);
     handleSave(
@@ -86,22 +84,12 @@ export default function ViewWardModal({
     setNewName(ward ? ward.name : '');
     setNewDescription(ward ? ward.description : '');
     setNewPersonInCharge(ward ? ward.personInCharge._id : '');
-    console.log('pic');
-    console.log(ward?.personInCharge);
     setNewNumDutyCycles(ward ? ward.shifts.length : 1);
     setNewShifts(ward ? ward.shifts : []);
     setNewMinNumDoctors(ward ? ward.minNumberOfDoctors : '');
     setNewMaxNumLeaves(ward ? ward.maxNumberOfLeaves : '');
     setNewMinNumDoctorsPerShift(ward ? ward.minNumberOfDoctorsPerShift : '');
     setNewStatusAdjacentShifts(ward ? ward.allowAdjacentShifts : false);
-    // setAssignedConsultants([...assignedConsultants]);
-    // let arr = [...assignedConsultants_state];
-    // let index = assignedConsultants_state.findIndex((id) => {
-    //   return id === newPersonInCharge;
-    // });
-
-    // arr.splice(index, 1);
-    // setAssignedConsultants([...arr]);
   }, [ward, open]);
 
   useEffect(() => {
@@ -226,7 +214,6 @@ export default function ViewWardModal({
               onChange={(e) => setNewPersonInCharge(e.target.value)}
             >
               {consultants.map((consultant, index) => (
-                // !assignedConsultants?.includes(consultant._id) &&
                 <MenuItem
                   key={index}
                   value={consultant._id}

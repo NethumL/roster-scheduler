@@ -46,8 +46,6 @@ export default function ViewWard({ ward, hasWard }) {
               </Typography>
               <Typography variant="body2" paddingLeft="15px">
                 {ward.personInCharge.name}
-                {/* <br />
-            {'"a benevolent smile"'} */}
               </Typography>
               <Typography sx={{ mt: 1.5 }} color="text.secondary">
                 Shifts
@@ -136,42 +134,42 @@ export default function ViewWard({ ward, hasWard }) {
 export async function getServerSideProps(context) {
   let ward = [];
   let hasWard = true;
-  //   try {
-  const user = await getUser(context.req);
-  await dbConnect();
-  if (user.type === 'CONSULTANT') {
-    ward = await Ward.find({ consultant: user._id })
-      .populate('personInCharge')
-      .populate('doctors')
-      .populate('shifts')
-      .lean();
-  } else if (user.type === 'DOCTOR') {
-    ward = await Ward.find({ doctors: { $in: [user._id] } })
-      .populate('personInCharge')
-      .populate('doctors')
-      .populate('shifts')
-      .lean();
-  } else {
+  try {
+    const user = await getUser(context.req);
+    await dbConnect();
+    if (user.type === 'CONSULTANT') {
+      ward = await Ward.find({ consultant: user._id })
+        .populate('personInCharge')
+        .populate('doctors')
+        .populate('shifts')
+        .lean();
+    } else if (user.type === 'DOCTOR') {
+      ward = await Ward.find({ doctors: { $in: [user._id] } })
+        .populate('personInCharge')
+        .populate('doctors')
+        .populate('shifts')
+        .lean();
+    } else {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
+    }
+    if (ward.length == 0) {
+      hasWard = false;
+    } else {
+      ward = JSON.parse(JSON.stringify(ward[0]));
+    }
+
+    return { props: { ward, hasWard } };
+  } catch (error) {
     return {
       redirect: {
-        destination: '/',
+        destination: '/auth/login',
         permanent: false,
       },
     };
   }
-  if (ward.length == 0) {
-    hasWard = false;
-  } else {
-    ward = JSON.parse(JSON.stringify(ward[0]));
-  }
-
-  return { props: { ward, hasWard } };
-  //   } catch (error) {
-  //     return {
-  //       redirect: {
-  //         destination: '/auth/login',
-  //         permanent: false,
-  //       },
-  //     };
-  //   }
 }
