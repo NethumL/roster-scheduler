@@ -63,7 +63,7 @@ export default function View({
     ? 'column'
     : 'row';
   const height = useMediaQuery(theme.breakpoints.down('md')) ? 'auto' : 530;
-  const margn = useMediaQuery(theme.breakpoints.down('md')) ? 'auto' : 7;
+  const margn = useMediaQuery(theme.breakpoints.down('md')) ? 0 : 7;
   const bordr = useMediaQuery(theme.breakpoints.down('md'))
     ? '10px solid #e9f3fc'
     : '37px solid #e9f3fc';
@@ -152,7 +152,7 @@ export default function View({
                     // openTo="month"
                     disableHighlightToday={true}
                     value={value}
-                    sx={{ margin: 5 }}
+                    // sx={{ margin: 5 }}
                     onChange={(newValue) => {
                       setIsSavedLeaves(false);
                       if (leaves.length != maxLeaves) {

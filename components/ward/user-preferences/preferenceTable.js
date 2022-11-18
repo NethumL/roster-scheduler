@@ -77,12 +77,7 @@ export default function PreferenceTable({
             <TableRow key={i}>
               <TableCell>{i + 1}</TableCell>
               <TableCell>
-                {pref.name +
-                  ' [' +
-                  pref.start.slice(-13, -8) +
-                  ' - ' +
-                  pref.end.slice(-13, -8) +
-                  ']'}
+                {pref.name + ' [' + pref.start + ' - ' + pref.end + ']'}
               </TableCell>
               {newPreferences.map((p, j) => (
                 <TableCell key={j} align="center">

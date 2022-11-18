@@ -31,13 +31,13 @@ export default function ShiftsList({
   };
   const setStart = (val, i) => {
     var temp = [...shifts];
-    temp[i].start = val;
+    temp[i].start = val['$d'].toString().split(' ')[4].slice(0, 5);
     setShifts(temp);
     setNew(temp.map((obj) => ({ ...obj })));
   };
   const setEnd = (val, i) => {
     var temp = [...shifts];
-    temp[i].end = val;
+    temp[i].end = val['$d'].toString().split(' ')[4].slice(0, 5);
     setShifts(temp);
     setNew(temp.map((obj) => ({ ...obj })));
   };
@@ -50,14 +50,13 @@ export default function ShiftsList({
     if (!shifts[i]) {
       shifts.push({
         name: '',
-        start: '2014-08-18T00:00:00.000z',
-        end: '2014-08-18T00:00:00.000z',
+        start: '00:00',
+        end: '00:00',
       });
     }
 
     indents.push(
       <TableRow key={i}>
-        <TableCell align="right">{i + 1}</TableCell>
         <TableCell align="right">
           <TextField
             autoFocus
@@ -76,7 +75,7 @@ export default function ShiftsList({
           <TableCell align="right">
             <TimePicker
               label=""
-              value={dayjs(shifts[i]?.start)}
+              value={dayjs('2014-08-18T' + shifts[i]?.start + ':00')}
               onChange={(e) => setStart(e, i)}
               disabled={!isEdit}
               renderInput={(params) => <TextField {...params} />}
@@ -86,7 +85,7 @@ export default function ShiftsList({
           <TableCell align="right">
             <TimePicker
               label=""
-              value={dayjs(shifts[i]?.end)}
+              value={dayjs('2014-08-18T' + shifts[i]?.end + ':00')}
               onChange={(e) => setEnd(e, i)}
               disabled={!isEdit}
               renderInput={(params) => <TextField {...params} />}

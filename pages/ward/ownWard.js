@@ -55,12 +55,7 @@ export default function ViewWard({ ward, hasWard }) {
                   paddingLeft="15px"
                   key={index}
                 >
-                  {shift.name +
-                    ' [' +
-                    shift.start.slice(-13, -8) +
-                    ' - ' +
-                    shift.end.slice(-13, -8) +
-                    ']'}
+                  {shift.name + ' [' + shift.start + ' - ' + shift.end + ']'}
                 </Typography>
               ))}
               <Typography sx={{ mt: 1.5 }} color="text.secondary">

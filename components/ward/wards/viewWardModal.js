@@ -256,14 +256,12 @@ export default function ViewWardModal({
           />
           <Table>
             <colgroup>
-              <col width="1%" />
+              <col width="30%" />
               <col width="35%" />
-              <col width="32%" />
-              <col width="32%" />
+              <col width="35%" />
             </colgroup>
             <TableHead>
               <TableRow>
-                <TableCell>#</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell align="center">Start Time</TableCell>
                 <TableCell align="center">End Time</TableCell>
