@@ -137,7 +137,7 @@ export default function View({ wards, consultants, assignedConsultants }) {
 
           console.log('body');
           console.log(body);
-          const wrd = {};
+          var wrd = {};
           try {
             wrd = await send('POST', '/api/ward/wards/newWard', body);
             console.log('wrd');
