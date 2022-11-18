@@ -7,8 +7,8 @@ import {
   Typography,
 } from '@mui/material';
 
-export default function ReportCard({ report, isDoctor, resolve }) {
-  const { _id, subject, description, resolved } = report;
+export default function RequestCard({ request, isDoctor, resolve }) {
+  const { _id, subject, description, resolved } = request;
 
   return (
     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
@@ -20,7 +20,7 @@ export default function ReportCard({ report, isDoctor, resolve }) {
           <Typography variant="subtitle1" component="div" sx={{ mb: 1 }}>
             {isDoctor
               ? `Status: ${resolved ? 'Resolved' : 'Pending'}`
-              : report.user.name}
+              : request.user.name}
           </Typography>
           <Typography variant="body2">{description}</Typography>
         </CardContent>

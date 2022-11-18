@@ -1,8 +1,8 @@
-import NewReportModal from '@/components/reports/newReportModal';
-import ReportCard from '@/components/reports/reportCard';
+import NewRequestModal from '@/components/requests/newRequestModal';
+import RequestCard from '@/components/requests/requestCard';
 import { getUser } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
-import Report from '@/lib/models/Report';
+import Request from '@/lib/models/Request';
 import Ward from '@/lib/models/Ward';
 import { send } from '@/lib/util';
 import { Add, AddCircleOutline } from '@mui/icons-material';
@@ -23,32 +23,32 @@ import {
 import { Container } from '@mui/system';
 import { useEffect, useState } from 'react';
 
-export default function ViewReports({ reports, user }) {
+export default function ViewRequests({ requests, user }) {
   let isDoctor = user.type === 'DOCTOR';
 
   const [status, setStatus] = useState(['Pending', 'Resolved']);
-  const [allReports, setAllReports] = useState(reports);
-  const [filtered, setFiltered] = useState(reports);
+  const [allRequests, setAllRequests] = useState(requests);
+  const [filtered, setFiltered] = useState(requests);
 
   const theme = useTheme();
   const mobileView = useMediaQuery(theme.breakpoints.down('md'));
 
-  const [openReportModal, setOpenReportModal] = useState(false);
+  const [openRequestModal, setOpenRequestModal] = useState(false);
   const [openToast, setOpenToast] = useState(false);
 
-  const handleClickOpenReportModal = () => {
-    setOpenReportModal(true);
+  const handleClickOpenRequestModal = () => {
+    setOpenRequestModal(true);
   };
 
-  const handleCloseReportModal = () => {
-    setOpenReportModal(false);
+  const handleCloseRequestModal = () => {
+    setOpenRequestModal(false);
   };
 
-  const handleSaveReport = async (subject, description) => {
+  const handleSaveRequest = async (subject, description) => {
     if (!isDoctor) return;
 
-    const newReports = [
-      ...allReports,
+    const newRequests = [
+      ...allRequests,
       {
         subject,
         description,
@@ -56,9 +56,9 @@ export default function ViewReports({ reports, user }) {
       },
     ];
 
-    const original = [...allReports];
+    const original = [...allRequests];
 
-    setAllReports(newReports);
+    setAllRequests(newRequests);
 
     const body = {
       subject,
@@ -66,13 +66,13 @@ export default function ViewReports({ reports, user }) {
     };
 
     try {
-      await send('POST', '/api/report', body);
+      await send('POST', '/api/request', body);
     } catch (error) {
       setOpenToast(true);
-      setAllReports(original);
+      setAllRequests(original);
     }
 
-    setOpenReportModal(false);
+    setOpenRequestModal(false);
   };
 
   const handleCloseToast = (event, reason) => {
@@ -83,43 +83,43 @@ export default function ViewReports({ reports, user }) {
     setOpenToast(false);
   };
 
-  const resolve = async (reportId) => {
+  const resolve = async (requestId) => {
     if (isDoctor) return;
 
-    let original = [...allReports];
-    let newReports = [...allReports];
-    newReports = newReports.map((report) => {
-      const newReport = { ...report };
-      if (report._id === reportId) {
-        newReport.resolved = true;
+    let original = [...allRequests];
+    let newRequests = [...allRequests];
+    newRequests = newRequests.map((request) => {
+      const newRequest = { ...request };
+      if (request._id === requestId) {
+        newRequest.resolved = true;
       }
-      return newReport;
+      return newRequest;
     });
-    setAllReports(newReports);
+    setAllRequests(newRequests);
 
     const body = { resolve: true };
 
     try {
-      await send('PUT', `/api/report/resolve/${reportId}`, body);
+      await send('PUT', `/api/request/resolve/${requestId}`, body);
     } catch (error) {
       setOpenToast(true);
-      setAllReports(original);
+      setAllRequests(original);
     }
   };
 
   const filter = () => {
-    let temp = [...allReports];
+    let temp = [...allRequests];
 
     if (status.length) {
-      temp = temp.filter((report) => {
-        if (report.resolved) {
+      temp = temp.filter((request) => {
+        if (request.resolved) {
           if (status.includes('Resolved')) {
-            return report;
+            return request;
           }
         } else {
-          if (!report.resolved) {
+          if (!request.resolved) {
             if (status.includes('Pending')) {
-              return report;
+              return request;
             }
           }
         }
@@ -129,19 +129,19 @@ export default function ViewReports({ reports, user }) {
     setFiltered(temp);
   };
 
-  useEffect(filter, [status, allReports]);
+  useEffect(filter, [status, allRequests]);
 
   return (
     <Container sx={{ mt: 5 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 5 }}>
         <Typography variant="h4" component="span">
-          {isDoctor ? 'My Reports' : 'Reports'}
+          {isDoctor ? 'My Requests' : 'Requests'}
         </Typography>
         {isDoctor && !mobileView && (
           <Button
             variant="contained"
             startIcon={<AddCircleOutline />}
-            onClick={handleClickOpenReportModal}
+            onClick={handleClickOpenRequestModal}
           >
             New
           </Button>
@@ -169,13 +169,13 @@ export default function ViewReports({ reports, user }) {
         <Paper elevation={2} sx={{ p: 5, mb: 5 }}>
           <Grid
             container
-            id="reports-grid"
+            id="requests-grid"
             spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}
           >
-            {filtered.map((report, index) => (
-              <ReportCard
+            {filtered.map((request, index) => (
+              <RequestCard
                 key={index}
-                report={report}
+                request={request}
                 isDoctor={isDoctor}
                 resolve={resolve}
               />
@@ -185,7 +185,7 @@ export default function ViewReports({ reports, user }) {
       )}
       {filtered.length === 0 && (
         <Alert severity="info" sx={{ mb: 5 }}>
-          No reports found
+          No requests found
         </Alert>
       )}
       {isDoctor && mobileView && (
@@ -193,16 +193,16 @@ export default function ViewReports({ reports, user }) {
           color="primary"
           aria-label="add"
           sx={{ position: 'fixed', bottom: 16, right: 16 }}
-          onClick={handleClickOpenReportModal}
+          onClick={handleClickOpenRequestModal}
         >
           <Add />
         </Fab>
       )}
       {isDoctor && (
-        <NewReportModal
-          open={openReportModal}
-          handleClose={handleCloseReportModal}
-          handleSave={handleSaveReport}
+        <NewRequestModal
+          open={openRequestModal}
+          handleClose={handleCloseRequestModal}
+          handleSave={handleSaveRequest}
         />
       )}
       <Snackbar
@@ -216,7 +216,7 @@ export default function ViewReports({ reports, user }) {
           sx={{ width: '100%' }}
         >
           {isDoctor
-            ? 'The report could not be saved!'
+            ? 'The request could not be saved!'
             : 'The request could not be completed!'}
         </Alert>
       </Snackbar>
@@ -228,7 +228,7 @@ export default function ViewReports({ reports, user }) {
  * @param {import('next').NextPageContext} context
  */
 export async function getServerSideProps(context) {
-  let reports = [];
+  let requests = [];
 
   try {
     const user = await getUser(context.req);
@@ -236,7 +236,7 @@ export async function getServerSideProps(context) {
     if (user.type === 'DOCTOR') {
       await dbConnect();
 
-      reports = await Report.find({ user: user._id }).populate('user').lean();
+      requests = await Request.find({ user: user._id }).populate('user').lean();
     } else if (user.type === 'CONSULTANT') {
       await dbConnect();
 
@@ -245,7 +245,7 @@ export async function getServerSideProps(context) {
       }).lean();
 
       if (ward !== null) {
-        reports = await Report.find({ user: { $in: ward.doctors } })
+        requests = await Request.find({ user: { $in: ward.doctors } })
           .populate('user')
           .lean();
       }
@@ -258,8 +258,8 @@ export async function getServerSideProps(context) {
       };
     }
 
-    reports = JSON.parse(JSON.stringify(reports));
-    return { props: { reports, user } };
+    requests = JSON.parse(JSON.stringify(requests));
+    return { props: { requests, user } };
   } catch (error) {
     return {
       redirect: {
