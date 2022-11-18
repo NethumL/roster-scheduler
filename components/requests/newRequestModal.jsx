@@ -1,16 +1,16 @@
 import { TextField } from '@mui/material';
 import { useState } from 'react';
 import ModalHeader from '@/components/common/modalHeader';
-import validateReport from '@/lib/validation/Report';
+import validateRequest from '@/lib/validation/Request';
 
-export default function NewReportModal({ open, handleClose, handleSave }) {
+export default function NewRequestModal({ open, handleClose, handleSave }) {
   const [subject, setSubject] = useState('');
   const [subjectError, setSubjectError] = useState('');
   const [description, setDescription] = useState('');
   const [descriptionError, setDescriptionError] = useState('');
 
   const save = () => {
-    const { error } = validateReport({ subject, description }, [
+    const { error } = validateRequest({ subject, description }, [
       'subject',
       'description',
     ]);
@@ -49,7 +49,7 @@ export default function NewReportModal({ open, handleClose, handleSave }) {
       return;
     }
 
-    const { error } = validateReport({ subject }, ['subject']);
+    const { error } = validateRequest({ subject }, ['subject']);
 
     if (error) {
       setSubjectError(error.details[0].message);
@@ -63,7 +63,7 @@ export default function NewReportModal({ open, handleClose, handleSave }) {
       return;
     }
 
-    const { error } = validateReport({ description }, ['description']);
+    const { error } = validateRequest({ description }, ['description']);
 
     if (error) {
       setDescriptionError(error.details[0].message);
@@ -73,7 +73,7 @@ export default function NewReportModal({ open, handleClose, handleSave }) {
   return (
     <div>
       <ModalHeader
-        title="New Report"
+        title="New Request"
         open={open}
         handleClose={close}
         successActionName="Send"
@@ -82,7 +82,7 @@ export default function NewReportModal({ open, handleClose, handleSave }) {
         <TextField
           autoFocus
           margin="dense"
-          id="report-subject"
+          id="request-subject"
           label="Subject"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
@@ -94,7 +94,7 @@ export default function NewReportModal({ open, handleClose, handleSave }) {
           helperText={subjectError}
         />
         <TextField
-          id="report-description"
+          id="request-description"
           label="Description"
           multiline
           value={description}
