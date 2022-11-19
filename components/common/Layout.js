@@ -58,7 +58,13 @@ const pageGroups = [
 ];
 const disallowedForDoctor = ['/roster/generate', '/roster/edit'];
 const disallowedForConsultant = ['/ward/user-preferences'];
-const disallowedForAdmin = ['/request', '/ward/user-preferences'];
+const disallowedForAdmin = [
+  '/request',
+  '/ward/user-preferences',
+  '/roster/generate',
+  '/roster/view',
+  '/roster/edit',
+];
 const onlyForDoctor = ['/roster/exchange'];
 const accountLinks = [
   { href: '/api/logout', title: 'Logout' },
