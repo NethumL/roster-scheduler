@@ -40,6 +40,7 @@ export default function View({
   allDoctors,
   wID,
   assignedDoctorsFinal,
+  wardName,
 }) {
   const theme = useTheme();
   const border = useMediaQuery(theme.breakpoints.down('sm'))
@@ -160,7 +161,7 @@ export default function View({
           display: flx,
         }}
       >
-        Doctors
+        {wardName}
         <Search_bar
           searchedText={searchedText}
           setSearchedText={setSearchedText}
@@ -229,12 +230,14 @@ export async function getServerSideProps(context) {
   let doctors = [];
   let allDoctors = [];
   let assignedDoctors = [];
+  let wardName = '';
   try {
     const user = await getUser(context.req);
     await dbConnect();
     allDoctors = await User.find({ type: 'DOCTOR' }).lean();
     doctorsL = await Ward.find({ _id: context.query.w_id })
       .select('doctors')
+      .select('name')
       .populate('doctors')
       .lean();
     assignedDoctors = await Ward.find({}).select('doctors').lean();
@@ -243,10 +246,13 @@ export async function getServerSideProps(context) {
       assignedDoctorsFinal.push(...JSON.parse(JSON.stringify(doc.doctors)));
     });
     doctors = doctorsL[0].doctors;
+    wardName = doctorsL[0].name;
     doctors = JSON.parse(JSON.stringify(doctors));
     allDoctors = JSON.parse(JSON.stringify(allDoctors));
     const wID = context.query.w_id;
-    return { props: { doctors, allDoctors, wID, assignedDoctorsFinal } };
+    return {
+      props: { doctors, allDoctors, wID, assignedDoctorsFinal, wardName },
+    };
   } catch (error) {
     return {
       redirect: {
