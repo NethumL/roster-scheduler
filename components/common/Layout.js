@@ -228,7 +228,7 @@ const Layout = ({ children, user, setUser }) => {
                 textDecoration: 'none',
               }}
             >
-              <Link href="/">Foo</Link>
+              <Link href="/">{process.env.NEXT_PUBLIC_TITLE}</Link>
             </Typography>
 
             {user && (
@@ -259,7 +259,7 @@ const Layout = ({ children, user, setUser }) => {
                 textDecoration: 'none',
               }}
             >
-              <Link href="/">Foo</Link>
+              <Link href="/">{process.env.NEXT_PUBLIC_TITLE}</Link>
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               {getAllowedPages(user).map((pageGroup) =>
