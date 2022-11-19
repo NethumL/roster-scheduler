@@ -366,9 +366,7 @@ export async function getServerSideProps(context) {
           preferences.map((pref, index) => {
             pref.rank = index + 1;
           });
-          preferences.sort(
-            (objA, objB) => dayjs(objA.start) - dayjs(objB.start)
-          );
+          preferences.sort((a, b) => (a.start > b.start ? 1 : -1));
         }
         leaveDates = await Preferences.find({ doctor: user._id })
           .select('leaveDates')

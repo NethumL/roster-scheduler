@@ -1,6 +1,7 @@
 import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Preferences from '@/lib/models/Preferences';
+import validatePreference from '@/lib/validation/ward/Preferences';
 
 export default async function setLeaveDates(req, res) {
   try {
@@ -16,15 +17,23 @@ export default async function setLeaveDates(req, res) {
       await dbConnect();
 
       const { doctor, preferenceOrder } = req.body;
+
       preferenceOrder.sort((objA, objB) => objA.rank - objB.rank);
       let prefL = [];
       preferenceOrder.map((pref) => {
         prefL.push(pref._id);
       });
+      const { error, value } = validatePreference({ prefL }, [
+        'preferenceOrder',
+      ]);
+      if (error) {
+        console.log(error);
+        return res.status(400).json({ error: error.details });
+      }
       preferences = await Preferences.findOneAndUpdate(
         { doctor: doctor },
         {
-          preferenceOrder: prefL,
+          preferenceOrder: [...prefL],
         }
       );
       if (!preferences) {
@@ -38,6 +47,7 @@ export default async function setLeaveDates(req, res) {
       res.status(200).json({ preferences });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).end('Authentication token is invalid, please log in');
   }
 }

@@ -2,7 +2,8 @@ import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Ward from '@/lib/models/Ward';
 import Shift from '@/lib/models/Shift';
-
+import validateWard from '@/lib/validation/ward/Ward';
+import validateShift from '@/lib/validation/ward/Shift';
 export default async function newWard(req, res) {
   try {
     if (req.method !== 'POST') {
@@ -30,10 +31,43 @@ export default async function newWard(req, res) {
       let shiftsL = [];
       let shft;
       shifts.map((shift) => {
+        const { error: error_1 } = validateShift({
+          name: shift.name,
+          start: shift.start,
+          end: shift.end,
+        });
+        if (error_1) {
+          return res.status(400).json({ error: error_1.details });
+        }
         shft = new Shift(shift);
         shft.save();
         shiftsL.push(shft._id);
       });
+      const { error: error_2 } = validateWard(
+        {
+          name,
+          description,
+          personInCharge: personInCharge._id,
+          shiftsL,
+          minNumberOfDoctors,
+          maxNumberOfLeaves,
+          minNumberOfDoctorsPerShift,
+          allowAdjacentShifts,
+        },
+        [
+          'name',
+          'description',
+          'shifts',
+          'minNumberOfDoctors',
+          'maxNumberOfLeaves',
+          'minNumberOfDoctorsPerShift',
+          'allowAdjacentShifts',
+        ]
+      );
+      if (error_2) {
+        console.log(error_2);
+        return res.status(400).json({ error: error_2.details });
+      }
       ward = new Ward({
         name,
         description,

@@ -38,7 +38,7 @@ export default function DoctorsList({ doctors, handleDelete }) {
         <ListItemIcon>
           <LetterAvatar name={doctor.name}></LetterAvatar>
         </ListItemIcon>
-        <ListItemText primary={doctor.name} />
+        <ListItemText primary={doctor.name} secondary={doctor.username} />
       </ListItem>
       <Divider variant="inset" component="li" />
     </div>

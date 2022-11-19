@@ -222,7 +222,7 @@ export default function ViewWardModal({
                     consultant._id != ward?.personInCharge._id
                   }
                 >
-                  {consultant.name}
+                  {consultant.name} - {consultant.username}
                 </MenuItem>
               ))}
             </Select>
@@ -261,7 +261,6 @@ export default function ViewWardModal({
                 isEdit={isEdit}
                 newShifts={newShifts}
                 open={open}
-                ward={ward}
               />
             </TableBody>
           </Table>

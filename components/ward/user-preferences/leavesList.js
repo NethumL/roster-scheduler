@@ -19,6 +19,7 @@ export default function LeaveList({ dates, setNew, setIsSavedLeaves }) {
     setNew([...temp]);
   };
   useEffect(() => {
+    console.log('dates', dates);
     setNewDates([...dates]);
   }, [dates]);
   return (

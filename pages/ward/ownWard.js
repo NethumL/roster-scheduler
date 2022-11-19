@@ -95,7 +95,7 @@ export default function ViewWard({ ward, hasWard }) {
                   paddingLeft="15px"
                   key={index}
                 >
-                  {doctor.name}
+                  {doctor.name} - {doctor.username}
                 </Typography>
               ))}
             </CardContent>
@@ -138,7 +138,7 @@ export async function getServerSideProps(context) {
     const user = await getUser(context.req);
     await dbConnect();
     if (user.type === 'CONSULTANT') {
-      ward = await Ward.find({ consultant: user._id })
+      ward = await Ward.find({ personInCharge: user._id })
         .populate('personInCharge')
         .populate('doctors')
         .populate('shifts')

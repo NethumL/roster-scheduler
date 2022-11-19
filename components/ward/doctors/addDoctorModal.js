@@ -108,7 +108,7 @@ export default function AddDoctorModal({
                 value={doctor}
                 disabled={assignedDoctors?.includes(doctor._id)}
               >
-                {doctor.name}
+                {doctor.name} - {doctor.username}
               </MenuItem>
             ))}
           </TextField>

@@ -20,7 +20,6 @@ export default function ShiftsList({
   setNew,
   isEdit,
   newShifts,
-  ward,
 }) {
   const [shifts, setShifts] = useState([]);
   const setName = (val, i) => {
