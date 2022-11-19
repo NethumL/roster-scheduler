@@ -1,8 +1,9 @@
-import User from '../../../lib/models/User';
 import { expect } from '@playwright/test';
-import mongoose from 'mongoose';
-import test from '../fixtures';
 import { compareSync } from 'bcryptjs';
+import mongoose from 'mongoose';
+import User from '../../../lib/models/User';
+import test from '../fixtures';
+import { login } from '../util';
 
 test.describe('/auth/change-password', () => {
   test('should change password', async ({ page, baseURL }) => {
@@ -28,20 +29,3 @@ test.describe('/auth/change-password', () => {
     await login(page, baseURL, { ...credentials, password: newPassword });
   });
 });
-
-/**
- * @param {import('@playwright/test').Page} page
- * @param {string} baseURL
- * @param {{username: string, password: string}} credentials
- */
-async function login(page, baseURL, credentials) {
-  await page.goto('/auth/login');
-  expect(page.url()).toBe(baseURL + '/auth/login');
-  await page.getByLabel('Username').fill(credentials.username);
-  await page.getByLabel('Password').fill(credentials.password);
-  await page.getByRole('button', { name: 'Login' }).last().click();
-  await page.waitForURL(new RegExp(baseURL + '/?$'), {
-    waitUntil: 'networkidle',
-  });
-  expect(page.url()).toMatch(new RegExp(baseURL + '/?$'));
-}
