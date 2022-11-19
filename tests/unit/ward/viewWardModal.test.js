@@ -1,6 +1,6 @@
 import ViewWardModal from '@/components/ward/wards/viewWardModal';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 describe('ViewWardModal', () => {
   it('renders a view ward modal', () => {
@@ -40,6 +40,32 @@ describe('ViewWardModal', () => {
         username: 'sasitha',
         type: 'CONSULTANT',
       },
+      {
+        _id: '633adc7cc3fa58ef887b8b0c',
+        name: 'Sasith Senaka',
+        username: 'sasith',
+        type: 'CONSULTANT',
+      },
+      {
+        _id: '633adc7cc3fa58ef887b8b0b',
+        name: 'Sasithika Hiruni',
+        username: 'sasithi',
+        type: 'CONSULTANT',
+      },
+    ];
+    const assignedConsultants = [
+      {
+        _id: '633adc7cc3fa58ef887b8b0d',
+        name: 'Sasitha Kumarasinghe',
+        username: 'sasitha',
+        type: 'CONSULTANT',
+      },
+      {
+        _id: '633adc7cc3fa58ef887b8b0c',
+        name: 'Sasith Senaka',
+        username: 'sasith',
+        type: 'CONSULTANT',
+      },
     ];
     const mockHandleSaveCallback = jest.fn(
       (
@@ -55,8 +81,8 @@ describe('ViewWardModal', () => {
         newStatusAdjacentShifts
       ) => _id
     );
+    const mockHandleIsEditCallBack = jest.fn();
     const handleCloseCallback = jest.fn();
-
     render(
       <ViewWardModal
         open={true}
@@ -64,48 +90,54 @@ describe('ViewWardModal', () => {
         handleClose={handleCloseCallback}
         handleSave={mockHandleSaveCallback}
         consultants={consultants}
+        assignedConsultants={assignedConsultants}
+        isEmpty={false}
       />
     );
 
     const nameInput = screen.getByRole('textbox', { name: 'Name' });
-    // const descriptionInput = screen.getByRole('textbox', {
-    //   name: 'Description',
-    // });
-    // const PICInput = screen.getByRole('textbox', { name: 'Person in charge' });
-    // const dutyCyclesInput = screen.getByRole('textbox', {
-    //   name: 'Number of duty cycles per day',
-    // });
-    // const minNumDoctorsInput = screen.getByRole('textbox', {
-    //   name: 'Minimum Number of Doctors',
-    // });
-    // const typeSelect = screen.getByDisplayValue('DOCTOR');
-    // const saveButton = screen.getByRole('button', { name: 'Save' });
-
+    const descriptionInput = screen.getByRole('textbox', {
+      name: 'Description',
+    });
+    const PICInp = screen.getByRole('button', {
+      name: 'Person in charge Sasitha Kumarasinghe - sasitha',
+    });
+    const dutyCyclesInput = screen.getByRole('spinbutton', {
+      name: 'Number of duty cycles per day',
+    });
+    const minNumDoctorsInput = screen.getByRole('spinbutton', {
+      name: 'Minimum Number of Doctors',
+    });
+    const maxNumLeavesInput = screen.getByRole('spinbutton', {
+      name: 'Maximum number of leaves',
+    });
+    const minNumDoctorsPerShiftInput = screen.getByRole('spinbutton', {
+      name: 'Minimum number of doctors per shift',
+    });
+    const allowedAdjacentShiftsInput = screen.getByRole('checkbox', {
+      name: 'Same doctor has not to be given both last shift of the day & first shift of the next day',
+    });
+    const editButton = screen.getByRole('button', { name: 'edit' });
+    const OKButton = screen.getByRole('button', { name: 'OK' });
     expect(nameInput).toBeInTheDocument();
-    // expect(descriptionInput).toBeInTheDocument();
-    // expect(PICInput).toBeInTheDocument();
-    // expect(dutyCyclesInput).toBeInTheDocument();
-    // expect(minNumberDoctorsInput).toBeInTheDocument();
+    expect(descriptionInput).toBeInTheDocument();
+    expect(PICInp).toBeInTheDocument();
+    expect(dutyCyclesInput).toBeInTheDocument();
+    expect(minNumDoctorsInput).toBeInTheDocument();
+    expect(maxNumLeavesInput).toBeInTheDocument();
+    expect(minNumDoctorsPerShiftInput).toBeInTheDocument();
+    expect(allowedAdjacentShiftsInput).toBeInTheDocument();
 
-    // expect(typeSelect).toBeInTheDocument();
-    // expect(usernameInput).toBeInTheDocument();
-    // expect(saveButton).toBeInTheDocument();
+    expect(editButton).toBeInTheDocument();
+    expect(OKButton).toBeInTheDocument();
 
-    // expect(nameInput).toHaveValue(user.name);
-    // expect(typeSelect).toHaveValue(user.type);
-    // expect(usernameInput).toHaveValue(user.username);
-
-    // fireEvent.change(nameInput, { target: { value: 'Jane Doe' } });
-    // fireEvent.change(typeSelect, { target: { value: 'CONSULTANT' } });
-
-    // expect(nameInput).toHaveValue('Jane Doe');
-    // expect(typeSelect).toHaveValue('CONSULTANT');
-
-    // saveButton.click();
-    // expect(mockHandleSaveCallback).toHaveBeenCalledWith(
-    //   user._id,
-    //   'Jane Doe',
-    //   'CONSULTANT'
-    // );
+    expect(nameInput).toHaveValue(ward.name);
+    expect(descriptionInput).toHaveValue(ward.description);
+    expect(dutyCyclesInput).toHaveValue(ward.shifts.length);
+    expect(maxNumLeavesInput).toHaveValue(ward.maxNumberOfLeaves);
+    expect(minNumDoctorsPerShiftInput).toHaveValue(
+      ward.minNumberOfDoctorsPerShift
+    );
+    expect(allowedAdjacentShiftsInput).toBeChecked(ward.allowAdjacentShifts);
   });
 });

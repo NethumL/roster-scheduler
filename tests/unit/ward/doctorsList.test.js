@@ -26,9 +26,9 @@ describe('doctorsList', () => {
     );
     const buttonList = screen.getAllByRole('button');
     expect(buttonList).toHaveLength(2);
-    buttonList[1].click();
-    expect(mockDeleteCallback).toHaveBeenCalledWith(1);
-    // const childEle = component.getAllByName('avatar');
-    // expect(childEle).toBeInTheDocument();
+    buttonList.map((buttn, index) => {
+      buttn.click();
+      expect(mockDeleteCallback).toHaveBeenCalledWith(index);
+    });
   });
 });
