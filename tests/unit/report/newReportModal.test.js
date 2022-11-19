@@ -1,14 +1,14 @@
-import NewReportModal from '@/components/reports/newReportModal';
+import NewRequestModal from '@/components/requests/newRequestModal';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 
-describe('NewReportModal', () => {
+describe('NewRequestModal', () => {
   it('renders a reset password modal and saves with matching passwords', () => {
     const mockHandleSaveCallback = jest.fn((subject, description) => subject);
     const handleCloseCallback = jest.fn();
 
     render(
-      <NewReportModal
+      <NewRequestModal
         open={true}
         handleClose={handleCloseCallback}
         handleSave={mockHandleSaveCallback}

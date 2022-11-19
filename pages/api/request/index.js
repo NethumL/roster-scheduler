@@ -1,9 +1,9 @@
 import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
-import Report from '@/lib/models/Report';
-import validateReport from '@/lib/validation/Report';
+import Request from '@/lib/models/Request';
+import validateRequest from '@/lib/validation/Request';
 
-export default async function report(req, res) {
+export default async function request(req, res) {
   try {
     if (req.method !== 'POST') {
       return res.status(405).end();
@@ -11,14 +11,14 @@ export default async function report(req, res) {
 
     const session = await getLoginSession(req);
 
-    /** @type {import('@/lib/models/Report').ReportEntity | null} */
-    let report = null;
+    /** @type {import('@/lib/models/Request').RequestEntity | null} */
+    let request = null;
 
     if (session) {
       if (session.type === 'DOCTOR') {
         await dbConnect();
 
-        const { error } = validateReport({
+        const { error } = validateRequest({
           ...req.body,
           user: session._id,
           resolved: false,
@@ -29,15 +29,15 @@ export default async function report(req, res) {
         }
 
         const { subject, description } = req.body;
-        report = new Report({
+        request = new Request({
           subject,
           description,
           user: session._id,
           resolved: false,
         });
 
-        await report.save();
-        res.status(200).json({ report });
+        await request.save();
+        res.status(200).json({ request });
       } else {
         res.status(403).end("You don't have permission to perform this action");
       }

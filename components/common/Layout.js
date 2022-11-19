@@ -29,14 +29,13 @@ const pageGroups = [
     title: 'Admin',
     items: [
       { href: '/admin/new-users', title: 'New users' },
-      { href: '/admin/settings', title: 'Settings' },
       { href: '/admin/edit', title: 'Edit users' },
     ],
   },
   {
-    id: 'report',
-    title: 'Reports',
-    items: [{ href: '/report', title: 'Reports' }],
+    id: 'request',
+    title: 'Requests',
+    items: [{ href: '/request', title: 'Requests' }],
   },
   {
     id: 'ward',
@@ -59,7 +58,7 @@ const pageGroups = [
 ];
 const disallowedForDoctor = ['/roster/generate', '/roster/edit'];
 const disallowedForConsultant = ['/ward/user-preferences'];
-const disallowedForAdmin = ['/report', '/ward/user-preferences'];
+const disallowedForAdmin = ['/request', '/ward/user-preferences'];
 const onlyForDoctor = ['/roster/exchange'];
 const accountLinks = [
   { href: '/api/logout', title: 'Logout' },

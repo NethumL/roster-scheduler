@@ -8,6 +8,7 @@ import User from '@/lib/models/User';
 import { send } from '@/lib/util';
 import { Alert, Container, Snackbar, Typography } from '@mui/material';
 import { useRef, useState } from 'react';
+import Head from 'next/head';
 
 export default function Edit({ users }) {
   const apiEndPoint = '/api/admin/edit';
@@ -138,69 +139,74 @@ export default function Edit({ users }) {
   };
 
   return (
-    <Container sx={{ mt: 5 }}>
-      <Typography variant="h4" component="div" sx={{ mb: 5 }}>
-        Edit Users
-      </Typography>
-      <UserFilters
-        filter={() => filter(null)}
-        clear={clear}
-        nameRef={nameRef}
-        unameRef={unameRef}
-        type={type}
-        setType={setType}
-      />
-      {filtered.length !== 0 && (
-        <UserTable
-          users={filtered}
-          handleEdit={handleClickOpenEditModal}
-          handleReset={handleClickOpenResetModal}
+    <>
+      <Head>
+        <title>{`Edit users | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
+      </Head>
+      <Container sx={{ mt: 5 }}>
+        <Typography variant="h4" component="div" sx={{ mb: 5 }}>
+          Edit Users
+        </Typography>
+        <UserFilters
+          filter={() => filter(null)}
+          clear={clear}
+          nameRef={nameRef}
+          unameRef={unameRef}
+          type={type}
+          setType={setType}
         />
-      )}
-      {filtered.length === 0 && (
-        <Alert severity="info" sx={{ mb: 5 }}>
-          No users found!
-        </Alert>
-      )}
-      <EditUserModal
-        open={openEditModal}
-        user={selectedUser}
-        handleClose={handleCloseEditModal}
-        handleSave={handleSaveEdit}
-      />
-      <ResetPasswordModal
-        open={openResetModal}
-        user={selectedUser}
-        handleClose={handleCloseResetModal}
-        handleSave={handleSavePassword}
-      />
-      <Snackbar
-        open={openEditToast}
-        autoHideDuration={6000}
-        onClose={handleCloseEditToast}
-      >
-        <Alert
+        {filtered.length !== 0 && (
+          <UserTable
+            users={filtered}
+            handleEdit={handleClickOpenEditModal}
+            handleReset={handleClickOpenResetModal}
+          />
+        )}
+        {filtered.length === 0 && (
+          <Alert severity="info" sx={{ mb: 5 }}>
+            No users found!
+          </Alert>
+        )}
+        <EditUserModal
+          open={openEditModal}
+          user={selectedUser}
+          handleClose={handleCloseEditModal}
+          handleSave={handleSaveEdit}
+        />
+        <ResetPasswordModal
+          open={openResetModal}
+          user={selectedUser}
+          handleClose={handleCloseResetModal}
+          handleSave={handleSavePassword}
+        />
+        <Snackbar
+          open={openEditToast}
+          autoHideDuration={6000}
           onClose={handleCloseEditToast}
-          severity="error"
-          sx={{ width: '100%' }}
         >
-          Changes could not be saved!
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={openResetToast}
-        autoHideDuration={6000}
-        onClose={handleCloseResetToast}
-      >
-        <Alert
+          <Alert
+            onClose={handleCloseEditToast}
+            severity="error"
+            sx={{ width: '100%' }}
+          >
+            Changes could not be saved!
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={openResetToast}
+          autoHideDuration={6000}
           onClose={handleCloseResetToast}
-          severity="error"
-          sx={{ width: '100%' }}
         >
-          New Password could not be saved!
-        </Alert>
-      </Snackbar>
-    </Container>
+          <Alert
+            onClose={handleCloseResetToast}
+            severity="error"
+            sx={{ width: '100%' }}
+          >
+            New Password could not be saved!
+          </Alert>
+        </Snackbar>
+      </Container>
+    </>
   );
 }
 

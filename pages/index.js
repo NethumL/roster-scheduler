@@ -1,7 +1,9 @@
 import { getUser } from '@/lib/auth/session';
 import { Link as MUILink } from '@mui/material';
 import Head from 'next/head';
+import Image from 'next/image';
 import Link from 'next/link';
+import landingImage from '../public/img/image.svg';
 import styles from '../styles/Home.module.css';
 
 /**
@@ -17,12 +19,10 @@ export default function Home({ user }) {
       </Head>
 
       <main className={styles.main}>
+        <Image src={landingImage} alt="vector art of calendar"></Image>
         <h1 className={styles.title}>Welcome to Roster Scheduler!</h1>
         {user ? (
           <>
-            <MUILink component={Link} href="/preferences">
-              Preferences
-            </MUILink>
             <MUILink component={Link} href="/api/logout">
               Logout
             </MUILink>
