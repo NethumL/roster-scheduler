@@ -51,9 +51,11 @@ export default async function handler(req, res) {
   }
 
   /** @type {Date} */
-  const date = exchange.shiftDate;
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
+  const shiftDate = exchange.shiftDate;
+  /** @type {Date} */
+  const otherShiftDate = exchange.otherShiftDate;
+  const year = shiftDate.getFullYear();
+  const month = shiftDate.getMonth() + 1;
 
   exchange.status = status;
   await exchange.save();
@@ -72,8 +74,8 @@ export default async function handler(req, res) {
       (r) => r.doctor.toString() === exchange.doctor.toString()
     ).shifts;
 
-    doctorShifts[date.getDate() - 1] = exchange.shift;
-    theirDoctorShifts[date.getDate() - 1] = exchange.otherShift;
+    doctorShifts[otherShiftDate.getDate() - 1] = exchange.shift;
+    theirDoctorShifts[shiftDate.getDate() - 1] = exchange.otherShift;
 
     await roster.save();
   }
