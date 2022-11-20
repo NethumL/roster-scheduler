@@ -12,6 +12,8 @@ test.describe('/admin/edit', () => {
     await expect(page.locator('.MuiTypography-h4')).toHaveText('Edit Users');
     await expect(page.getByText('Doctor 1')).toBeVisible();
     await expect(page.getByText('Doctor 2')).toBeVisible();
+    await expect(page.getByText('Doctor 3')).toBeVisible();
     await expect(page.getByText('Consultant 1')).toBeVisible();
+    await expect(page.getByText('Consultant 2')).toBeVisible();
   });
 });
