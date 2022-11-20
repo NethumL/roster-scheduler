@@ -21,7 +21,7 @@ test.describe('/request', () => {
   });
 
   test('should show reports of consultant', async ({ page, baseURL }) => {
-    const credentials = { username: 'consultant', password: 'password' };
+    const credentials = { username: 'consultant1', password: 'password' };
 
     await login(page, baseURL, credentials);
     await page.goto('/request');

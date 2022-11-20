@@ -40,8 +40,8 @@ async function setup() {
     },
     {
       _id: '5f9f1c9b9c9b9c9b9c9b9c9c',
-      username: 'consultant',
-      name: 'Consultant',
+      username: 'consultant1',
+      name: 'Consultant 1',
       password: '$2a$12$1XlHf1SKssVoAO03lgBJQenqn3fLSOhZVLbg6b/S7ooqtoubSY0E2',
       type: 'CONSULTANT',
     },
@@ -91,6 +91,28 @@ async function setup() {
       allowAdjacentShifts: false,
       doctors: ['5f9f1c9b9c9b9c9b9c9b9c9b', '5f9f1c9b9c9b9c9b9c9b9c9d'],
     },
+  ]);
+
+  await NewUser.insertMany([
+    {
+        _id: '5f9f1c9b9c9b9c9b9c9b9c12',
+        username: 'doctor3',
+        name: 'Doctor 3',
+        password: '$2a$12$1XlHf1SKssVoAO03lgBJQenqn3fLSOhZVLbg6b/S7ooqtoubSY0E2',
+        type: 'DOCTOR',
+    },{
+        _id: '5f9f1c9b9c9b9c9b9c9b9c13',
+        username: 'doctor4',
+        name: 'Doctor 4',
+        password: '$2a$12$1XlHf1SKssVoAO03lgBJQenqn3fLSOhZVLbg6b/S7ooqtoubSY0E2',
+        type: 'DOCTOR',
+    },{
+        _id: '5f9f1c9b9c9b9c9b9c9b9c14',
+        username: 'consultant2',
+        name: 'Consultant 2',
+        password: '$2a$12$1XlHf1SKssVoAO03lgBJQenqn3fLSOhZVLbg6b/S7ooqtoubSY0E2',
+        type: 'CONSULTANT',
+    }
   ]);
 }
 
