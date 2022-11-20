@@ -71,7 +71,7 @@ export default function EditUserModal({ open, user, handleClose, handleSave }) {
   return (
     <div>
       <ModalHeader
-        title="Reset Password"
+        title="Edit User"
         open={open}
         handleClose={handleClose}
         successActionName="Save"

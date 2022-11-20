@@ -13,14 +13,16 @@ export default function Home({ user }) {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Home</title>
+        <title>{`Home | ${process.env.NEXT_PUBLIC_TITLE}`}</title>
         <meta name="description" content="Constraint Based Roster scheduler" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
         <Image src={landingImage} alt="vector art of calendar"></Image>
-        <h1 className={styles.title}>Welcome to Roster Scheduler!</h1>
+        <h1
+          className={styles.title}
+        >{`Welcome to ${process.env.NEXT_PUBLIC_TITLE}`}</h1>
         {user ? (
           <>
             <MUILink component={Link} href="/api/logout">

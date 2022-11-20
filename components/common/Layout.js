@@ -58,7 +58,13 @@ const pageGroups = [
 ];
 const disallowedForDoctor = ['/roster/generate', '/roster/edit'];
 const disallowedForConsultant = ['/ward/user-preferences'];
-const disallowedForAdmin = ['/request', '/ward/user-preferences'];
+const disallowedForAdmin = [
+  '/request',
+  '/ward/user-preferences',
+  '/roster/generate',
+  '/roster/view',
+  '/roster/edit',
+];
 const onlyForDoctor = ['/roster/exchange'];
 const accountLinks = [
   { href: '/api/logout', title: 'Logout' },
@@ -228,7 +234,7 @@ const Layout = ({ children, user, setUser }) => {
                 textDecoration: 'none',
               }}
             >
-              <Link href="/">Foo</Link>
+              <Link href="/">{process.env.NEXT_PUBLIC_TITLE}</Link>
             </Typography>
 
             {user && (
@@ -259,7 +265,7 @@ const Layout = ({ children, user, setUser }) => {
                 textDecoration: 'none',
               }}
             >
-              <Link href="/">Foo</Link>
+              <Link href="/">{process.env.NEXT_PUBLIC_TITLE}</Link>
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               {getAllowedPages(user).map((pageGroup) =>
