@@ -100,6 +100,7 @@ export default function View({ wards, consultants, assignedConsultants }) {
           description: newDescription,
           personInCharge: newPersonInCharge,
           shifts: newShifts,
+          oldShifts: wards[selectedIndex].shifts,
           minNumberOfDoctors: newMinNumDoctors,
           maxNumberOfLeaves: newMaxNumLeaves,
           minNumberOfDoctorsPerShift: newMinNumDoctorsPerShift,
@@ -115,6 +116,7 @@ export default function View({ wards, consultants, assignedConsultants }) {
           arr.push(newPersonInCharge._id);
           setAssignedConsultants_state([...arr]);
           body._id = wards[selectedIndex]._id;
+          body.doctors = wards[selectedIndex].doctors;
           try {
             const wrd = await send('PUT', '/api/ward/wards/editWard', body);
           } catch (error) {

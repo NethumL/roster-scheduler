@@ -1,6 +1,7 @@
 import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Ward from '@/lib/models/Ward';
+import Preferences from '@/lib/models/Preferences';
 import Shift from '@/lib/models/Shift';
 import validateWard from '@/lib/validation/ward/Ward';
 import validateShift from '@/lib/validation/ward/Shift';
@@ -25,15 +26,16 @@ export default async function editWard(req, res) {
         description,
         personInCharge,
         shifts,
+        oldShifts,
         minNumberOfDoctors,
         maxNumberOfLeaves,
         minNumberOfDoctorsPerShift,
         allowAdjacentShifts,
+        doctors,
       } = req.body;
 
       let shiftsL = [];
-      let shft;
-      shifts.map(async (shift, index) => {
+      shifts.forEach(async (shift) => {
         const { error: error_1 } = validateShift(
           {
             name: shift.name,
@@ -46,8 +48,8 @@ export default async function editWard(req, res) {
           return res.status(400).json({ error: error_1.details });
         }
         if (shift._id === undefined) {
-          shft = new Shift(shift);
-          await shft.save();
+          const shft = new Shift(shift);
+          shft.save();
           shiftsL.push(shft._id);
         } else {
           const s = await Shift.findByIdAndUpdate(shift._id, {
@@ -58,6 +60,7 @@ export default async function editWard(req, res) {
           shiftsL.push(s._id);
         }
       });
+
       let personInChargeId = personInCharge._id;
       const { error: error_2 } = validateWard(
         {
@@ -92,8 +95,26 @@ export default async function editWard(req, res) {
         minNumberOfDoctorsPerShift: minNumberOfDoctorsPerShift,
         allowAdjacentShifts: allowAdjacentShifts,
       });
-      ward = await Ward.findByIdAndUpdate(_id, {
-        $addToSet: { shifts: { $each: shiftsL } },
+      if (shiftsL.length == shifts.length) {
+        // console.log('sl', shiftsL);
+        // console.log('sb', shifts);
+        // shiftsL.sort(function (a, b) {
+        //   return shifts.indexOf(a._id) - shifts.indexOf(b._id);
+        // });
+        ward = await Ward.findByIdAndUpdate(_id, {
+          shifts: shiftsL,
+        });
+      }
+      // else {
+      //   console.log('sk', shiftsL);
+      // }
+      doctors.forEach(async (doctor) => {
+        if (oldShifts.length != shifts.length) {
+          await Preferences.findOneAndUpdate(
+            { doctor: doctor },
+            { preferenceOrder: [] }
+          );
+        }
       });
       if (!ward) return res.status(404).json({ message: 'Ward not found' });
 

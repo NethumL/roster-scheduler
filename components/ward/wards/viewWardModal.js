@@ -177,7 +177,7 @@ export default function ViewWardModal({
           )}
           <TextField
             required
-            autoFocus
+            // autoFocus
             margin="dense"
             id="edit-name"
             label="Name"
@@ -190,7 +190,7 @@ export default function ViewWardModal({
           />
           <TextField
             required
-            autoFocus
+            // autoFocus
             margin="dense"
             id="edit-Description"
             label="Description"
@@ -229,7 +229,7 @@ export default function ViewWardModal({
           </FormControl>
           <TextField
             required
-            autoFocus
+            // autoFocus
             margin="dense"
             id="edit-NumDutyCycles"
             label="Number of duty cycles per day"
@@ -265,7 +265,7 @@ export default function ViewWardModal({
             </TableBody>
           </Table>
           <TextField
-            autoFocus
+            // autoFocus
             margin="dense"
             id="edit-MinNumDoctors"
             label="Minimum Number of Doctors"
@@ -278,7 +278,7 @@ export default function ViewWardModal({
             variant="standard"
           />
           <TextField
-            autoFocus
+            // autoFocus
             required
             margin="dense"
             id="edit-MaxNumLeaves"
@@ -292,7 +292,7 @@ export default function ViewWardModal({
             variant="standard"
           />
           <TextField
-            autoFocus
+            // autoFocus
             margin="dense"
             id="edit-MinNumDoctorsPerShift"
             label="Minimum number of doctors per shift"

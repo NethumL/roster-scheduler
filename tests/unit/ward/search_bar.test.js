@@ -1,4 +1,4 @@
-import SearchBar from '@/components/ward/common/Search_bar';
+import SearchBar from '@/components/ward/common/search_bar';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 

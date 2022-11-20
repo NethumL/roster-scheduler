@@ -1,7 +1,7 @@
 import { getLoginSession } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 import Ward from '@/lib/models/Ward';
-
+import Preferences from '@/lib/models/Preferences';
 export default async function deleteDoctor(req, res) {
   try {
     if (req.method !== 'PUT') {
@@ -18,7 +18,10 @@ export default async function deleteDoctor(req, res) {
 
       const { _id, doctor } = req.body;
       out = await Ward.update({ _id: _id }, { $pull: { doctors: doctor } });
-
+      await Preferences.findOneAndUpdate(
+        { doctor: doctor },
+        { preferenceOrder: [] }
+      );
       res.status(200).json({ out });
     }
   } catch (error) {

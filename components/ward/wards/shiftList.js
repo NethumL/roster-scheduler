@@ -58,7 +58,7 @@ export default function ShiftsList({
       <TableRow key={i}>
         <TableCell align="right">
           <TextField
-            autoFocus
+            // autoFocus
             margin="dense"
             id="edit-shifts"
             label=""
