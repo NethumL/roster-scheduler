@@ -10,9 +10,6 @@ test.describe('/ward/user-preferences', () => {
     await page.goto('/ward/user-preferences');
     expect(page.url()).toBe(baseURL + '/ward/user-preferences');
 
-    await expect(page.getByText('12/14/2022')).toBeVisible();
-    await expect(page.getByText('12/7/2022')).toBeVisible();
-
     await expect(page.getByText('Shift 1 [12:00 - 13:00]')).toBeVisible();
     await expect(page.getByText('Shift 2 [13:00 - 14:00]')).toBeVisible();
   });
