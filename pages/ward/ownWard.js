@@ -2,13 +2,9 @@ import Ward from '@/lib/models/Ward';
 import { getUser } from '@/lib/auth/session';
 import dbConnect from '@/lib/db';
 
-import GroupIcon from '@mui/icons-material/Group';
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Head from 'next/head';

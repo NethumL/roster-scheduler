@@ -5,7 +5,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useTheme } from '@mui/system';
-import dayjs from 'dayjs';
 import {
   AppBar,
   IconButton,
@@ -16,7 +15,6 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { Close } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
 
 export default function AddDoctorModal({

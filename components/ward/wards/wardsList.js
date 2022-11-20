@@ -1,4 +1,3 @@
-import * as React from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -6,8 +5,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import GroupIcon from '@mui/icons-material/Group';
 import LetterAvatar from '../common/letterAvatar';
-import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { Tooltip } from '@mui/material';
 import Divider from '@mui/material/Divider';

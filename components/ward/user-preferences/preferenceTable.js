@@ -1,8 +1,3 @@
-import * as React from 'react';
-import GroupIcon from '@mui/icons-material/Group';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import { Tooltip } from '@mui/material';
 import TableCell from '@mui/material/TableCell';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,10 +5,7 @@ import TableRow from '@mui/material/TableRow';
 import Radio from '@mui/material/Radio';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import col from '@mui/material/';
 import { useState, useEffect } from 'react';
-import colgroup from '@mui/material/';
-import dayjs from 'dayjs';
 
 export default function PreferenceTable({
   preferences,

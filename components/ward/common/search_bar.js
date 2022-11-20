@@ -1,36 +1,8 @@
-import { styled, alpha } from '@mui/material/styles';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/system';
-import dayjs from 'dayjs';
-import Table from '@mui/material/Table';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableRow from '@mui/material/TableRow';
-import col from '@mui/material/';
-import colgroup from '@mui/material/';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
-import {
-  AppBar,
-  IconButton,
-  Toolbar,
-  useMediaQuery,
-  Typography,
-  MenuItem,
-} from '@mui/material';
-import { useEffect, useState } from 'react';
-import { Close } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit';
-import { Tooltip } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 
 export default function Search_bar({ searchedText, setSearchedText }) {
   const theme = useTheme();
